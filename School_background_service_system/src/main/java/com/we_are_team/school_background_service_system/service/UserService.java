@@ -1,0 +1,47 @@
+package com.we_are_team.school_background_service_system.service;
+
+import com.we_are_team.school_background_service_system.pojo.dto.ChangePasswordDTO;
+import com.we_are_team.school_background_service_system.pojo.dto.UserLoginDTO;
+import com.we_are_team.school_background_service_system.pojo.dto.UserRegisterDTO;
+import com.we_are_team.school_background_service_system.pojo.dto.UserUpdateDTO;
+import com.we_are_team.school_background_service_system.pojo.vo.UserLoginVO;
+import com.we_are_team.school_background_service_system.pojo.vo.UserVO;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.web.multipart.MultipartFile;
+
+public interface UserService {
+    /**
+     * 注册
+     * @param userRegisterDTO
+     * @return
+     */
+    void register(UserRegisterDTO userRegisterDTO);
+/**
+     * 登录
+     * @param userLoginDTO
+     * @return
+     */
+    UserLoginVO login(UserLoginDTO userLoginDTO);
+/**
+     * 获取用户信息
+     * @return
+     */
+    UserVO getUserInfo();
+
+    /**
+     * 修改用户昵称
+     * @param userUpdateDTO
+     */
+    void updateUserNickname(UserUpdateDTO userUpdateDTO);
+
+    /**
+     * 修改密码
+     * @param changePasswordDTO
+     */
+    void updatePassword(ChangePasswordDTO changePasswordDTO);
+/**
+     * 上传头像
+     * @param avatar
+     */
+    String uploadAvatar(MultipartFile avatar);
+}
