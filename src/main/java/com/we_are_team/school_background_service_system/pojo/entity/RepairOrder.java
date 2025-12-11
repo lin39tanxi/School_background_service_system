@@ -23,4 +23,8 @@ public class RepairOrder {
     private LocalDateTime createdTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedTime;
+    private Integer rating;
+    private String comment;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime commentCreatedTime;
 }
