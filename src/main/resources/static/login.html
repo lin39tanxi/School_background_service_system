@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .login-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #666;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .tab {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab button {
+            flex: 1;
+            background-color: #e9ecef;
+            border: none;
+            padding: 10px;
+        }
+        .tab button.active {
+            background-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+<div class="login-card">
+    <h2>用户登录</h2>
+
+    <div class="tab">
+        <button id="studentTab" class="active" onclick="switchTab('student')">学号登录</button>
+        <button id="usernameTab" onclick="switchTab('username')">用户名登录</button>
+    </div>
+
+    <form id="loginForm">
+        <div id="studentLogin" style="display: block;">
+            <div class="form-group">
+                <label for="studentNumber">学号:</label>
+                <input type="text" id="studentNumber" required>
+            </div>
+            <div class="form-group">
+                <label for="studentPassword">密码:</label>
+                <input type="password" id="studentPassword" required>
+            </div>
+        </div>
+
+        <div id="usernameLogin" style="display: none;">
+            <div class="form-group">
+                <label for="username">用户名:</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="usernamePassword">密码:</label>
+                <input type="password" id="usernamePassword" required>
+            </div>
+        </div>
+
+        <button type="submit">登录</button>
+    </form>
+    <div id="errorMessage" class="error-message"></div>
+</div>
+
+<script>
+    let currentTab = 'student';
+
+    function switchTab(tab) {
+        currentTab = tab;
+
+        // 更新标签样式
+        document.getElementById('studentTab').classList.toggle('active', tab === 'student');
+        document.getElementById('usernameTab').classList.toggle('active', tab === 'username');
+
+        // 显示对应表单
+        document.getElementById('studentLogin').style.display = tab === 'student' ? 'block' : 'none';
+        document.getElementById('usernameLogin').style.display = tab === 'username' ? 'block' : 'none';
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.textContent = '';
+
+        let loginData;
+
+        if (currentTab === 'student') {
+            loginData = {
+                studentNumber: document.getElementById('studentNumber').value,
+                password: document.getElementById('studentPassword').value
+            };
+            // 移除undefined字段
+            delete loginData.username;
+        } else {
+            loginData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('usernamePassword').value
+            };
+            // 移除undefined字段
+            delete loginData.studentNumber;
+        }
+
+        console.log('发送登录数据:', loginData);
+
+        try {
+            const response = await fetch('/user/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginData)
+            });
+
+            console.log('响应状态:', response.status);
+
+            const result = await response.json();
+            console.log('响应数据:', result);
+
+            if (result.code === 1) { // 登录成功
+                // 存储token到localStorage
+                localStorage.setItem('token', result.data.token);
+
+                // 跳转到用户信息页面
+                window.location.href = 'user-info.html';
+            } else {
+                errorMessage.textContent = result.msg || '登录失败';
+            }
+        } catch (error) {
+            console.error('登录请求失败:', error);
+            errorMessage.textContent = '网络错误，请稍后重试';
+        }
+    });
+</script>
+</body>
+</html>
