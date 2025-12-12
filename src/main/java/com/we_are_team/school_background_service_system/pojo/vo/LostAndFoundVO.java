@@ -18,13 +18,9 @@ public class LostAndFoundVO {
     private String categoryName;
     private Integer locationId;
     private String locationName;
-    private String specificLocation;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime foundTime;
     private String description;
     private String[] imageUrls;
     private Integer status;
-    private String statusText;
     private Integer adminId;
     private String adminName;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

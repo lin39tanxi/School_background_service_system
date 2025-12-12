@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.we_are_team.school_background_service_system.context.BaseContext;
 import com.we_are_team.school_background_service_system.mapper.RepairsMapper;
+import com.we_are_team.school_background_service_system.pojo.dto.RepairEvaluationCreateDTO;
 import com.we_are_team.school_background_service_system.pojo.entity.RepairOrder;
 import com.we_are_team.school_background_service_system.pojo.vo.GetRepairOrderVO;
 import com.we_are_team.school_background_service_system.pojo.vo.RepairOrderVO;
@@ -114,8 +115,28 @@ public class RepairsServiceImpl implements ReparisService {
     @Override
     public void cancelRepair(Integer orderId) {
         Integer processStatus = 5;
-        repairsMapper.cancelRepair(orderId,processStatus);
+        repairsMapper.updateRepairStatius(orderId,processStatus);
 
+    }
+
+    /**
+     * 评价保修单
+     * @param orderId
+     * @param repairEvaluationCreateDTO
+     */
+    @Override
+    public void commentRepair(Integer orderId, RepairEvaluationCreateDTO repairEvaluationCreateDTO) {
+        Integer processStatus = 4;
+        LocalDateTime commentCreatedTime = LocalDateTime.now();
+        String comment = repairEvaluationCreateDTO.getComment();
+        Integer rating = repairEvaluationCreateDTO.getRating();
+        repairsMapper.updateComment(orderId,comment,rating,commentCreatedTime,processStatus);
+
+    }
+
+    @Override
+    public void deleteComment(Integer orderId) {
+        repairsMapper.deleteComment(orderId);
     }
 
 }

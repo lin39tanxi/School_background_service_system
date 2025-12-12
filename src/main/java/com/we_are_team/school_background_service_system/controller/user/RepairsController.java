@@ -1,4 +1,5 @@
 package com.we_are_team.school_background_service_system.controller.user;
+import com.we_are_team.school_background_service_system.pojo.dto.RepairEvaluationCreateDTO;
 import com.we_are_team.school_background_service_system.pojo.vo.RepairOrderVO;
 import com.we_are_team.school_background_service_system.result.PageResult;
 import com.we_are_team.school_background_service_system.result.Result;
@@ -48,5 +49,23 @@ public class RepairsController {
     public Result cancelRepair(@PathVariable Integer orderId){
         reparisService.cancelRepair(orderId);
         return Result.success("取消报修成功");
+    }
+
+    /**
+     * 评价报修单
+     */
+    @PutMapping("/repairs/{orderId}/comment")
+    public Result commentRepair(@PathVariable Integer orderId, @RequestBody RepairEvaluationCreateDTO repairEvaluationCreateDTO){
+        reparisService.commentRepair(orderId, repairEvaluationCreateDTO);
+        return Result.success("评价成功");
+    }
+
+    /**
+     * 删除保修单评价
+     */
+    @PutMapping("/repairs/{orderId}/deleteComment")
+    public Result deleteComment(@PathVariable Integer orderId){
+        reparisService.deleteComment(orderId);
+        return Result.success("删除评价成功");
     }
 }
