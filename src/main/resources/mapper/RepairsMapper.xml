@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+
+<mapper namespace="com.we_are_team.school_background_service_system.mapper.RepairsMapper">
+   <select id="getMyRepairs" resultType="com.we_are_team.school_background_service_system.pojo.vo.GetRepairOrderVO">
+       SELECT order_table.order_id,order_table.description,order_table.process_status,order_table.rating FROM order_table WHERE user_id=#{userId}
+       <if test="processStatus != null and processStatus !='' ">
+           AND process_status=#{processStatus}
+       </if>
+       <if test="orderKey != null and orderKey != ''">
+           AND (order_id LIKE '%${orderKey}%' OR description LIKE '%${orderKey}%')
+       </if>
+       <if test="beginTime != null and beginTime != ''">
+           AND created_time >= #{beginTime}
+       </if>
+        <if test="endTime != null and endTime != ''">
+           AND created_time &amp;gt= #{endTime}
+       </if>
+
+   </select>
+
+</mapper>

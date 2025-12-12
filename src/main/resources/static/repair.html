@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>提交保修申请</title>
+    <style>
+        .repair-container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            box-sizing: border-box;
+            min-height: 120px;
+            resize: vertical;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 12px 25px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .image-preview {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .image-preview img {
+            max-width: 150px;
+            max-height: 150px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logout-btn {
+            background-color: #dc3545;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+<div class="repair-container">
+    <div class="header">
+        <h2>提交保修申请</h2>
+        <button class="logout-btn" id="logoutBtn">退出登录</button>
+    </div>
+
+    <form id="repairForm">
+        <div class="form-group">
+            <label for="description">问题描述:</label>
+            <textarea id="description" name="description" placeholder="请输入详细的故障描述..." required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="imageUrlsArray">上传图片:</label>
+            <input type="file" id="imageUrlsArray" name="imageUrlsArray" multiple accept="image/*">
+            <div class="image-preview" id="imagePreview"></div>
+        </div>
+        <button type="submit">提交保修申请</button>
+    </form>
+</div>
+
+<script>
+    // 页面加载时检查 token
+    document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('请先登录');
+            window.location.href = 'login.html';
+        }
+    });
+
+    // 退出登录功能
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userInfo');
+        window.location.href = 'login.html';
+    });
+
+    // 图片预览功能
+    document.getElementById('imageUrlsArray').addEventListener('change', function(e) {
+        const files = e.target.files;
+        const preview = document.getElementById('imagePreview');
+        preview.innerHTML = '';
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    });
+
+    // 提交保修申请
+    document.getElementById('repairForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('请先登录');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const description = document.getElementById('description').value;
+        const imageFiles = document.getElementById('imageUrlsArray').files;
+
+        const formData = new FormData();
+        formData.append('description', description);
+
+        // 添加图片文件
+        for (let i = 0; i < imageFiles.length; i++) {
+            formData.append('imageUrlsArray', imageFiles[i]);
+        }
+
+        try {
+            // 发送保修申请请求
+            const response = await fetch('/user/repairs', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token // 正确添加 token 到请求头
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+
+            // 根据实际的响应格式判断成功条件
+            if (data.code === "200") { // 提交成功
+                alert('报修提交成功！');
+                document.getElementById('repairForm').reset();
+                document.getElementById('imagePreview').innerHTML = '';
+            } else {
+                alert('提交失败: ' + data.message);
+            }
+        } catch (error) {
+            console.error('提交错误:', error);
+            alert('提交请求失败，请检查网络连接');
+        }
+    });
+</script>
+</body>
+</html>
