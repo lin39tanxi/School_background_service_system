@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 public class RepairOrder {
     private Integer orderId;
     private Integer userId;
-    private LocalDate startAppointmentTime;
-    private LocalDate endAppointmentTime;
     private Integer processStatus;
     private String description;
     private Integer adminId;

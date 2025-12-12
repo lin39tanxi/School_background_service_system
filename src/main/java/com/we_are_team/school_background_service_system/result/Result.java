@@ -1,7 +1,11 @@
 package com.we_are_team.school_background_service_system.result;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class Result<T> {
     private String code;  // 状态码：200为成功

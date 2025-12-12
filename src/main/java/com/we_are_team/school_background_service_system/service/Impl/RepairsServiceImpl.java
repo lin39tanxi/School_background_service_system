@@ -1,0 +1,142 @@
+package com.we_are_team.school_background_service_system.service.Impl;
+
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.we_are_team.school_background_service_system.context.BaseContext;
+import com.we_are_team.school_background_service_system.mapper.RepairsMapper;
+import com.we_are_team.school_background_service_system.pojo.dto.RepairEvaluationCreateDTO;
+import com.we_are_team.school_background_service_system.pojo.entity.RepairOrder;
+import com.we_are_team.school_background_service_system.pojo.vo.GetRepairOrderVO;
+import com.we_are_team.school_background_service_system.pojo.vo.RepairOrderVO;
+import com.we_are_team.school_background_service_system.result.PageResult;
+import com.we_are_team.school_background_service_system.service.ReparisService;
+import com.we_are_team.school_background_service_system.utils.AliOssUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+@Slf4j
+@Service
+public class RepairsServiceImpl implements ReparisService {
+    @Autowired
+    private RepairsMapper repairsMapper;
+    @Autowired
+    private AliOssUtil aliOssUtil;
+
+
+    @Override
+    public void submitRepair(String description, MultipartFile[] imageUrlsArray) {
+        RepairOrderVO repairOrderVO = new RepairOrderVO();
+        RepairOrder repairOrder = new RepairOrder();
+            repairOrder.setUserId(BaseContext.getCurrentId());
+            repairOrder.setDescription(description);
+            repairOrder.setCreatedTime(LocalDateTime.now());
+            repairOrder.setProcessStatus(0);
+        List<String> urlsArray = new ArrayList<>();
+        if(imageUrlsArray ==  null || imageUrlsArray.length == 0){
+            repairsMapper.insert(repairOrder);
+        }
+        else
+        if ( imageUrlsArray.length> 0  && !imageUrlsArray[0].getOriginalFilename().equals("")) {
+            log.info("图片数组{}",imageUrlsArray[0].getOriginalFilename());
+            for (MultipartFile file : imageUrlsArray) {
+                String originalFilename = file.getOriginalFilename();
+                String objectName = originalFilename.substring(originalFilename.lastIndexOf("."));
+                String obj = UUID.randomUUID().toString() + objectName;
+                String url = null;
+                try {
+                    url = aliOssUtil.upload(file.getBytes(), obj);
+                    urlsArray.add(url);
+                } catch (IOException e) {
+                    throw new RuntimeException("上传失败");
+                }
+            }
+        }
+        if(urlsArray !=  null && !urlsArray.equals("")){
+            String result = String.join(",", urlsArray);
+            log.info("图片字符串{}",result);
+            repairOrder.setImageUrls(result);
+            repairsMapper.insert(repairOrder);
+        }
+
+
+
+
+
+        }
+
+    @Override
+    public PageResult getMyRepairs(String  status, Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime,LocalDate endTime) {
+//        开启分页查询
+        PageHelper pageHelper = new PageHelper();
+        pageHelper.startPage(pageNum, pageSize);
+        Integer userId = BaseContext.getCurrentId();
+        Page<GetRepairOrderVO> repairOrders  = repairsMapper.getMyRepairs(userId,status,orderKey,beginTime,endTime);
+        return new PageResult(repairOrders.getTotal(),repairOrders.getResult());
+    }
+
+    @Override
+    public RepairOrderVO getRepairOrdeDetail(Integer orderId) {
+       RepairOrder repairOrder = repairsMapper.getRepairDetail(orderId);
+       if(repairOrder == null){
+           throw new RuntimeException("没有这个保修单号");
+       }
+       String[] urlArray=  repairOrder.getImageUrls().split(",");
+       List<String> urls = new ArrayList<>(Arrays.asList(urlArray));
+       RepairOrderVO repairOrderVO =  RepairOrderVO.builder().
+               orderId(repairOrder.getOrderId())
+               .adminId(repairOrder.getAdminId())
+               .comment(repairOrder.getComment())
+               .createdTime(repairOrder.getCreatedTime())
+               .processStatus(repairOrder.getProcessStatus())
+               .rejectReason(repairOrder.getRejectReason())
+               .updatedTime(repairOrder.getUpdatedTime())
+               .description(repairOrder.getDescription())
+               .completedTime(repairOrder.getCompletedTime())
+               .imageUrls(urls)
+
+        .build();
+      return repairOrderVO;
+
+
+    }
+
+    /**
+     * 取消保修单
+     */
+    @Override
+    public void cancelRepair(Integer orderId) {
+        Integer processStatus = 5;
+        repairsMapper.updateRepairStatius(orderId,processStatus);
+
+    }
+
+    /**
+     * 评价保修单
+     * @param orderId
+     * @param repairEvaluationCreateDTO
+     */
+    @Override
+    public void commentRepair(Integer orderId, RepairEvaluationCreateDTO repairEvaluationCreateDTO) {
+        Integer processStatus = 4;
+        LocalDateTime commentCreatedTime = LocalDateTime.now();
+        String comment = repairEvaluationCreateDTO.getComment();
+        Integer rating = repairEvaluationCreateDTO.getRating();
+        repairsMapper.updateComment(orderId,comment,rating,commentCreatedTime,processStatus);
+
+    }
+
+    @Override
+    public void deleteComment(Integer orderId) {
+        repairsMapper.deleteComment(orderId);
+    }
+
+}

@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 
 @Data
 public class RepairEvaluationCreateDTO {
-    private Integer orderId;
     private Integer rating;
     private String comment;
 }

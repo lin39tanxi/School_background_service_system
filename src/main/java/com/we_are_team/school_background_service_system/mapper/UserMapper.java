@@ -62,7 +62,7 @@ public interface UserMapper {
 
 /**
      * 根据id更新头像
-     * @param currentId
+     * @param
      * @param url
      */
 @Update("update user set avatar_url= #{url} where user_id= #{usertId}")

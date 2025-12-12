@@ -26,3 +26,10 @@ we:
   access-key-id: LTAI5tEUyi76UvK181VRECDu
   access-key-secret: nF60yJIplDFqNmtdRxgnyX6R773tC2
   bucket-name: shcoolsystem
+#分页查询插件
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
