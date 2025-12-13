@@ -6,4 +6,5 @@ import lombok.Data;
 public class FeedbackCreateDTO {
     private String content;
     private Integer isAnonymous;
+
 }

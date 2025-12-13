@@ -34,7 +34,6 @@ public class RepairsServiceImpl implements ReparisService {
 
     @Override
     public void submitRepair(String description, MultipartFile[] imageUrlsArray) {
-        RepairOrderVO repairOrderVO = new RepairOrderVO();
         RepairOrder repairOrder = new RepairOrder();
             repairOrder.setUserId(BaseContext.getCurrentId());
             repairOrder.setDescription(description);
@@ -80,6 +79,12 @@ public class RepairsServiceImpl implements ReparisService {
         pageHelper.startPage(pageNum, pageSize);
         Integer userId = BaseContext.getCurrentId();
         Page<GetRepairOrderVO> repairOrders  = repairsMapper.getMyRepairs(userId,status,orderKey,beginTime,endTime);
+        repairOrders.getResult().forEach(repairOrder -> {
+            if(repairOrder.getImageUrl()!= "" && repairOrder.getImageUrl() != null){
+                   String[] imageUrls =  repairOrder.getImageUrl().split(",");
+                   repairOrder.setImageUrl(imageUrls[0]);
+            }
+        });
         return new PageResult(repairOrders.getTotal(),repairOrders.getResult());
     }
 
@@ -89,25 +94,42 @@ public class RepairsServiceImpl implements ReparisService {
        if(repairOrder == null){
            throw new RuntimeException("没有这个保修单号");
        }
-       String[] urlArray=  repairOrder.getImageUrls().split(",");
-       List<String> urls = new ArrayList<>(Arrays.asList(urlArray));
-       RepairOrderVO repairOrderVO =  RepairOrderVO.builder().
-               orderId(repairOrder.getOrderId())
-               .adminId(repairOrder.getAdminId())
-               .comment(repairOrder.getComment())
-               .createdTime(repairOrder.getCreatedTime())
-               .processStatus(repairOrder.getProcessStatus())
-               .rejectReason(repairOrder.getRejectReason())
-               .updatedTime(repairOrder.getUpdatedTime())
-               .description(repairOrder.getDescription())
-               .completedTime(repairOrder.getCompletedTime())
-               .imageUrls(urls)
-
-        .build();
-      return repairOrderVO;
-
-
+       if(repairOrder.getImageUrls() == null || repairOrder.getImageUrls().equals("")){
+           RepairOrderVO repairOrderVO =  RepairOrderVO.builder().
+                   orderId(repairOrder.getOrderId())
+                   .adminId(repairOrder.getAdminId())
+                   .comment(repairOrder.getComment())
+                   .createdTime(repairOrder.getCreatedTime())
+                   .processStatus(repairOrder.getProcessStatus())
+                   .rejectReason(repairOrder.getRejectReason())
+                   .updatedTime(repairOrder.getUpdatedTime())
+                   .description(repairOrder.getDescription())
+                   .completedTime(repairOrder.getCompletedTime())
+                   .build();
+           return repairOrderVO;
+       }
+       else {
+           String[] urlArray=  repairOrder.getImageUrls().split(",");
+           List<String> urls = new ArrayList<>(Arrays.asList(urlArray));
+           RepairOrderVO repairOrderVO =  RepairOrderVO.builder().
+                   orderId(repairOrder.getOrderId())
+                   .adminId(repairOrder.getAdminId())
+                   .comment(repairOrder.getComment())
+                   .createdTime(repairOrder.getCreatedTime())
+                   .processStatus(repairOrder.getProcessStatus())
+                   .rejectReason(repairOrder.getRejectReason())
+                   .updatedTime(repairOrder.getUpdatedTime())
+                   .description(repairOrder.getDescription())
+                   .completedTime(repairOrder.getCompletedTime())
+                   .imageUrls(urls).build();
+           return repairOrderVO;
+       }
     }
+
+
+
+
+
 
     /**
      * 取消保修单

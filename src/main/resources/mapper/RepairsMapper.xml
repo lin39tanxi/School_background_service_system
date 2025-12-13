@@ -6,7 +6,7 @@
 
 <mapper namespace="com.we_are_team.school_background_service_system.mapper.RepairsMapper">
    <select id="getMyRepairs" resultType="com.we_are_team.school_background_service_system.pojo.vo.GetRepairOrderVO">
-       SELECT order_table.order_id,order_table.description,order_table.process_status,order_table.rating FROM order_table WHERE user_id=#{userId}
+       SELECT order_table.order_id,order_table.description,order_table.process_status,order_table.rating,order_table.image_urls as imageUrl FROM order_table WHERE user_id=#{userId}
        <if test="processStatus != null and processStatus !='' ">
            AND process_status=#{processStatus}
        </if>

@@ -1,10 +1,8 @@
 package com.we_are_team.school_background_service_system.mapper;
 
 import com.github.pagehelper.Page;
-import com.we_are_team.school_background_service_system.pojo.dto.RepairEvaluationCreateDTO;
 import com.we_are_team.school_background_service_system.pojo.entity.RepairOrder;
 import com.we_are_team.school_background_service_system.pojo.vo.GetRepairOrderVO;
-import com.we_are_team.school_background_service_system.pojo.vo.RepairOrderVO;
 import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDate;

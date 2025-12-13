@@ -10,7 +10,6 @@ public class LostAndFoundCreateDTO {
     private String itemName;
     private Integer categoryId;
     private Integer locationId;
-    private LocalDateTime foundTime;
     private String description;
     private String specificLocation;
 }
