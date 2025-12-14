@@ -4,8 +4,10 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.we_are_team.school_background_service_system.context.BaseContext;
 import com.we_are_team.school_background_service_system.mapper.RepairsMapper;
+import com.we_are_team.school_background_service_system.mapper.UserMapper;
 import com.we_are_team.school_background_service_system.pojo.dto.RepairEvaluationCreateDTO;
 import com.we_are_team.school_background_service_system.pojo.entity.RepairOrder;
+import com.we_are_team.school_background_service_system.pojo.entity.User;
 import com.we_are_team.school_background_service_system.pojo.vo.GetRepairOrderVO;
 import com.we_are_team.school_background_service_system.pojo.vo.RepairOrderVO;
 import com.we_are_team.school_background_service_system.result.PageResult;
@@ -30,6 +32,8 @@ public class RepairsServiceImpl implements ReparisService {
     private RepairsMapper repairsMapper;
     @Autowired
     private AliOssUtil aliOssUtil;
+    @Autowired
+    private UserMapper userMapper;
 
 
     @Override
@@ -94,6 +98,9 @@ public class RepairsServiceImpl implements ReparisService {
        if(repairOrder == null){
            throw new RuntimeException("没有这个保修单号");
        }
+       if(!repairOrder.getUserId().equals(BaseContext.getCurrentId())){
+           throw new RuntimeException("你没有这个权限查询这个保修单");
+       }
        if(repairOrder.getImageUrls() == null || repairOrder.getImageUrls().equals("")){
            RepairOrderVO repairOrderVO =  RepairOrderVO.builder().
                    orderId(repairOrder.getOrderId())
@@ -137,7 +144,11 @@ public class RepairsServiceImpl implements ReparisService {
     @Override
     public void cancelRepair(Integer orderId) {
         Integer processStatus = 5;
-        repairsMapper.updateRepairStatius(orderId,processStatus);
+        RepairOrder repairOrder = new RepairOrder();
+        repairOrder.setProcessStatus(processStatus);
+        repairOrder.setCompletedTime(LocalDateTime.now());
+        repairOrder.setOrderId(orderId);
+
 
     }
 
@@ -159,6 +170,116 @@ public class RepairsServiceImpl implements ReparisService {
     @Override
     public void deleteComment(Integer orderId) {
         repairsMapper.deleteComment(orderId);
+    }
+
+    /**
+     * 管理员获取我的报修单
+     * @param status
+     * @param pageNum
+     * @param pageSize
+     * @param orderKey
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    @Override
+    public PageResult AdminGetMyRepairs(String status, Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime) {
+        PageHelper pageHelper = new PageHelper();
+        pageHelper.startPage(pageNum, pageSize);
+        Integer userId = null;
+        Page<GetRepairOrderVO> repairOrders  = repairsMapper.getMyRepairs(userId,status,orderKey,beginTime,endTime);
+        repairOrders.getResult().forEach(repairOrder -> {
+            if(repairOrder.getImageUrl()!= "" && repairOrder.getImageUrl() != null){
+                String[] imageUrls =  repairOrder.getImageUrl().split(",");
+                repairOrder.setImageUrl(imageUrls[0]);
+            }
+        });
+        return new PageResult(repairOrders.getTotal(),repairOrders.getResult());
+    }
+
+    /**
+     * 管理员获取报修单详情
+     * @param orderId
+     * @return
+     */
+    @Override
+    public RepairOrderVO AdmingetRepairOrdeDetail(Integer orderId) {
+        User user =userMapper.getUserByUserId(BaseContext.getCurrentId());
+        String permission = user.getPermission();
+        log.info("权限：{}",permission);
+        if(!permission.contains("2")){
+            throw new RuntimeException("管理员你没有这个权限");
+        }
+        RepairOrder repairOrder = repairsMapper.getRepairDetail(orderId);
+        if(repairOrder == null){
+            throw new RuntimeException("没有这个保修单号");
+        }
+
+        if(repairOrder.getImageUrls() == null || repairOrder.getImageUrls().equals("")){
+            RepairOrderVO repairOrderVO =  RepairOrderVO.builder().
+                    orderId(repairOrder.getOrderId())
+                    .adminId(repairOrder.getAdminId())
+                    .comment(repairOrder.getComment())
+                    .createdTime(repairOrder.getCreatedTime())
+                    .processStatus(repairOrder.getProcessStatus())
+                    .rejectReason(repairOrder.getRejectReason())
+                    .updatedTime(repairOrder.getUpdatedTime())
+                    .description(repairOrder.getDescription())
+                    .completedTime(repairOrder.getCompletedTime())
+                    .build();
+            return repairOrderVO;
+        }
+        else {
+            String[] urlArray=  repairOrder.getImageUrls().split(",");
+            List<String> urls = new ArrayList<>(Arrays.asList(urlArray));
+            RepairOrderVO repairOrderVO =  RepairOrderVO.builder().
+                    orderId(repairOrder.getOrderId())
+                    .adminId(repairOrder.getAdminId())
+                    .comment(repairOrder.getComment())
+                    .createdTime(repairOrder.getCreatedTime())
+                    .processStatus(repairOrder.getProcessStatus())
+                    .rejectReason(repairOrder.getRejectReason())
+                    .updatedTime(repairOrder.getUpdatedTime())
+                    .description(repairOrder.getDescription())
+                    .completedTime(repairOrder.getCompletedTime())
+                    .imageUrls(urls).build();
+            return repairOrderVO;
+        }
+    }
+
+    @Override
+    public void updateRepairStatus(Integer orderId) {
+        RepairOrder repairOrder = new RepairOrder();
+        repairOrder.setProcessStatus(2);
+        repairOrder.setOrderId(orderId);
+        repairOrder.setUpdatedTime(LocalDateTime.now());
+        repairOrder.setAdminId(BaseContext.getCurrentId());
+        repairsMapper.updateRepairStatus(repairOrder);
+    }
+/**
+ * 拒绝报修单
+ */
+    @Override
+    public void regiectRepair(Integer orderId, String rejectReason) {
+        RepairOrder repairOrder = new RepairOrder();
+        repairOrder.setProcessStatus(4);
+        repairOrder.setOrderId(orderId);
+        repairOrder.setRejectReason(rejectReason);
+        repairOrder.setAdminId(BaseContext.getCurrentId());
+        repairOrder.setCompletedTime(LocalDateTime.now());
+        repairsMapper.updateRepairStatus(repairOrder);
+
+
+    }
+
+    @Override
+    public void completeRepair(Integer orderId) {
+        RepairOrder repairOrder = new RepairOrder();
+        repairOrder.setProcessStatus(3);
+        repairOrder.setOrderId(orderId);
+        repairOrder.setAdminId(BaseContext.getCurrentId());
+        repairOrder.setCompletedTime(LocalDateTime.now());
+        repairsMapper.updateRepairStatus(repairOrder);
     }
 
 }

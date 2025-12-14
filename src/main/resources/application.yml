@@ -17,10 +17,14 @@ spring:
 
 # token秘钥以及过期时间
 we:
+# 用户端jwt令牌秘钥
  jwt:
    user-secret-key: weareteam
-   user-ttl: 72000000
+   user-ttl: 72000000000
    user-token-name: token
+   admin-secret-key: teamarewe
+   admin-ttl: 72000000000
+   admin-token-name: admintoken
  alioss:
   endpoint: oss-cn-beijing.aliyuncs.com
   access-key-id: LTAI5tEUyi76UvK181VRECDu

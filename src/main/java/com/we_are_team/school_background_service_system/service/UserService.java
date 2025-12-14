@@ -1,9 +1,6 @@
 package com.we_are_team.school_background_service_system.service;
 
-import com.we_are_team.school_background_service_system.pojo.dto.ChangePasswordDTO;
-import com.we_are_team.school_background_service_system.pojo.dto.UserLoginDTO;
-import com.we_are_team.school_background_service_system.pojo.dto.UserRegisterDTO;
-import com.we_are_team.school_background_service_system.pojo.dto.UserUpdateDTO;
+import com.we_are_team.school_background_service_system.pojo.dto.*;
 import com.we_are_team.school_background_service_system.pojo.vo.UserLoginVO;
 import com.we_are_team.school_background_service_system.pojo.vo.UserVO;
 import org.apache.ibatis.annotations.Param;
@@ -44,4 +41,11 @@ public interface UserService {
      * @param avatar
      */
     String uploadAvatar(MultipartFile avatar);
+
+    /**
+     * 管理员登录
+     * @param adminLoginDTO
+     * @return
+     */
+    String adminLogin(AdminLoginDTO adminLoginDTO);
 }

@@ -9,10 +9,8 @@
 
     <select id="getUserByPasswordAndStudentNumberOrUsername" parameterType="User" resultType="User">
         SELECT * FROM user
-        WHERE password = #{password}
-        <if test="studentNumber != null and studentNumber != ''">
-            AND (student_number = #{studentNumber} OR username = #{username})
-        </if>
+        WHERE password = #{password} and (student_number = #{studentNumber} OR username = #{username})
+
     </select>
 
 

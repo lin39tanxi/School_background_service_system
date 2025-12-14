@@ -45,4 +45,32 @@ public interface ReparisService {
      * @param orderId
      */
     void deleteComment(Integer orderId);
+/**
+ * 管理员获取报修单
+ * @return
+ */
+    PageResult AdminGetMyRepairs(String status, Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime);
+
+    /**
+     * 管理端获得保修订单详情
+     * @param orderId
+     * @return
+     */
+    RepairOrderVO AdmingetRepairOrdeDetail(Integer orderId);
+/**
+ * 修改报修单状态
+ * @param orderId
+ */
+    void updateRepairStatus(Integer orderId);
+    /**
+     * 拒绝报修单
+     * @param orderId
+     * @param rejectReason
+     */
+    void regiectRepair(Integer orderId, String rejectReason);
+/**
+ * 完成报修单
+ * @param orderId
+ */
+    void completeRepair(Integer orderId);
 }

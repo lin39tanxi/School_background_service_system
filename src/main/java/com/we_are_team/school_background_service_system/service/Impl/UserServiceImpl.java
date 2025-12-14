@@ -1,24 +1,24 @@
 package com.we_are_team.school_background_service_system.service.Impl;
 
+import com.github.pagehelper.util.StringUtil;
 import com.we_are_team.school_background_service_system.context.BaseContext;
 import com.we_are_team.school_background_service_system.mapper.UserMapper;
-import com.we_are_team.school_background_service_system.pojo.dto.ChangePasswordDTO;
-import com.we_are_team.school_background_service_system.pojo.dto.UserLoginDTO;
-import com.we_are_team.school_background_service_system.pojo.dto.UserRegisterDTO;
-import com.we_are_team.school_background_service_system.pojo.dto.UserUpdateDTO;
+import com.we_are_team.school_background_service_system.pojo.dto.*;
 import com.we_are_team.school_background_service_system.pojo.entity.Student;
 import com.we_are_team.school_background_service_system.pojo.entity.User;
 import com.we_are_team.school_background_service_system.pojo.vo.UserLoginVO;
 import com.we_are_team.school_background_service_system.pojo.vo.UserVO;
 import com.we_are_team.school_background_service_system.properties.JwtProperties;
-import com.we_are_team.school_background_service_system.result.Result;
+
 import com.we_are_team.school_background_service_system.service.UserService;
 import com.we_are_team.school_background_service_system.utils.AliOssUtil;
 import com.we_are_team.school_background_service_system.utils.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Mapper;
+
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -168,5 +168,31 @@ public class UserServiceImpl implements UserService {
         } catch (IOException e) {
             throw new RuntimeException("上传失败");
         }
+    }
+
+    /**
+     * 管理员登录
+     * @param adminLoginDTO
+     * @return
+     */
+    @Override
+    public String adminLogin(AdminLoginDTO adminLoginDTO) {
+        User user = new User();
+        user.setUsername(adminLoginDTO.getUsername());
+        user.setPassword(adminLoginDTO.getPassword());
+        user = userMapper.getUserByPasswordAndStudentNumberOrUsername(user);
+        log.info("用户登录信息：{}",user);
+//        没有这个用户
+        if(user == null || user.equals("")){
+            throw new RuntimeException("账号或密码错误");
+        }
+        if(StringUtils.equals(user.getPermission(),"0")){
+            throw new RuntimeException("你没有权限登录管理端");
+        }
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getUserId());
+        log.info("claims:{}", claims);
+        String adminToken = JwtUtil.createJwt(jwtProperties.getAdminSecretkey(), jwtProperties.getAdminTtl(),claims);
+        return adminToken;
     }
 }

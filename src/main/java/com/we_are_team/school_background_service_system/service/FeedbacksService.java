@@ -31,4 +31,12 @@ public interface FeedbacksService {
  * 删除反馈
  */
     void deleteFeedback(Integer feedbackId);
+/**
+ * 获取管理员我的反馈
+ */
+    PageResult adminGetMyFeedbacks(Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime);
+/**
+ * 获取管理员反馈详情
+ */
+    FeedbackVO adminGetFeedbackDetail(Integer feedbackId);
 }

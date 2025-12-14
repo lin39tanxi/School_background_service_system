@@ -6,20 +6,59 @@
 
 <mapper namespace="com.we_are_team.school_background_service_system.mapper.RepairsMapper">
    <select id="getMyRepairs" resultType="com.we_are_team.school_background_service_system.pojo.vo.GetRepairOrderVO">
-       SELECT order_table.order_id,order_table.description,order_table.process_status,order_table.rating,order_table.image_urls as imageUrl FROM order_table WHERE user_id=#{userId}
-       <if test="processStatus != null and processStatus !='' ">
-           AND process_status=#{processStatus}
-       </if>
-       <if test="orderKey != null and orderKey != ''">
-           AND (order_id LIKE '%${orderKey}%' OR description LIKE '%${orderKey}%')
-       </if>
-       <if test="beginTime != null and beginTime != ''">
-           AND created_time >= #{beginTime}
-       </if>
-        <if test="endTime != null and endTime != ''">
-           AND created_time &amp;gt= #{endTime}
-       </if>
+       SELECT order_table.order_id,order_table.description,order_table.process_status,order_table.rating,order_table.image_urls as imageUrl FROM order_table
+       <where>
+           <if test="userId != null and userId != ''">
+               user_id=#{userId}
+           </if>
+           <if test="processStatus != null and processStatus !='' ">
+               AND process_status=#{processStatus}
+           </if>
+           <if test="orderKey != null and orderKey != ''">
+               AND (order_id LIKE '%${orderKey}%' OR description LIKE '%${orderKey}%')
+           </if>
+           <if test="beginTime != null and beginTime != ''">
+               AND created_time >= #{beginTime}
+           </if>
+           <if test="endTime != null and endTime != ''">
+               AND created_time &amp;gt= #{endTime}
+           </if>
+       </where>
 
    </select>
+    <update id="updateRepairStatus" parameterType="com.we_are_team.school_background_service_system.pojo.entity.RepairOrder">
+        UPDATE order_table
+        <set>
+            <if test="repairOrder.processStatus != null and repairOrder.processStatus !=''">
+                process_status = #{repairOrder.processStatus},
+            </if>
+            <if test="repairOrder.adminId != null and repairOrder.adminId!=''">
+                admin_id = #{repairOrder.adminId},
+            </if>
+            <if test="repairOrder.rejectReason != null and repairOrder.rejectReason != ''">
+                reject_reason = #{repairOrder.rejectReason},
+            </if>
+            <if test="repairOrder.completedTime != null">
+                completed_time = #{repairOrder.completedTime},
+            </if>
+            <if test="repairOrder.updatedTime != null ">
+                updated_time = #{repairOrder.updatedTime},
+            </if>
+            <if test="repairOrder.rating != null and repairOrder.rating">
+                rating = #{repairOrder.rating},
+            </if>
+            <if test="repairOrder.comment != null and repairOrder.comment != ''">
+                comment = #{repairOrder.comment},
+            </if>
+            <if test="repairOrder.commentCreatedTime != null">
+                comment_created_time = #{repairOrder.commentCreatedTime},
+            </if>
+            <if test="repairOrder.createdTime != null">
+                createdTime = #{repairOrder.createdTime},
+            </if>
+
+        </set>
+        WHERE order_id = #{repairOrder.orderId}
+    </update>
 
 </mapper>

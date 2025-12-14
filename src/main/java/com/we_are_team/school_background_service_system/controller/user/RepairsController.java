@@ -5,6 +5,7 @@ import com.we_are_team.school_background_service_system.result.PageResult;
 import com.we_are_team.school_background_service_system.result.Result;
 import com.we_are_team.school_background_service_system.service.ReparisService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class RepairsController {
      * 获取我的报修列表
      */
     @GetMapping("/repairs/my")
-    public Result<PageResult> getMyRepairs(String  status , Integer pageNum, Integer pageSize, String orderKey, @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginTime, @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endTime) {
+    public Result<PageResult> getMyRepairs( String  status , @RequestParam(defaultValue = "1") Integer pageNum,@RequestParam(defaultValue = "10") Integer pageSize, String orderKey, @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginTime, @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endTime) {
         PageResult pageResult = reparisService.getMyRepairs(status, pageNum, pageSize, orderKey, beginTime, endTime);
         return Result.success("获取成功", pageResult);
     }

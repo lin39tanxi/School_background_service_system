@@ -27,8 +27,7 @@ public interface RepairsMapper {
     @Select("select * from order_table where order_id = #{orderId}")
     RepairOrder getRepairDetail(Integer orderId);
 
-    @Update("update order_table set process_status = #{processStatus} where order_id = #{orderId}")
-    void updateRepairStatius(@Param("orderId") Integer orderId,@Param("processStatus") Integer processStatus);
+    void updateRepairStatus(@Param("repairOrder") RepairOrder repairOrder);
 
     @Update("update order_table set comment = #{comment}, rating = #{rating}, comment_created_time = #{commentCreatedTime},process_status= #{processStatus} where order_id = #{orderId}")
     void updateComment(@Param("orderId") Integer orderId,@Param("comment") String  comment,@Param("rating") Integer rating, @Param("commentCreatedTime") LocalDateTime commentCreatedTime,@Param("processStatus") Integer processStatus);

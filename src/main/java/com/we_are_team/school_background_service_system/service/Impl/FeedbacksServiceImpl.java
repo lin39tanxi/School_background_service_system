@@ -145,6 +145,54 @@ public class FeedbacksServiceImpl implements FeedbacksService {
         }
         feedbacksMapper.deleteFeedback(feedbackId);
     }
-}
+
+    @Override
+    public PageResult adminGetMyFeedbacks(Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime) {
+        PageHelper.startPage(pageNum, pageSize);
+        Integer userId = null;
+        Page<GetFeedbackVO> feedbacks = feedbacksMapper.getList(userId, orderKey, beginTime, endTime);
+        feedbacks.getResult().forEach(feedback->{
+            if (feedback.getImageUrls() != null && !feedback.getImageUrls().equals("")) {
+                String[] imageUrls = feedback.getImageUrls().split(",");
+                feedback.setImageUrls(imageUrls[0]);
+            }
+
+        });
+        return new PageResult(feedbacks.getTotal(),feedbacks.getResult());
+    }
+/**
+ * 管理员获取反馈详情
+ * @param feedbackId
+ * @return
+ */
+    @Override
+    public FeedbackVO adminGetFeedbackDetail(Integer feedbackId) {
+        Feedback feedback = feedbacksMapper.getFeedbackByFeedbackId(feedbackId);
+        if(feedback == null){
+            throw new RuntimeException("反馈不存在");
+        }
+        if(feedback.getImageUrls() == null || feedback.getImageUrls().equals("")){
+            FeedbackVO feedbackVO = FeedbackVO.builder()
+                    .feedbackId(feedback.getFeedbackId())
+                    .content(feedback.getContent())
+                    .isAnonymous(feedback.getIsAnonymous())
+                    .createdTime(feedback.getCreatedTime())
+                    .studentNumber(feedback.getStudentNumber())
+                    .build();
+            return feedbackVO;
+        }else {
+            String[] urlArray = feedback.getImageUrls().split(",");
+            List<String> urls = new ArrayList<>(Arrays.asList(urlArray));
+            FeedbackVO feedbackVO = FeedbackVO.builder()
+                    .feedbackId(feedback.getFeedbackId())
+                    .content(feedback.getContent())
+                    .isAnonymous(feedback.getIsAnonymous())
+                    .createdTime(feedback.getCreatedTime())
+                    .imageUrls(urls)
+                    .studentNumber(feedback.getStudentNumber())
+                    .build();
+            return feedbackVO;
+    }
+}}
 
 
