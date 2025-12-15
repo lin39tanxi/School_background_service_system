@@ -14,6 +14,6 @@ import java.time.LocalDateTime;
 public class LocationCategoryVO {
     private Integer locationId;
     private String locationName;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdTime;
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//    private LocalDateTime createdTime;
 }

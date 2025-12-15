@@ -14,6 +14,6 @@ import java.time.LocalDateTime;
 public class ItemCategoryVO {
     private Integer categoryId;
     private String categoryName;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdTime;
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//    private LocalDateTime createdTime;
 }

@@ -3,7 +3,6 @@ package com.we_are_team.school_background_service_system.service;
 import com.we_are_team.school_background_service_system.pojo.dto.*;
 import com.we_are_team.school_background_service_system.pojo.vo.UserLoginVO;
 import com.we_are_team.school_background_service_system.pojo.vo.UserVO;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
@@ -48,4 +47,9 @@ public interface UserService {
      * @return
      */
     String adminLogin(AdminLoginDTO adminLoginDTO);
+/**
+     * 管理员注册
+     * @param adminRegisterDTO
+     */
+    void adminRegister(AdminRegisterDTO adminRegisterDTO);
 }

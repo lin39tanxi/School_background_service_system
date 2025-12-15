@@ -1,13 +1,11 @@
 package com.we_are_team.school_background_service_system.mapper;
 
+import com.we_are_team.school_background_service_system.pojo.dto.AdminLoginDTO;
 import com.we_are_team.school_background_service_system.pojo.dto.ChangePasswordDTO;
 import com.we_are_team.school_background_service_system.pojo.dto.UserRegisterDTO;
 import com.we_are_team.school_background_service_system.pojo.entity.Student;
 import com.we_are_team.school_background_service_system.pojo.entity.User;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface UserMapper {
@@ -67,6 +65,12 @@ public interface UserMapper {
      */
 @Update("update user set avatar_url= #{url} where user_id= #{usertId}")
     void updateAvatarUrlById(@Param("usertId") Integer userId,@Param("url") String url);
+/**
+     * 管理员注册
+     * @param user
+     */
+    @Insert("insert into user(username,password,permission,registered_time,nickname) values(#{user.username},#{user.password},#{user.permission},#{user.registeredTime},#{user.nickname})")
+    void adminInsert(@Param("user") User user);
 
 
 //    void updateStudentByStudentNumber(String studentNumber);

@@ -46,6 +46,7 @@ public class RepairsServiceImpl implements ReparisService {
         List<String> urlsArray = new ArrayList<>();
         if(imageUrlsArray ==  null || imageUrlsArray.length == 0){
             repairsMapper.insert(repairOrder);
+            return;
         }
         else
         if ( imageUrlsArray.length> 0  && !imageUrlsArray[0].getOriginalFilename().equals("")) {
@@ -62,17 +63,11 @@ public class RepairsServiceImpl implements ReparisService {
                     throw new RuntimeException("上传失败");
                 }
             }
-        }
-        if(urlsArray !=  null && !urlsArray.equals("")){
             String result = String.join(",", urlsArray);
             log.info("图片字符串{}",result);
             repairOrder.setImageUrls(result);
-            repairsMapper.insert(repairOrder);
         }
-
-
-
-
+            repairsMapper.insert(repairOrder);
 
         }
 

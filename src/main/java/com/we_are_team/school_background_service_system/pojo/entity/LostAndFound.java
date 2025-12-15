@@ -14,7 +14,7 @@ public class LostAndFound {
     private Integer locationId;
     private LocalDate foundTime;
     private String description;
-    private String imageUrl;
+    private String imageUrls;
     private Integer status;
     private Integer adminId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

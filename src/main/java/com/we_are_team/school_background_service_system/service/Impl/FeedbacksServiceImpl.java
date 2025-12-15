@@ -48,6 +48,7 @@ public class FeedbacksServiceImpl implements FeedbacksService {
         if(imageUrlsArray == null || imageUrlsArray.length == 0){
 
             feedbacksMapper.insert(feedback);
+            return;
         }
         else if ( imageUrlsArray.length> 0  && !imageUrlsArray[0].getOriginalFilename().equals("")) {
             log.info("图片数组{}",imageUrlsArray[0].getOriginalFilename());
@@ -63,13 +64,19 @@ public class FeedbacksServiceImpl implements FeedbacksService {
                     throw new RuntimeException("上传失败");
                 }
             }
-        }
-        if(urlsArray !=  null && !urlsArray.equals("")){
             String result = String.join(",", urlsArray);
             log.info("图片字符串{}",result);
             feedback.setImageUrls(result);
-            feedbacksMapper.insert(feedback);
+
         }
+            feedbacksMapper.insert(feedback);
+
+//        if( !urlsArray.isEmpty()){
+//            String result = String.join(",", urlsArray);
+//            log.info("图片字符串{}",result);
+//            feedback.setImageUrls(result);
+//            feedbacksMapper.insert(feedback);
+//        }
 
     }
 

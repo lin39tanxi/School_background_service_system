@@ -1,6 +1,5 @@
 package com.we_are_team.school_background_service_system.service.Impl;
 
-import com.github.pagehelper.util.StringUtil;
 import com.we_are_team.school_background_service_system.context.BaseContext;
 import com.we_are_team.school_background_service_system.mapper.UserMapper;
 import com.we_are_team.school_background_service_system.pojo.dto.*;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -194,5 +194,28 @@ public class UserServiceImpl implements UserService {
         log.info("claims:{}", claims);
         String adminToken = JwtUtil.createJwt(jwtProperties.getAdminSecretkey(), jwtProperties.getAdminTtl(),claims);
         return adminToken;
+    }
+/**
+     * 管理员注册
+     * @param adminRegisterDTO
+     */
+    @Override
+    public void adminRegister(AdminRegisterDTO adminRegisterDTO) {
+        if( adminRegisterDTO.getPermission() == null ){
+            throw new RuntimeException("权限不能为空");
+        }
+         String username = userMapper.getUsernameByUsername(adminRegisterDTO.getUsername());
+        if(username != null){
+            throw new RuntimeException("用户名已存在");
+        }
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("1")){
+            throw new RuntimeException("你没有权限注册管理员");
+        }
+        user.setUsername(adminRegisterDTO.getUsername());
+        user.setPassword(adminRegisterDTO.getPassword());
+        user.setPermission(adminRegisterDTO.getPermission());
+        user.setRegisteredTime(LocalDateTime.now());
+        userMapper.adminInsert(user);
     }
 }

@@ -11,5 +11,5 @@ public class LostAndFoundCreateDTO {
     private Integer categoryId;
     private Integer locationId;
     private String description;
-    private String specificLocation;
+
 }
