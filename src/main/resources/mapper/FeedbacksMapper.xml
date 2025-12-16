@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.we_are_team.school_background_service_system.mapper.FeedbacksMapper">
-<select id="getList" resultType="com.we_are_team.school_background_service_system.pojo.vo.GetFeedbackVO">
+<select id="getList" resultType="com.we_are_team.school_background_service_system.pojo.vo.GetFeedbackListVO">
     SELECT f.feedback_id, f.content, f.is_anonymous, f.created_time, f.image_urls ,u.student_number FROM feedback as f
     LEFT JOIN user as u ON f.user_id = u.user_id
     <where>

@@ -4,8 +4,11 @@ import com.we_are_team.school_background_service_system.pojo.dto.AddCategoryDTO;
 import com.we_are_team.school_background_service_system.pojo.dto.AddLocationDTO;
 import com.we_are_team.school_background_service_system.pojo.vo.ItemCategoryVO;
 import com.we_are_team.school_background_service_system.pojo.vo.LocationCategoryVO;
+import com.we_are_team.school_background_service_system.pojo.vo.LostAndFoundVO;
+import com.we_are_team.school_background_service_system.result.PageResult;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface LostAndFoundService {
@@ -55,4 +58,14 @@ public interface LostAndFoundService {
      * @param
      */
     void deleteLostFound(Integer itemId);
+/**
+     * 获取失物列表
+     * @param
+     */
+    PageResult getLostAndFoundList(Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime, String status);
+/**
+     * 获取失物详情
+     * @param
+     */
+    LostAndFoundVO getLostAndFoundDetail(Integer itemId);
 }

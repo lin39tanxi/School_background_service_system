@@ -20,4 +20,5 @@ public class Student {
     private LocalDateTime createdTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
+    private String phone;
 }

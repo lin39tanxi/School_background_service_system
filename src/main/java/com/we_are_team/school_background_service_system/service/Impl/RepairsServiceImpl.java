@@ -8,7 +8,7 @@ import com.we_are_team.school_background_service_system.mapper.UserMapper;
 import com.we_are_team.school_background_service_system.pojo.dto.RepairEvaluationCreateDTO;
 import com.we_are_team.school_background_service_system.pojo.entity.RepairOrder;
 import com.we_are_team.school_background_service_system.pojo.entity.User;
-import com.we_are_team.school_background_service_system.pojo.vo.GetRepairOrderVO;
+import com.we_are_team.school_background_service_system.pojo.vo.GetRepairOrderListVO;
 import com.we_are_team.school_background_service_system.pojo.vo.RepairOrderVO;
 import com.we_are_team.school_background_service_system.result.PageResult;
 import com.we_are_team.school_background_service_system.service.ReparisService;
@@ -37,12 +37,13 @@ public class RepairsServiceImpl implements ReparisService {
 
 
     @Override
-    public void submitRepair(String description, MultipartFile[] imageUrlsArray) {
+    public void submitRepair(String description, String address,MultipartFile[] imageUrlsArray) {
         RepairOrder repairOrder = new RepairOrder();
             repairOrder.setUserId(BaseContext.getCurrentId());
             repairOrder.setDescription(description);
             repairOrder.setCreatedTime(LocalDateTime.now());
             repairOrder.setProcessStatus(0);
+            repairOrder.setAddress( address);
         List<String> urlsArray = new ArrayList<>();
         if(imageUrlsArray ==  null || imageUrlsArray.length == 0){
             repairsMapper.insert(repairOrder);
@@ -77,7 +78,7 @@ public class RepairsServiceImpl implements ReparisService {
         PageHelper pageHelper = new PageHelper();
         pageHelper.startPage(pageNum, pageSize);
         Integer userId = BaseContext.getCurrentId();
-        Page<GetRepairOrderVO> repairOrders  = repairsMapper.getMyRepairs(userId,status,orderKey,beginTime,endTime);
+        Page<GetRepairOrderListVO> repairOrders  = repairsMapper.getMyRepairs(userId,status,orderKey,beginTime,endTime);
         repairOrders.getResult().forEach(repairOrder -> {
             if(repairOrder.getImageUrl()!= "" && repairOrder.getImageUrl() != null){
                    String[] imageUrls =  repairOrder.getImageUrl().split(",");
@@ -107,6 +108,7 @@ public class RepairsServiceImpl implements ReparisService {
                    .updatedTime(repairOrder.getUpdatedTime())
                    .description(repairOrder.getDescription())
                    .completedTime(repairOrder.getCompletedTime())
+                   .address(repairOrder.getAddress())
                    .build();
            return repairOrderVO;
        }
@@ -123,6 +125,7 @@ public class RepairsServiceImpl implements ReparisService {
                    .updatedTime(repairOrder.getUpdatedTime())
                    .description(repairOrder.getDescription())
                    .completedTime(repairOrder.getCompletedTime())
+                   .address(repairOrder.getAddress())
                    .imageUrls(urls).build();
            return repairOrderVO;
        }
@@ -182,7 +185,7 @@ public class RepairsServiceImpl implements ReparisService {
         PageHelper pageHelper = new PageHelper();
         pageHelper.startPage(pageNum, pageSize);
         Integer userId = null;
-        Page<GetRepairOrderVO> repairOrders  = repairsMapper.getMyRepairs(userId,status,orderKey,beginTime,endTime);
+        Page<GetRepairOrderListVO> repairOrders  = repairsMapper.getMyRepairs(userId,status,orderKey,beginTime,endTime);
         repairOrders.getResult().forEach(repairOrder -> {
             if(repairOrder.getImageUrl()!= "" && repairOrder.getImageUrl() != null){
                 String[] imageUrls =  repairOrder.getImageUrl().split(",");

@@ -1,12 +1,16 @@
 package com.we_are_team.school_background_service_system.mapper;
 
+import com.github.pagehelper.Page;
 import com.we_are_team.school_background_service_system.pojo.entity.ItemCategory;
 import com.we_are_team.school_background_service_system.pojo.entity.LocationCategory;
 import com.we_are_team.school_background_service_system.pojo.entity.LostAndFound;
+import com.we_are_team.school_background_service_system.pojo.vo.GetLostAndFoundVO;
 import com.we_are_team.school_background_service_system.pojo.vo.ItemCategoryVO;
 import com.we_are_team.school_background_service_system.pojo.vo.LocationCategoryVO;
+import com.we_are_team.school_background_service_system.pojo.vo.LostAndFoundVO;
 import org.apache.ibatis.annotations.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Mapper
@@ -55,4 +59,8 @@ public interface LostAndFoundMapper {
 
     @Delete("delete from lost_and_found where item_id = #{itemId}")
     void deleteLostFound(@Param( "itemId") Integer itemId);
+
+    Page<GetLostAndFoundVO> getLostAndFoundList(@Param("orderKey") String orderKey,@Param("beginTime") LocalDate beginTime,@Param("endTime") LocalDate endTime,@Param("status") String status);
+
+    LostAndFound getLostAndFoundDetail(Integer itemId);
 }

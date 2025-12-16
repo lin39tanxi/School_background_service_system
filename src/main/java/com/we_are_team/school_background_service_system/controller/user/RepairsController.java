@@ -22,9 +22,9 @@ public class RepairsController {
      * 提交保修申请
      */
     @PostMapping("/repairs")
-    public Result submitRepair(@RequestParam String description, @RequestParam(required = false) MultipartFile[] imageUrlsArray ) {
+    public Result submitRepair(@RequestParam String description, @RequestParam String address, @RequestParam(required = false) MultipartFile[] imageUrlsArray ) {
 
-        reparisService.submitRepair(description, imageUrlsArray);
+        reparisService.submitRepair(description, address,imageUrlsArray);
         return Result.success("报修提交成功");
     }
 

@@ -5,21 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
-public class NotificationVO {
+@NoArgsConstructor
+@AllArgsConstructor
+public class GetNotificationListVO {
     private Integer notificationId;
     private String title;
-    private String content;
-    private Integer adminId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishTime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updatedTime;
-    private List imageUrls;
 }

@@ -25,4 +25,5 @@ public class RepairOrder {
     private String comment;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime commentCreatedTime;
+    private String address;
 }

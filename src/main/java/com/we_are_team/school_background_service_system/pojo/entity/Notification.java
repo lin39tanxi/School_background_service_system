@@ -12,7 +12,6 @@ public class Notification {
     private String title;
     private String content;
     private Integer adminId;
-    private Integer status;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

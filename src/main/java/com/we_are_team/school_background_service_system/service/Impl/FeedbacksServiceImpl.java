@@ -6,7 +6,7 @@ import com.we_are_team.school_background_service_system.context.BaseContext;
 import com.we_are_team.school_background_service_system.mapper.FeedbacksMapper;
 import com.we_are_team.school_background_service_system.pojo.entity.Feedback;
 import com.we_are_team.school_background_service_system.pojo.vo.FeedbackVO;
-import com.we_are_team.school_background_service_system.pojo.vo.GetFeedbackVO;
+import com.we_are_team.school_background_service_system.pojo.vo.GetFeedbackListVO;
 import com.we_are_team.school_background_service_system.result.PageResult;
 import com.we_are_team.school_background_service_system.service.FeedbacksService;
 import com.we_are_team.school_background_service_system.utils.AliOssUtil;
@@ -94,7 +94,7 @@ public class FeedbacksServiceImpl implements FeedbacksService {
     public PageResult getMyFeedbacks(Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime) {
         PageHelper.startPage(pageNum, pageSize);
         Integer userId = BaseContext.getCurrentId();
-        Page<GetFeedbackVO> feedbacks = feedbacksMapper.getList(userId, orderKey, beginTime, endTime);
+        Page<GetFeedbackListVO> feedbacks = feedbacksMapper.getList(userId, orderKey, beginTime, endTime);
         feedbacks.getResult().forEach(feedback->{
             if (feedback.getImageUrls() != null && !feedback.getImageUrls().equals("")) {
                 String[] imageUrls = feedback.getImageUrls().split(",");
@@ -157,7 +157,7 @@ public class FeedbacksServiceImpl implements FeedbacksService {
     public PageResult adminGetMyFeedbacks(Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime) {
         PageHelper.startPage(pageNum, pageSize);
         Integer userId = null;
-        Page<GetFeedbackVO> feedbacks = feedbacksMapper.getList(userId, orderKey, beginTime, endTime);
+        Page<GetFeedbackListVO> feedbacks = feedbacksMapper.getList(userId, orderKey, beginTime, endTime);
         feedbacks.getResult().forEach(feedback->{
             if (feedback.getImageUrls() != null && !feedback.getImageUrls().equals("")) {
                 String[] imageUrls = feedback.getImageUrls().split(",");

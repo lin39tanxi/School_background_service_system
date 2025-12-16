@@ -13,7 +13,7 @@ public interface ReparisService {
      * @param description
      * @param imageUrlsArray
      */
-    void submitRepair(String description, MultipartFile[] imageUrlsArray);
+    void submitRepair(String description, String address,MultipartFile[] imageUrlsArray);
 
     /**
      * 获取我的报修列表

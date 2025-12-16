@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,15 +15,12 @@ import java.time.LocalDateTime;
 public class LostAndFoundVO {
     private Integer itemId;
     private String itemName;
-    private Integer categoryId;
     private String categoryName;
-    private Integer locationId;
     private String locationName;
     private String description;
-    private String[] imageUrls;
+    private List imageUrls;
     private Integer status;
     private Integer adminId;
-    private String adminName;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

@@ -25,6 +25,7 @@ public class UserVO {
     private String username; // 用户名
     private String nickname; // 用户昵称
     private String avatarUrl; // 用户头像
+    private String phone;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdTime; // 用户创建时间
      // 用户更新时间

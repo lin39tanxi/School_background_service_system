@@ -1,7 +1,6 @@
 package com.we_are_team.school_background_service_system.controller.user;
 
 import com.we_are_team.school_background_service_system.pojo.vo.FeedbackVO;
-import com.we_are_team.school_background_service_system.pojo.vo.GetFeedbackVO;
 import com.we_are_team.school_background_service_system.result.PageResult;
 import com.we_are_team.school_background_service_system.result.Result;
 import com.we_are_team.school_background_service_system.service.FeedbacksService;

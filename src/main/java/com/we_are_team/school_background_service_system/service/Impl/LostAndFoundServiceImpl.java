@@ -1,5 +1,7 @@
 package com.we_are_team.school_background_service_system.service.Impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.we_are_team.school_background_service_system.context.BaseContext;
 import com.we_are_team.school_background_service_system.mapper.LostAndFoundMapper;
 import com.we_are_team.school_background_service_system.pojo.dto.AddCategoryDTO;
@@ -7,18 +9,24 @@ import com.we_are_team.school_background_service_system.pojo.dto.AddLocationDTO;
 import com.we_are_team.school_background_service_system.pojo.entity.ItemCategory;
 import com.we_are_team.school_background_service_system.pojo.entity.LocationCategory;
 import com.we_are_team.school_background_service_system.pojo.entity.LostAndFound;
+import com.we_are_team.school_background_service_system.pojo.vo.GetLostAndFoundVO;
 import com.we_are_team.school_background_service_system.pojo.vo.ItemCategoryVO;
 import com.we_are_team.school_background_service_system.pojo.vo.LocationCategoryVO;
+import com.we_are_team.school_background_service_system.pojo.vo.LostAndFoundVO;
+import com.we_are_team.school_background_service_system.result.PageResult;
 import com.we_are_team.school_background_service_system.service.LostAndFoundService;
 import com.we_are_team.school_background_service_system.utils.AliOssUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 @Slf4j
@@ -148,5 +156,33 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
     @Override
     public void deleteLostFound(Integer itemId) {
          lostAndFoundMapper.deleteLostFound(itemId);
+    }
+
+    @Override
+    public PageResult getLostAndFoundList(Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime, String status) {
+        PageHelper pageHelper = new PageHelper();
+        pageHelper.startPage(pageNum, pageSize);
+        Page<GetLostAndFoundVO> lostAndFoundVOList = lostAndFoundMapper.getLostAndFoundList(orderKey,beginTime,endTime,status);
+        lostAndFoundVOList.forEach(lostAndFoundVO -> {
+            if(lostAndFoundVO.getImageUrls() != null && !lostAndFoundVO.getImageUrls().isEmpty()){
+                String[] imageUrls = lostAndFoundVO.getImageUrls().split(",");
+                lostAndFoundVO.setImageUrls(imageUrls[0]);
+            }
+        });
+        return new PageResult(lostAndFoundVOList.getTotal(),lostAndFoundVOList.getResult());
+    }
+
+    @Override
+    public LostAndFoundVO getLostAndFoundDetail(Integer itemId) {
+        LostAndFound lostAndFound = lostAndFoundMapper.getLostAndFoundDetail(itemId);
+        LostAndFoundVO lostAndFoundVO = new LostAndFoundVO();
+        BeanUtils.copyProperties(lostAndFound,lostAndFoundVO);
+        String[] imageUrls = null;
+        if(lostAndFound.getImageUrls()!=null && !lostAndFound.getImageUrls().isEmpty()){
+            imageUrls = lostAndFound.getImageUrls().split(",");
+            lostAndFoundVO.setImageUrls(Arrays.asList(imageUrls));
+        }
+
+        return lostAndFoundVO;
     }
 }

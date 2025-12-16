@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class GetFeedbackVO {
+public class GetFeedbackListVO {
     private Integer feedbackId;
     private String content;
     private Integer isAnonymous;
