@@ -15,8 +15,8 @@ public interface RepairsMapper {
      * 添加报修单
      */
 
-    @Insert("insert into order_table (user_id, process_status, description, admin_id, reject_reason, completed_time, image_urls, created_time, updated_time, rating, comment, comment_created_time,address) " +
-            "values(#{userId},#{processStatus},#{description},#{adminId},#{rejectReason},#{completedTime},#{imageUrls},#{createdTime},#{updatedTime},#{rating},#{comment},#{commentCreatedTime},#{address})")
+    @Insert("insert into order_table (user_id, process_status, description, admin_id, reject_reason, completed_time, image_urls, created_time, updated_time, rating, comment, comment_created_time,address,phone) " +
+            "values(#{userId},#{processStatus},#{description},#{adminId},#{rejectReason},#{completedTime},#{imageUrls},#{createdTime},#{updatedTime},#{rating},#{comment},#{commentCreatedTime},#{address},#{phone})")
     void insert(RepairOrder repairOrder);
 
 

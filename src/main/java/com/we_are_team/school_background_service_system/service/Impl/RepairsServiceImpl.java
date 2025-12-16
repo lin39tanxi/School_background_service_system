@@ -37,13 +37,14 @@ public class RepairsServiceImpl implements ReparisService {
 
 
     @Override
-    public void submitRepair(String description, String address,MultipartFile[] imageUrlsArray) {
+    public void submitRepair(String description, String address,MultipartFile[] imageUrlsArray,String phone) {
         RepairOrder repairOrder = new RepairOrder();
             repairOrder.setUserId(BaseContext.getCurrentId());
             repairOrder.setDescription(description);
             repairOrder.setCreatedTime(LocalDateTime.now());
             repairOrder.setProcessStatus(0);
-            repairOrder.setAddress( address);
+            repairOrder.setPhone(phone);
+            repairOrder.setAddress(address);
         List<String> urlsArray = new ArrayList<>();
         if(imageUrlsArray ==  null || imageUrlsArray.length == 0){
             repairsMapper.insert(repairOrder);
@@ -109,6 +110,7 @@ public class RepairsServiceImpl implements ReparisService {
                    .description(repairOrder.getDescription())
                    .completedTime(repairOrder.getCompletedTime())
                    .address(repairOrder.getAddress())
+                   .phone(repairOrder.getPhone())
                    .build();
            return repairOrderVO;
        }
@@ -126,6 +128,7 @@ public class RepairsServiceImpl implements ReparisService {
                    .description(repairOrder.getDescription())
                    .completedTime(repairOrder.getCompletedTime())
                    .address(repairOrder.getAddress())
+                   .phone(repairOrder.getPhone())
                    .imageUrls(urls).build();
            return repairOrderVO;
        }
@@ -144,8 +147,10 @@ public class RepairsServiceImpl implements ReparisService {
         Integer processStatus = 5;
         RepairOrder repairOrder = new RepairOrder();
         repairOrder.setProcessStatus(processStatus);
+        repairOrder.setUpdatedTime(LocalDateTime.now());
         repairOrder.setCompletedTime(LocalDateTime.now());
         repairOrder.setOrderId(orderId);
+        repairsMapper.updateRepairStatus(repairOrder);
 
 
     }
