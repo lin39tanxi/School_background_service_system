@@ -1,8 +1,10 @@
 package com.we_are_team.school_background_service_system.service;
 
 import com.we_are_team.school_background_service_system.pojo.dto.*;
+import com.we_are_team.school_background_service_system.pojo.entity.User;
 import com.we_are_team.school_background_service_system.pojo.vo.UserLoginVO;
 import com.we_are_team.school_background_service_system.pojo.vo.UserVO;
+import com.we_are_team.school_background_service_system.result.PageResult;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
@@ -52,4 +54,31 @@ public interface UserService {
      * @param adminRegisterDTO
      */
     void adminRegister(AdminRegisterDTO adminRegisterDTO);
+/**
+     * 超级管理员修改密码
+     * @param updatePasswordNoOldDTO
+     */
+    void updateAdminPassword(UpdatePasswordNoOldDTO updatePasswordNoOldDTO);
+/**
+     * 超级管理员修改权限
+     * @param updatePermissionDTO
+     */
+    void updatePermission(UpdatePermissionDTO updatePermissionDTO);
+/**
+     * 删除管理员
+     * @param userId
+     */
+    void deleteUserByAdminId(Integer userId);
+/**
+     * 获取所有管理员
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    PageResult getAllAdmin(Integer pageNum, Integer pageSize);
+/**
+     * 获取管理员信息
+     * @return
+     */
+    User adminGetUserInfo();
 }

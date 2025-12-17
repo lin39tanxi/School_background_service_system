@@ -1,11 +1,13 @@
 package com.we_are_team.school_background_service_system.mapper;
 
-import com.we_are_team.school_background_service_system.pojo.dto.AdminLoginDTO;
-import com.we_are_team.school_background_service_system.pojo.dto.ChangePasswordDTO;
-import com.we_are_team.school_background_service_system.pojo.dto.UserRegisterDTO;
+import com.github.pagehelper.Page;
+import com.we_are_team.school_background_service_system.pojo.dto.*;
 import com.we_are_team.school_background_service_system.pojo.entity.Student;
 import com.we_are_team.school_background_service_system.pojo.entity.User;
+import com.we_are_team.school_background_service_system.pojo.vo.UserVO;
 import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface UserMapper {
@@ -71,6 +73,17 @@ public interface UserMapper {
      */
     @Insert("insert into user(username,password,permission,registered_time,nickname) values(#{user.username},#{user.password},#{user.permission},#{user.registeredTime},#{user.nickname})")
     void adminInsert(@Param("user") User user);
+
+    @Update("update user set password= #{updatePasswordNoOldDTO.newPassword} where user_id= #{updatePasswordNoOldDTO.userId}")
+    void updateAdminPassword(@Param("updatePasswordNoOldDTO") UpdatePasswordNoOldDTO updatePasswordNoOldDTO);
+
+    @Update("update user set permission= #{updatePermissionDTO.newPermission} where user_id= #{updatePermissionDTO.userId}")
+    void updateAdminPermission(@Param("updatePermissionDTO") UpdatePermissionDTO updatePermissionDTO);
+
+    @Delete("delete from user where user_id= #{userId}")
+    void deleteUserByAdminId(@Param("userId") Integer userId);
+    @Select("select * from user where permission != '0' ")
+    Page<UserVO> getAllAdmin();
 
 
 //    void updateStudentByStudentNumber(String studentNumber);

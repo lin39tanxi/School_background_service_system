@@ -15,10 +15,13 @@ public interface RepairsMapper {
      * 添加报修单
      */
 
-    @Insert("insert into order_table (user_id, process_status, description, admin_id, reject_reason, completed_time, image_urls, created_time, updated_time, rating, comment, comment_created_time,address,phone) " +
-            "values(#{userId},#{processStatus},#{description},#{adminId},#{rejectReason},#{completedTime},#{imageUrls},#{createdTime},#{updatedTime},#{rating},#{comment},#{commentCreatedTime},#{address},#{phone})")
-    void insert(RepairOrder repairOrder);
+    @Insert("insert into order_table (user_id, process_status, description,image_urls, created_time, address, phone) " +
+            "values(#{repairOrder.userId},#{repairOrder.processStatus},#{repairOrder.description},#{repairOrder.imageUrls},#{repairOrder.createdTime},#{repairOrder.address},#{repairOrder.phone})")
+    void insert(@Param("repairOrder") RepairOrder repairOrder);
 
+//    @Insert("insert into order_table (user_id, process_status, description, admin_id, reject_reason, completed_time, image_urls, created_time, updated_time, rating, comment, comment_created_time,address,phone) " +
+//            "values(#{userId},#{processStatus},#{description},#{adminId},#{rejectReason},#{completedTime},#{imageUrls},#{createdTime},#{updatedTime},#{rating},#{comment},#{commentCreatedTime},#{address},#{phone})")
+//    void insert(RepairOrder repairOrder);
 
     Page<GetRepairOrderListVO> getMyRepairs(@Param("userId") Integer userId, @Param("processStatus") String processStatus, @Param("orderKey") String orderKey, @Param("beginTime")LocalDate beginTime, @Param("endTime")LocalDate endTime);
 /**

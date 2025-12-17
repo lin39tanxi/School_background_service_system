@@ -1,5 +1,9 @@
 package com.we_are_team.school_background_service_system.service.Impl;
 
+
+
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.we_are_team.school_background_service_system.context.BaseContext;
 import com.we_are_team.school_background_service_system.mapper.UserMapper;
 import com.we_are_team.school_background_service_system.pojo.dto.*;
@@ -9,6 +13,7 @@ import com.we_are_team.school_background_service_system.pojo.vo.UserLoginVO;
 import com.we_are_team.school_background_service_system.pojo.vo.UserVO;
 import com.we_are_team.school_background_service_system.properties.JwtProperties;
 
+import com.we_are_team.school_background_service_system.result.PageResult;
 import com.we_are_team.school_background_service_system.service.UserService;
 import com.we_are_team.school_background_service_system.utils.AliOssUtil;
 import com.we_are_team.school_background_service_system.utils.JwtUtil;
@@ -23,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -97,6 +103,7 @@ public class UserServiceImpl implements UserService {
     public UserVO getUserInfo() {
         int userId = BaseContext.getCurrentId();
         User user = userMapper.getUserByUserId(userId);
+        log.info("用户信息：{}",user);
         Student student = userMapper.getStudentByStudentNumber(user.getStudentNumber());
         UserVO userVO = new UserVO();
         userVO.setUserId(user.getUserId());
@@ -155,9 +162,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String uploadAvatar(MultipartFile avatarFile) {
+//        log.info("上传头像{}", avatarFile);
         /**
          * 上传头像
          */
+
+        if(avatarFile == null || avatarFile.getOriginalFilename().equals("")){
+            throw new RuntimeException("请选择文件");
+        }
         String originalFilename = avatarFile.getOriginalFilename();
         String objectName =  originalFilename.substring(originalFilename.lastIndexOf("."));
         String obj = UUID.randomUUID().toString() + objectName;
@@ -219,4 +231,42 @@ public class UserServiceImpl implements UserService {
         user.setRegisteredTime(LocalDateTime.now());
         userMapper.adminInsert(user);
     }
+
+    @Override
+    public void updateAdminPassword(UpdatePasswordNoOldDTO updatePasswordNoOldDTO) {
+        userMapper.updateAdminPassword(updatePasswordNoOldDTO);
+
+    }
+
+    @Override
+    public void updatePermission(UpdatePermissionDTO updatePermissionDTO) {
+        userMapper.updateAdminPermission(updatePermissionDTO);
+    }
+
+    @Override
+    public void deleteUserByAdminId(Integer userId) {
+          userMapper.deleteUserByAdminId(userId);
+            }
+
+ /**
+     * 获取所有管理员
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PageResult getAllAdmin(Integer pageNum, Integer pageSize) {
+        PageHelper pageHelper = new PageHelper();
+        pageHelper.startPage(pageNum, pageSize);
+        Page<UserVO> adminVO = userMapper.getAllAdmin();
+        return new PageResult(adminVO.getTotal(),adminVO.getResult());
+    }
+
+    @Override
+    public User adminGetUserInfo() {
+        Integer userId = BaseContext.getCurrentId();
+        return userMapper.getUserByUserId(userId);
+    }
+
+
 }
