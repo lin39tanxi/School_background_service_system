@@ -28,6 +28,7 @@ public class UserController {
     @PostMapping("/register")
     public Result register(@RequestBody UserRegisterDTO userRegisterDTO)
     {
+
         userService.register(userRegisterDTO);
         return Result.success("注册成功");
 

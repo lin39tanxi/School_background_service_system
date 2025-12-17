@@ -53,6 +53,12 @@ public class UserServiceImpl implements UserService {
         || userRegisterDTO.getUsername() == null || userRegisterDTO.getUsername().equals("")){
             throw new RuntimeException("请填写完整信息");
         }
+        if(userRegisterDTO.getUsername().length() < 6 || userRegisterDTO.getUsername().length() > 20){
+            throw new RuntimeException("账号长度不能小于6位或者大于20位");
+        }
+        if(userRegisterDTO.getPassword().length()<6 || userRegisterDTO.getPassword().length() > 20){
+            throw new RuntimeException("密码长度不能小于6位或者大于20位");
+        }
         String name = userRegisterDTO.getName();
         String studentNumber = userRegisterDTO.getStudentNumber();
         String username = userRegisterDTO.getUsername();
@@ -156,6 +162,9 @@ public class UserServiceImpl implements UserService {
         if(changePasswordDTO.getNewPassword().equals("")){
             throw new RuntimeException("新密码不能为空");
         }
+        if(changePasswordDTO.getNewPassword().length() < 6 || changePasswordDTO.getNewPassword().length() > 20){
+            throw new RuntimeException("密码长度不能小于6位或者大于20位");
+        }
        userMapper.updatePassword(userId,changePasswordDTO);
 
     }
@@ -214,6 +223,21 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void adminRegister(AdminRegisterDTO adminRegisterDTO) {
+        if(adminRegisterDTO.getUsername() == null || adminRegisterDTO.getUsername().equals("")){
+            throw new RuntimeException("用户名不能为空");
+        }
+        if(adminRegisterDTO.getPassword() == null || adminRegisterDTO.getPassword().equals("")){
+            throw new RuntimeException("密码不能为空");
+        }
+        if(adminRegisterDTO.getNickname() == null || adminRegisterDTO.getNickname().equals("")){
+            throw new RuntimeException("昵称不能为空");
+        }
+        if(adminRegisterDTO.getUsername().length()<6 || adminRegisterDTO.getUsername().length()>20){
+            throw new RuntimeException("用户名长度不能小于6位或者大于20位");
+        }
+        if(adminRegisterDTO.getPassword().length() < 6 || adminRegisterDTO.getPassword().length() > 20){
+            throw new RuntimeException("密码长度不能小于6位或者大于20位");
+        }
         if( adminRegisterDTO.getPermission() == null ){
             throw new RuntimeException("权限不能为空");
         }
@@ -234,17 +258,41 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateAdminPassword(UpdatePasswordNoOldDTO updatePasswordNoOldDTO) {
+        if(updatePasswordNoOldDTO.getNewPassword().equals("")){
+            throw new RuntimeException("新密码不能为空");
+        }
+        if(updatePasswordNoOldDTO.getNewPassword().length() < 6 || updatePasswordNoOldDTO.getNewPassword().length() > 20){
+            throw new RuntimeException("密码长度不能小于6位或者大于20位");
+        }
+        User user =userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("1")){
+            throw new RuntimeException("你不是超级管理员，无权限无密码更新");
+        }
         userMapper.updateAdminPassword(updatePasswordNoOldDTO);
 
     }
 
     @Override
     public void updatePermission(UpdatePermissionDTO updatePermissionDTO) {
+        if(updatePermissionDTO.getNewPermission().isEmpty()){
+            throw new RuntimeException("新权限不能为空");
+        }
+        if(updatePermissionDTO.getNewPermission().contains("1")){
+            throw new RuntimeException("新权限不能是超级管理员");
+        }
+        User user =userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("1")){
+            throw new RuntimeException("你不是超级管理员，无法更新权限");
+        }
         userMapper.updateAdminPermission(updatePermissionDTO);
     }
 
     @Override
     public void deleteUserByAdminId(Integer userId) {
+        User user =userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("1")){
+            throw new RuntimeException("你没有权限删除管理员");
+        }
           userMapper.deleteUserByAdminId(userId);
             }
 
