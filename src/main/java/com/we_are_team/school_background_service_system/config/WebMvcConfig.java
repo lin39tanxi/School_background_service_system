@@ -7,17 +7,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Slf4j
 @Configuration
-public class WebMvcConfig extends WebMvcConfigurationSupport {
+public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private JwtTokenUserInterceptor jwtTokenUserInterceptor;
 
     @Autowired
     private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
-    protected void addInterceptors(InterceptorRegistry registry){
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
         log.info("开始进行拦截器配置");
         registry.addInterceptor(jwtTokenUserInterceptor)
                 .addPathPatterns("/user/**")
@@ -28,16 +31,19 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
                 .addPathPatterns("/admin/**")
                 .excludePathPatterns("/admin/login");
 
-
-
     }
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**")
-                .addResourceLocations("classpath:/static/");
+                .addResourceLocations("classpath:/static/", "classpath:/");
     }
 
-
-
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        /* 配置静态资源映射 */
+        registry.addViewController("/").setViewName("redirect:/index.html");
+        
+    }
 
 }
