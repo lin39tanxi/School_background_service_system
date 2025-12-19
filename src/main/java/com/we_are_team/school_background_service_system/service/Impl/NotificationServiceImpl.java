@@ -4,7 +4,9 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.we_are_team.school_background_service_system.context.BaseContext;
 import com.we_are_team.school_background_service_system.mapper.NotificationMapper;
+import com.we_are_team.school_background_service_system.mapper.UserMapper;
 import com.we_are_team.school_background_service_system.pojo.entity.Notification;
+import com.we_are_team.school_background_service_system.pojo.entity.User;
 import com.we_are_team.school_background_service_system.pojo.vo.GetLostAndFoundVO;
 import com.we_are_team.school_background_service_system.pojo.vo.GetNotificationListVO;
 import com.we_are_team.school_background_service_system.pojo.vo.NotificationVO;
@@ -33,8 +35,14 @@ public class NotificationServiceImpl implements NotificationService {
     private NotificationMapper notificationMapper;
     @Autowired
     private AliOssUtil aliOssUtil;
+    @Autowired
+    private UserMapper userMapper;
     @Override
     public void addNotification(String title, String content, MultipartFile[] imageUrlsArray) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().equals("4")){
+            throw new RuntimeException("你没有权限提交通知");
+        }
         Notification notification = new Notification();
         notification.setTitle(title);
         notification.setContent(content);
@@ -69,6 +77,10 @@ public class NotificationServiceImpl implements NotificationService {
  */
     @Override
     public PageResult getNotificationList(String orderKey,Integer pageNum, Integer pageSize, LocalDate beginTime, LocalDate endTime) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("0") || !user.getPermission().contains("4")){
+            throw new RuntimeException("你没有权限查看通知列表");
+        }
         PageHelper pageHelper = new PageHelper();
         pageHelper.startPage(pageNum, pageSize);
         Page<GetNotificationListVO> lostAndFoundVOList =    notificationMapper.getNotificationList(orderKey,beginTime, endTime);
@@ -79,6 +91,10 @@ public class NotificationServiceImpl implements NotificationService {
  */
     @Override
     public NotificationVO getNotificationDetail(Integer notificationId) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("0") || !user.getPermission().contains("4")){
+            throw new RuntimeException("你没有权限查看通知详情");
+        }
         Notification notification = notificationMapper.getNotificationDetail(notificationId);
         NotificationVO notificationVO = new NotificationVO();
         BeanUtils.copyProperties(notification, notificationVO);
@@ -94,6 +110,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void deleteNotification(Integer notificationId) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("4")){
+            throw new RuntimeException("你没有权限删除通知");
+        }
         notificationMapper.deleteNotification(notificationId);
     }
 }

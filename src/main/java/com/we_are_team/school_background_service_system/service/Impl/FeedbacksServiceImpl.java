@@ -4,7 +4,9 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.we_are_team.school_background_service_system.context.BaseContext;
 import com.we_are_team.school_background_service_system.mapper.FeedbacksMapper;
+import com.we_are_team.school_background_service_system.mapper.UserMapper;
 import com.we_are_team.school_background_service_system.pojo.entity.Feedback;
+import com.we_are_team.school_background_service_system.pojo.entity.User;
 import com.we_are_team.school_background_service_system.pojo.vo.FeedbackVO;
 import com.we_are_team.school_background_service_system.pojo.vo.GetFeedbackListVO;
 import com.we_are_team.school_background_service_system.result.PageResult;
@@ -31,13 +33,19 @@ public class FeedbacksServiceImpl implements FeedbacksService {
     private FeedbacksMapper feedbacksMapper;
     @Autowired
     private AliOssUtil aliOssUtil;
+    @Autowired
+    private UserMapper usersMapper;
 /**
- * 提交反馈
+ * 用户端提交反馈
  */
 
     @Override
     public void submitFeedback(String comment, Integer isAnonymous, MultipartFile[] imageUrlsArray) {
         Feedback feedback = new Feedback();
+        User user = usersMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("这是用户端提交反馈");
+        }
        if(isAnonymous == 1){
            feedback.setUserId(BaseContext.getCurrentId());
        }
@@ -92,6 +100,10 @@ public class FeedbacksServiceImpl implements FeedbacksService {
 
     @Override
     public PageResult getMyFeedbacks(Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime) {
+        User user = usersMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("这是用户端获取自己的反馈列表");
+        }
         PageHelper.startPage(pageNum, pageSize);
         Integer userId = BaseContext.getCurrentId();
         Page<GetFeedbackListVO> feedbacks = feedbacksMapper.getList(userId, orderKey, beginTime, endTime);
@@ -107,6 +119,10 @@ public class FeedbacksServiceImpl implements FeedbacksService {
 
     @Override
     public FeedbackVO getFeedbackDetail(Integer feedbackId) {
+        User user = usersMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("这是用户端获取反馈详情");
+        }
         Feedback feedback = feedbacksMapper.getFeedbackByFeedbackId(feedbackId);
         if(feedback == null){
             throw new RuntimeException("反馈不存在");
@@ -143,6 +159,10 @@ public class FeedbacksServiceImpl implements FeedbacksService {
 
     @Override
     public void deleteFeedback(Integer feedbackId) {
+        User user = usersMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("这是用户端删除反馈");
+        }
         Feedback feedback = feedbacksMapper.getFeedbackByFeedbackId(feedbackId);
         if(feedback == null){
             throw new RuntimeException("反馈不存在");
@@ -155,6 +175,10 @@ public class FeedbacksServiceImpl implements FeedbacksService {
 
     @Override
     public PageResult adminGetMyFeedbacks(Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime) {
+       User user = usersMapper.getUserByUserId(BaseContext.getCurrentId());
+       if(!user.getPermission().contains("3")){
+           throw new RuntimeException("你没有权限获取意见列表");
+       }
         PageHelper.startPage(pageNum, pageSize);
         Integer userId = null;
         Page<GetFeedbackListVO> feedbacks = feedbacksMapper.getList(userId, orderKey, beginTime, endTime);
@@ -174,6 +198,10 @@ public class FeedbacksServiceImpl implements FeedbacksService {
  */
     @Override
     public FeedbackVO adminGetFeedbackDetail(Integer feedbackId) {
+        User user = usersMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("3")){
+            throw new RuntimeException("你没有权限获取反馈详情");
+        }
         Feedback feedback = feedbacksMapper.getFeedbackByFeedbackId(feedbackId);
         if(feedback == null){
             throw new RuntimeException("反馈不存在");

@@ -34,10 +34,19 @@ public class RepairsServiceImpl implements ReparisService {
     private AliOssUtil aliOssUtil;
     @Autowired
     private UserMapper userMapper;
-
+/**
+ * 用户提交报修单
+ */
 
     @Override
     public void submitRepair(String description, String address,MultipartFile[] imageUrlsArray,String phone) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(user == null){
+            throw new RuntimeException("用户不存在");
+        }
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("你不是用户，无法进行提交报单");
+        }
         RepairOrder repairOrder = new RepairOrder();
             repairOrder.setUserId(BaseContext.getCurrentId());
             repairOrder.setDescription(description);
@@ -72,10 +81,16 @@ public class RepairsServiceImpl implements ReparisService {
             repairsMapper.insert(repairOrder);
 
         }
-
+/**
+ * 获取我的报修单
+ */
     @Override
     public PageResult getMyRepairs(String  status, Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime,LocalDate endTime) {
-//        开启分页查询
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("这是用户端查看自己的报修列表");
+        }
+        //        开启分页查询
         PageHelper pageHelper = new PageHelper();
         pageHelper.startPage(pageNum, pageSize);
         Integer userId = BaseContext.getCurrentId();
@@ -88,7 +103,9 @@ public class RepairsServiceImpl implements ReparisService {
         });
         return new PageResult(repairOrders.getTotal(),repairOrders.getResult());
     }
-
+/**
+ * 用户获取报修单详情
+ */
     @Override
     public RepairOrderVO getRepairOrdeDetail(Integer orderId) {
        RepairOrder repairOrder = repairsMapper.getRepairDetail(orderId);
@@ -144,7 +161,11 @@ public class RepairsServiceImpl implements ReparisService {
      */
     @Override
     public void cancelRepair(Integer orderId) {
-        Integer processStatus = 5;
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("这是用户端取消保修单");
+        }
+        Integer processStatus = 5; // 状态码为5表示用户取消了保修单
         RepairOrder repairOrder = new RepairOrder();
         repairOrder.setProcessStatus(processStatus);
         repairOrder.setUpdatedTime(LocalDateTime.now());
@@ -162,6 +183,10 @@ public class RepairsServiceImpl implements ReparisService {
      */
     @Override
     public void commentRepair(Integer orderId, RepairEvaluationCreateDTO repairEvaluationCreateDTO) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("这是用户端评价保修单");
+        }
         Integer processStatus = 4;
         LocalDateTime commentCreatedTime = LocalDateTime.now();
         String comment = repairEvaluationCreateDTO.getComment();
@@ -170,8 +195,17 @@ public class RepairsServiceImpl implements ReparisService {
 
     }
 
+    /**
+     * 用户删除评价
+     * @param orderId
+     */
     @Override
     public void deleteComment(Integer orderId) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        String permission = user.getPermission();
+        if(!permission.contains("0")){
+            throw new RuntimeException("你无权限删除这个保修单评价");
+        }
         repairsMapper.deleteComment(orderId);
     }
 
@@ -187,6 +221,10 @@ public class RepairsServiceImpl implements ReparisService {
      */
     @Override
     public PageResult AdminGetMyRepairs(String status, Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime) {
+       User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+       if(!user.getPermission().contains("2")){
+           throw new RuntimeException("你没有权限获得报修单列表");
+       }
         PageHelper pageHelper = new PageHelper();
         pageHelper.startPage(pageNum, pageSize);
         Integer userId = null;
@@ -211,7 +249,7 @@ public class RepairsServiceImpl implements ReparisService {
         String permission = user.getPermission();
         log.info("权限：{}",permission);
         if(!permission.contains("2")){
-            throw new RuntimeException("管理员你没有这个权限");
+            throw new RuntimeException("管理员你没有这个权限获得保修单详情");
         }
         RepairOrder repairOrder = repairsMapper.getRepairDetail(orderId);
         if(repairOrder == null){
@@ -252,6 +290,11 @@ public class RepairsServiceImpl implements ReparisService {
 
     @Override
     public void updateRepairStatus(Integer orderId) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("2")){
+            throw new RuntimeException("你没有权限接受这个报修单");
+        }
+
         RepairOrder repairOrder = new RepairOrder();
         repairOrder.setProcessStatus(2);
         repairOrder.setOrderId(orderId);
@@ -264,6 +307,10 @@ public class RepairsServiceImpl implements ReparisService {
  */
     @Override
     public void regiectRepair(Integer orderId, String rejectReason) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("2")){
+            throw new RuntimeException("你没有权限拒绝这个报修单");
+        }
         RepairOrder repairOrder = new RepairOrder();
         repairOrder.setProcessStatus(4);
         repairOrder.setOrderId(orderId);
@@ -277,6 +324,10 @@ public class RepairsServiceImpl implements ReparisService {
 
     @Override
     public void completeRepair(Integer orderId) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("2")){
+            throw new RuntimeException("你没有权限完成这个报修单");
+        }
         RepairOrder repairOrder = new RepairOrder();
         repairOrder.setProcessStatus(3);
         repairOrder.setOrderId(orderId);
