@@ -11,23 +11,47 @@ import java.util.List;
 
 @Mapper
 public interface UserMapper {
-
+    /**
+     * 注册
+     * @param userRegisterDTO
+     */
     void insert(UserRegisterDTO userRegisterDTO);
 
-
+    /**
+     * 登录
+     * @param userLoginDTO
+     * @return
+     */
     @Select("select * from user where student_number=#{studentNumber} and password=#{password}")
     User getUserByStudentNumberAndPassword(User user);
 
 
-
+    /**
+     * 根据学号获取用户信息
+     * @param studentNumber
+     * @return
+     */
     @Select("select * from user where student_number=#{studentNumber}")
     User getUserByStudentNumber(String studentNumber);
-
+    /**
+     * 根据学号或用户名获取用户信息
+     * @param user
+     * @return
+     */
     User getUserByPasswordAndStudentNumberOrUsername(User user);
-
+    /**
+     * 根据姓名和学号获取学生信息
+     * @param name
+     * @param studentNumber
+     * @return
+     */
     @Select("select * from student where name=#{name} and student_number=#{studentNumber}")
     Student getStudentByNameAndStudentNumber(@Param("name") String name,@Param("studentNumber") String studentNumber);
-
+    /**
+     * 根据用户名获取用户名
+     * @param username
+     * @return
+     */
     @Select("select username from user where username= #{username}")
     String getUsernameByUsername(String username);
 
@@ -73,15 +97,28 @@ public interface UserMapper {
      */
     @Insert("insert into user(username,password,permission,registered_time,nickname) values(#{user.username},#{user.password},#{user.permission},#{user.registeredTime},#{user.nickname})")
     void adminInsert(@Param("user") User user);
-
+    /**
+     * 管理员更新密码
+     * @param updatePasswordNoOldDTO
+     */
     @Update("update user set password= #{updatePasswordNoOldDTO.newPassword} where user_id= #{updatePasswordNoOldDTO.userId}")
     void updateAdminPassword(@Param("updatePasswordNoOldDTO") UpdatePasswordNoOldDTO updatePasswordNoOldDTO);
-
+    /**
+     * 管理员更新权限
+     * @param updatePermissionDTO
+     */
     @Update("update user set permission= #{updatePermissionDTO.newPermission} where user_id= #{updatePermissionDTO.userId}")
     void updateAdminPermission(@Param("updatePermissionDTO") UpdatePermissionDTO updatePermissionDTO);
-
+    /**
+     * 管理员删除用户
+     * @param userId
+     */
     @Delete("delete from user where user_id= #{userId}")
     void deleteUserByAdminId(@Param("userId") Integer userId);
+    /**
+     * 获取所有管理员信息
+     * @return
+     */
     @Select("select * from user where permission != '0' ")
     Page<UserVO> getAllAdmin();
 

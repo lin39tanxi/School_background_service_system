@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>用户登录</title>
     <style>
+        body {
+            background-image: url(http://localhost:8081/img/05969fcd5f6d48348e51bdec8e5ecadc.jpg);
+            min-height: 100vh;
+            background-size: cover;
+            background-attachment: fixed;
+        }
         .login-container {
+            background-color: #ffffff9e;
             max-width: 400px;
             margin: 100px auto;
             padding: 20px;
@@ -71,7 +78,8 @@
         const token = localStorage.getItem('token');
         if (token) {
             // 如果已有token，直接跳转到报修页面
-            window.location.href = 'repair.html';
+            window.location.href = '/user/index';
+            return;
         }
     });
 
@@ -100,16 +108,16 @@
 
             const data = await response.json();
             console.log('登录响应:', data); // 调试信息
+            console.log('登录token:', data.data.token); // 调试信息
 
             // 根据实际的响应格式判断成功条件
             if (data.code === "200") { // 登录成功
                 // 使用简单的 'token' 作为存储键名
-                localStorage.setItem('token', data.token);
-
+                localStorage.setItem('token', data.data.token);
+                window.location.href = '/user/index';
                 // 跳转到报修页面
-                window.location.href = 'repair.html';
             } else {
-                errorMessage.textContent = data.message || '登录失败';
+                errorMessage.textContent = data.data.message || '登录失败';
             }
         } catch (error) {
             console.error('登录错误:', error);

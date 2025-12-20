@@ -28,7 +28,7 @@ we:
   jwt:
     user-secret-key: weareteam
     user-ttl: 72000000000
-    user-token-name: token
+    user-token-name: Authorization
     admin-secret-key: teamarewe
     admin-ttl: 72000000000
     admin-token-name: admintoken

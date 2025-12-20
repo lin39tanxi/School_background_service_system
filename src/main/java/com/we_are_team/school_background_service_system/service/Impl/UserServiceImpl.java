@@ -43,6 +43,10 @@ public class UserServiceImpl implements UserService {
       @Autowired
       private AliOssUtil aliOssUtil;
 
+      /**
+     * 用户注册
+     * @param userRegisterDTO
+     */
 
     @Override
     public void register(UserRegisterDTO userRegisterDTO) {
@@ -80,6 +84,11 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    /**
+     * 用户登录
+     * @param userLoginDTO
+     * @return UserLoginVO
+     */
     @Override
     public UserLoginVO login(UserLoginDTO userLoginDTO) {
         User user = new User();

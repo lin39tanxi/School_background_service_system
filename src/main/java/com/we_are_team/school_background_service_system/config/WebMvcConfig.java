@@ -36,21 +36,17 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**")
-<<<<<<< Updated upstream
                 .addResourceLocations("classpath:/static/", "classpath:/", "classpath:/templates/");
 
-
-=======
-                .addResourceLocations("classpath:/static/", "classpath:/templates/");
->>>>>>> Stashed changes
     }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         /* 配置静态资源映射 */
-        registry.addViewController("/").setViewName("forward:/login.html");
-        registry.addViewController("/login").setViewName("forward:/login.html");
-        registry.addViewController("/index").setViewName("forward:/user-index.html");
+        registry.addViewController("/").setViewName("forward:/user-login.html");
+        registry.addViewController("/users/login").setViewName("forward:/user-login.html");
+        registry.addViewController("/user/index").setViewName("forward:/user-index.html");
+        registry.addViewController("/user/info").setViewName("forward:/user-info.html");
 
     }
 

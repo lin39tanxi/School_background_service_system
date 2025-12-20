@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>校园后勤管理系统</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Microsoft YaHei", Arial, sans-serif;
+        background-image: url(http://localhost:8081/img/05969fcd5f6d48348e51bdec8e5ecadc.jpg);
+        min-height: 100vh;
+        background-size: cover;
+        background-attachment: fixed;
+      }
+
+      /* 顶部导航栏 */
+      .header {
+        background: #3f51b5;
+        color: white;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .header h1 {
+        font-size: 24px;
+        font-weight: normal;
+      }
+
+      .user-icon {
+        width: 45px;
+        height: 45px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        overflow: hidden;
+      }
+
+      .user-icon:hover {
+        transform: scale(1.05);
+        border-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+
+      /* 下拉菜单容器 */
+      .dropdown-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      /* 下拉菜单 */
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        z-index: 1000;
+        width: 150px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+      }
+
+      /* 悬停显示下拉菜单 */
+      .dropdown-container:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      /* 下拉菜单项 */
+      .dropdown-item {
+        width: 100%;
+        padding: 12px 20px;
+        background: none;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        color: #333;
+        font-size: 14px;
+        transition: all 0.2s;
+        outline: none;
+      }
+
+      /* 下拉菜单项悬停效果 */
+      .dropdown-item:hover {
+        background: #f5f5f5;
+        color: #3f51b5;
+      }
+
+      /* 下拉菜单项分隔线 */
+      .dropdown-item:not(:last-child) {
+        border-bottom: 1px solid #eee;
+      }
+
+      /* 主容器 */
+      .container {
+        display: flex;
+        min-height: calc(100vh - 70px);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+      <h1>校园后勤管理系统</h1>
+      <div class="dropdown-container">
+        <div
+          class="user-icon"
+          th:style="'background-image: url(' + ${user.avatarUrl} + ');'"
+        ></div>
+        <div class="dropdown-menu">
+          <button
+            class="dropdown-item"
+            onclick="location.href='/user-info.html'"
+          >
+            个人信息
+          </button>
+          <button class="dropdown-item" onclick="logout()">退出登录</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主容器 -->
+    <div class="container"></div>
+
+    <script>
+      // 页面加载时获取用户信息
+      window.addEventListener("DOMContentLoaded", function () {
+        fetchUserInfo();
+      });
+
+      // 获取用户信息
+      async function fetchUserInfo() {
+        try {
+          const response = await fetch("/user/user/my", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+              // 如果需要 token，在这里添加
+              // 'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+          });
+
+          const result = await response.json();
+          console.log(result);
+          if (result.code === "200" && result.data) {
+            const user = result.data;
+
+            // 更新个人信息
+            document.getElementById("userName").textContent = user.name || "-";
+            document.getElementById("userNickname").textContent =
+              user.nickname || "-";
+            document.getElementById("studentNumber").textContent =
+              user.studentNumber || "-";
+            document.getElementById("className").textContent =
+              user.className || "-";
+            document.getElementById("phone").textContent = user.phone || "-";
+            document.getElementById("dormitory").textContent =
+              (user.building || "") + (user.dormitory || "");
+
+            // 更新头像
+            if (user.avatarUrl) {
+              const userIcon = document.querySelector(".user-icon");
+              if (userIcon) {
+                userIcon.style.backgroundImage = `url('${user.avatarUrl.trim()}')`;
+              }
+            }
+          } else {
+            console.error("获取用户信息失败:", result.message);
+            showError();
+          }
+        } catch (error) {
+          console.error("获取用户信息出错:", error);
+          showError();
+        }
+      }
+
+      // 显示错误信息
+      function showError() {
+        document.getElementById("userName").textContent = "获取失败";
+        document.getElementById("userNickname").textContent = "获取失败";
+        document.getElementById("studentNumber").textContent = "获取失败";
+        document.getElementById("className").textContent = "获取失败";
+        document.getElementById("phone").textContent = "获取失败";
+        document.getElementById("dormitory").textContent = "获取失败";
+      }
+
+      // 菜单项点击高亮
+      document.querySelectorAll(".menu-item").forEach((item) => {
+        item.addEventListener("click", function () {
+          document
+            .querySelectorAll(".menu-item")
+            .forEach((i) => i.classList.remove("active"));
+          this.classList.add("active");
+        });
+      });
+
+
+      // 退出登录功能
+      function logout() {
+        if (confirm("确定要退出登录吗？")) {
+          localStorage.removeItem("token");
+          // 这里可以添加实际的退出登录逻辑，例如清除cookie、跳转到登录页等
+          alert("已退出登录");
+          // 示例：跳转到登录页面
+          location.href = "/login";
+        }
+      }
+    </script>
+  </body>
+</html>

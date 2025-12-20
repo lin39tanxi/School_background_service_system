@@ -449,7 +449,7 @@
         <div class="dropdown-menu">
           <button
             class="dropdown-item"
-            onclick="location.href='/user-info.html'"
+            onclick="location.href='/user/info'"
           >
             个人信息
           </button>
@@ -495,31 +495,72 @@
         <div class="top-section">
           <!-- 用户信息卡片 -->
           <div class="user-info-card">
-            <div><a href="/user-info.html">个人信息>></a></div>
+            <div><a href="/user/info">个人信息>></a></div>
             <div class="user-info-grid">
               <div class="info-item">
                 <span class="info-label">姓名：</span>
-                <span class="info-value" id="userName">加载中...</span>
+                <span
+                  class="info-value"
+                  id="userName"
+                  th:text="${user != null ? user.name : '加载中...'}"
+                  >加载中...</span
+                >
               </div>
               <div class="info-item">
                 <span class="info-label">昵称：</span>
-                <span class="info-value" id="userNickname">加载中...</span>
+                <span
+                  class="info-value"
+                  id="userNickname"
+                  th:text="${user != null ? user.nickname : '加载中...'}"
+                  >加载中...</span
+                >
               </div>
               <div class="info-item">
                 <span class="info-label">学号：</span>
-                <span class="info-value" id="studentNumber">加载中...</span>
+                <span
+                  class="info-value"
+                  id="studentNumber"
+                  th:text="${user != null ? user.studentNumber : '加载中...'}"
+                  >加载中...</span
+                >
               </div>
               <div class="info-item">
                 <span class="info-label">班级：</span>
-                <span class="info-value" id="className">加载中...</span>
+                <span
+                  class="info-value"
+                  id="className"
+                  th:text="${user != null ? user.className : '加载中...'}"
+                  >加载中...</span
+                >
               </div>
               <div class="info-item">
                 <span class="info-label">联系方式：</span>
-                <span class="info-value" id="phone">加载中...</span>
+                <span
+                  class="info-value"
+                  id="phone"
+                  th:text="${user != null ? user.phone : '加载中...'}"
+                  >加载中...</span
+                >
               </div>
               <div class="info-item">
                 <span class="info-label">宿舍住址：</span>
-                <span class="info-value" id="dormitory">加载中...</span>
+                <span
+                  class="info-value"
+                  id="dormitory"
+                  th:text="${user != null ? user.dormitory : '加载中...'}"
+                  >加载中...</span
+                >
+              </div>
+              <div>
+                <div class="info-item">
+                  <span class="info-label">出生日期：</span>
+                  <span
+                    class="info-value"
+                    id="birthday"
+                    th:text="${user != null ? user.birthDate : '加载中...'}"
+                    >加载中...</span
+                  >
+                </div>
               </div>
             </div>
           </div>
@@ -662,61 +703,62 @@
 
     <script>
       // 页面加载时获取用户信息
-      window.addEventListener('DOMContentLoaded', function() {
+      window.addEventListener("DOMContentLoaded", function () {
         fetchUserInfo();
       });
 
       // 获取用户信息
       async function fetchUserInfo() {
         try {
-          const response = await fetch('/user/user/my', {
-            method: 'GET',
+          const response = await fetch("/user/user/my", {
+            method: "GET",
             headers: {
-              'Content-Type': 'application/json',
-              
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
               // 如果需要 token，在这里添加
               // 'Authorization': 'Bearer ' + localStorage.getItem('token')
-            }
+            },
           });
 
           const result = await response.json();
           console.log(result);
-          if (result.code === '200' && result.data) {
+          if (result.code === "200" && result.data) {
             const user = result.data;
-            
+
             // 更新个人信息
-            document.getElementById('userName').textContent = user.name || '-';
-            document.getElementById('userNickname').textContent = user.nickname || '-';
-            document.getElementById('studentNumber').textContent = user.studentNumber || '-';
-            document.getElementById('className').textContent = user.className || '-';
-            document.getElementById('phone').textContent = user.phone || '-';
-            document.getElementById('dormitory').textContent = (user.building || '') + (user.dormitory || '');
+            document.getElementById("userName").textContent = user.name || "-";
+            document.getElementById("userNickname").textContent = user.nickname || "-";
+            document.getElementById("studentNumber").textContent = user.studentNumber || "-";
+            document.getElementById("className").textContent = user.className || "-";
+            document.getElementById("phone").textContent = user.phone || "-";
+            document.getElementById("dormitory").textContent = (user.building || "") + (user.dormitory || "");
+            document.getElementById("birthday").textContent = user.birthDate || "-";
             
             // 更新头像
             if (user.avatarUrl) {
-              const userIcon = document.querySelector('.user-icon');
+              const userIcon = document.querySelector(".user-icon");
               if (userIcon) {
                 userIcon.style.backgroundImage = `url('${user.avatarUrl.trim()}')`;
               }
             }
           } else {
-            console.error('获取用户信息失败:', result.message);
+            console.error("获取用户信息失败:", result.message);
             showError();
           }
         } catch (error) {
-          console.error('获取用户信息出错:', error);
+          console.error("获取用户信息出错:", error);
           showError();
         }
       }
 
       // 显示错误信息
       function showError() {
-        document.getElementById('userName').textContent = '获取失败';
-        document.getElementById('userNickname').textContent = '获取失败';
-        document.getElementById('studentNumber').textContent = '获取失败';
-        document.getElementById('className').textContent = '获取失败';
-        document.getElementById('phone').textContent = '获取失败';
-        document.getElementById('dormitory').textContent = '获取失败';
+        document.getElementById("userName").textContent = "获取失败";
+        document.getElementById("userNickname").textContent = "获取失败";
+        document.getElementById("studentNumber").textContent = "获取失败";
+        document.getElementById("className").textContent = "获取失败";
+        document.getElementById("phone").textContent = "获取失败";
+        document.getElementById("dormitory").textContent = "获取失败";
       }
 
       // 菜单项点击高亮
@@ -749,9 +791,10 @@
       function logout() {
         if (confirm("确定要退出登录吗？")) {
           // 这里可以添加实际的退出登录逻辑，例如清除cookie、跳转到登录页等
+          localStorage.removeItem("token");
           alert("已退出登录");
           // 示例：跳转到登录页面
-          // location.href = '/login.html';
+          window.location.href = '/users/login';
         }
       }
     </script>
