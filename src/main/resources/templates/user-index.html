@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>校园后勤管理系统</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Microsoft YaHei", Arial, sans-serif;
+        background-image: url(http://localhost:8081/img/05969fcd5f6d48348e51bdec8e5ecadc.jpg);
+        min-height: 100vh;
+        background-size: cover;
+        background-attachment: fixed;
+      }
+
+      /* 顶部导航栏 */
+      .header {
+        background: #3f51b5;
+        color: white;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .header h1 {
+        font-size: 24px;
+        font-weight: normal;
+      }
+
+      .user-icon {
+        width: 45px;
+        height: 45px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        overflow: hidden;
+      }
+
+      .user-icon:hover {
+        transform: scale(1.05);
+        border-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+
+      /* 下拉菜单容器 */
+      .dropdown-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      /* 下拉菜单 */
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        z-index: 1000;
+        width: 150px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+      }
+
+      /* 悬停显示下拉菜单 */
+      .dropdown-container:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      /* 下拉菜单项 */
+      .dropdown-item {
+        width: 100%;
+        padding: 12px 20px;
+        background: none;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        color: #333;
+        font-size: 14px;
+        transition: all 0.2s;
+        outline: none;
+      }
+
+      /* 下拉菜单项悬停效果 */
+      .dropdown-item:hover {
+        background: #f5f5f5;
+        color: #3f51b5;
+      }
+
+      /* 下拉菜单项分隔线 */
+      .dropdown-item:not(:last-child) {
+        border-bottom: 1px solid #eee;
+      }
+
+      /* 主容器 */
+      .container {
+        display: flex;
+        min-height: calc(100vh - 70px);
+      }
+
+      /* 左侧边栏 */
+      .sidebar {
+        width: 230px;
+        background: rgba(255, 255, 255, 0.85);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px 0;
+      }
+
+      .menu-item {
+        padding: 15px 25px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #666;
+        transition: all 0.3s;
+        border-left: 3px solid transparent;
+      }
+
+      .menu-item:hover,
+      .menu-item.active {
+        background: #f5f5f5;
+        color: #3f51b5;
+        border-left-color: #3f51b5;
+      }
+
+      .menu-item::before {
+        content: "📋";
+        margin-right: 10px;
+        font-size: 18px;
+      }
+
+      .menu-item:nth-child(1)::before {
+        content: "🔧";
+      }
+      .menu-item:nth-child(2)::before {
+        content: "🔍";
+      }
+      .menu-item:nth-child(3)::before {
+        content: "🏠";
+      }
+      .menu-item:nth-child(4)::before {
+        content: "📢";
+      }
+      .menu-item:nth-child(5)::before {
+        content: "💬";
+      }
+
+      /* 主内容区 */
+      .main-content {
+        flex: 1;
+        padding: 30px;
+        overflow-y: auto;
+      }
+
+      /* 用户信息和状态卡片的容器 */
+      .top-section {
+        display: flex;
+        grid-template-columns: 2fr 1fr;
+        gap: 30px;
+        height: 400px;
+        margin-bottom: 30px;
+      }
+
+      /* 用户信息卡片 */
+      .user-info-card {
+        width: 40%;
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 10px;
+        padding: 20px 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+      .user-info-card a {
+        width: 100%;
+        top: 20px;
+        padding-left: 80%;
+        border-bottom: 1.5px solid #d8d8d8;
+        text-decoration: none;
+        color: #3f51b5;
+        font-size: 14px;
+      }
+      .user-info-grid {
+        padding-top: 20px;
+        display: flex;
+        flex-direction: column;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+      }
+
+      .info-item {
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+      }
+
+      .info-label {
+        font-weight: bold;
+        color: #666;
+        margin-right: 10px;
+        min-width: 80px;
+      }
+
+      .info-value {
+        font-size: 16px;
+        color: #333;
+      }
+
+      /* 内容布局 */
+      .content-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      /* 申请状态卡片容器 */
+      .status-cards-container {
+        width: 60%;
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .status-header {
+        font-size: 20px;
+        color: #333;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+      }
+
+      /* 申请状态卡片区域 - 可滚动列表 */
+      .status-cards {
+        max-height: 300px;
+        overflow-y: auto;
+        display: grid;
+        gap: 10px;
+        padding-right: 10px;
+      }
+
+      /* 滚动条样式 */
+      .status-cards::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .status-cards::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+      }
+
+      .status-cards::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+      }
+
+      .status-cards::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+
+      .status-card {
+        height: 60px;
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .status-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      }
+
+      .status-info {
+        display: flex;
+      }
+      .status-info .linebox {
+        border-right: #eaeaea 2px solid;
+        height: 40px;
+        margin-top: 8px;
+      }
+      .status-info h3 {
+        height: 40px;
+        margin-top: 5px;
+        padding-right: 20px;
+        font-size: 16px;
+        color: #333333;
+        margin-bottom: 8px;
+      }
+
+      .status-date-box {
+        padding-left: 20px;
+      }
+
+      .status-date {
+        font-size: 14px;
+        color: #333333;
+        margin-bottom: 5px;
+      }
+
+      .status-detail {
+        font-size: 12px;
+        color: #aaa;
+      }
+
+      .status-badge {
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        white-space: nowrap;
+      }
+
+      .status-badge.pending {
+        background: #fff3e0;
+        color: #f57c00;
+      }
+
+      .status-badge.completed {
+        background: #e8f5e9;
+        color: #4caf50;
+      }
+
+      .status-badge.unfinished {
+        background: #fce4ec;
+        color: #e91e63;
+      }
+
+      /* 校园通知区域 */
+      .notice-section {
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .notice-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+      }
+
+      .notice-header h2 {
+        font-size: 20px;
+        color: #333;
+      }
+
+      .more-link {
+        color: #3f51b5;
+        text-decoration: none;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .more-link:hover {
+        text-decoration: underline;
+      }
+
+      .notice-list {
+        list-style: none;
+      }
+
+      .notice-item {
+        background-color: white;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .notice-item:last-child {
+        border-bottom: none;
+      }
+
+      .notice-item:hover {
+        background: #f9f9f9;
+        padding-left: 10px;
+      }
+
+      .notice-title {
+        padding-left: 20px;
+        color: #333;
+        font-size: 15px;
+        margin-bottom: 8px;
+        line-height: 1.5;
+      }
+
+      .notice-date {
+        padding-left: 20px;
+        color: #999;
+        font-size: 13px;
+      }
+
+      /* 响应式设计 */
+      @media (max-width: 1200px) {
+        .top-section {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 60px;
+        }
+
+        .menu-item span {
+          display: none;
+        }
+
+        .user-info-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+      <h1>校园后勤管理系统</h1>
+      <div class="dropdown-container">
+        <div
+          class="user-icon"
+          th:style="'background-image: url(' + ${user.avatarUrl} + ');'"
+        ></div>
+        <div class="dropdown-menu">
+          <button
+            class="dropdown-item"
+            onclick="location.href='/user-info.html'"
+          >
+            个人信息
+          </button>
+          <button class="dropdown-item" onclick="logout()">退出登录</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主容器 -->
+    <div class="container">
+      <!-- 左侧边栏 -->
+      <aside class="sidebar">
+        <div class="menu-item active" onclick="location.href='/repair.html'">
+          <span>维修预约</span>
+          <span>></span>
+        </div>
+        <div class="menu-item" onclick="alert('功能开发中')">
+          <span>失物招领</span>
+          <span>></span>
+        </div>
+        <div class="menu-item" onclick="alert('功能开发中')">
+          <span>宿舍调换申请</span>
+          <span>></span>
+        </div>
+        <div class="menu-item" onclick="alert('功能开发中')">
+          <span>学校通知</span>
+          <span>></span>
+        </div>
+        <div class="menu-item" onclick="alert('功能开发中')">
+          <span>问题反馈</span>
+          <span>></span>
+        </div>
+        <img
+          src="http://localhost:8081/img/G%20C%20C@1x.png"
+          style="padding-top: 150px"
+          alt=""
+        />
+      </aside>
+
+      <!-- 主内容区 -->
+      <main class="main-content">
+        <!-- 顶部区域：用户信息和申请状态 -->
+        <div class="top-section">
+          <!-- 用户信息卡片 -->
+          <div class="user-info-card">
+            <div><a href="/user-info.html">个人信息>></a></div>
+            <div class="user-info-grid">
+              <div class="info-item">
+                <span class="info-label">姓名：</span>
+                <span class="info-value" id="userName">加载中...</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">昵称：</span>
+                <span class="info-value" id="userNickname">加载中...</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">学号：</span>
+                <span class="info-value" id="studentNumber">加载中...</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">班级：</span>
+                <span class="info-value" id="className">加载中...</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">联系方式：</span>
+                <span class="info-value" id="phone">加载中...</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">宿舍住址：</span>
+                <span class="info-value" id="dormitory">加载中...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 申请状态卡片 -->
+          <div class="status-cards-container">
+            <h2 class="status-header">申请状态</h2>
+            <div class="status-cards">
+              <div class="status-card">
+                <div class="status-info">
+                  <div class="linebox">
+                    <h3>维修预约</h3>
+                  </div>
+                  <div class="status-date-box">
+                    <div class="status-date">2025-11-30</div>
+                    <div class="status-detail">请选择维修项目...</div>
+                  </div>
+                </div>
+                <div class="status-badge pending">已提约</div>
+              </div>
+
+              <div class="status-card">
+                <div class="status-info">
+                  <div class="linebox">
+                    <h3>宿舍调换</h3>
+                  </div>
+                  <div class="status-date-box">
+                    <div class="status-date">2025-9-21</div>
+                    <div class="status-detail">请选择宿舍...</div>
+                  </div>
+                </div>
+                <div class="status-badge unfinished">未通过</div>
+              </div>
+
+              <div class="status-card">
+                <div class="status-info">
+                  <div class="linebox">
+                    <h3>意见反馈</h3>
+                  </div>
+                  <div class="status-date-box">
+                    <div class="status-date">2025-4-2</div>
+                    <div class="status-detail">基于学生反馈...</div>
+                  </div>
+                </div>
+                <div class="status-badge completed">已受理</div>
+              </div>
+
+              <div class="status-card">
+                <div class="status-info">
+                  <div class="linebox">
+                    <h3>维修预约</h3>
+                  </div>
+                  <div class="status-date-box">
+                    <div class="status-date">2025-3-25</div>
+                    <div class="status-detail">进度：已受理</div>
+                  </div>
+                </div>
+                <div class="status-badge completed">已受理</div>
+              </div>
+
+              <div class="status-card">
+                <div class="status-info">
+                  <div class="linebox">
+                    <h3>失物招领</h3>
+                  </div>
+                  <div class="status-date-box">
+                    <div class="status-date">2025-2-15</div>
+                    <div class="status-detail">遗失物品：钥匙</div>
+                  </div>
+                </div>
+                <div class="status-badge pending">处理中</div>
+              </div>
+
+              <div class="status-card">
+                <div class="status-info">
+                  <div class="linebox">
+                    <h3>维修预约</h3>
+                  </div>
+                  <div class="status-date-box">
+                    <div class="status-date">2025-1-10</div>
+                    <div class="status-detail">宿舍水龙头维修</div>
+                  </div>
+                </div>
+                <div class="status-badge completed">已完成</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 内容布局：校园通知 -->
+        <div class="content-layout">
+          <!-- 校园通知 -->
+          <div class="notice-section">
+            <div class="notice-header">
+              <h2>校园通知</h2>
+              <a class="more-link">全部通知>></a>
+            </div>
+            <ul class="notice-list">
+              <li class="notice-item">
+                <div class="notice-title">
+                  广东省2026年考试录用公务员笔试广州商学院考点指引
+                </div>
+                <div class="notice-date">2025-12-03</div>
+              </li>
+              <li class="notice-item">
+                <div class="notice-title">
+                  中央机关及其直属机构2026年度考试录用公务员笔试考点指引
+                </div>
+                <div class="notice-date">2025-11-26</div>
+              </li>
+              <li class="notice-item">
+                <div class="notice-title">
+                  广州商学院关于开展省级质量工程项目2025年度校内结题验收收集结果的公示
+                </div>
+                <div class="notice-date">2025-11-07</div>
+              </li>
+              <li class="notice-item">
+                <div class="notice-title">
+                  关于2025年全国成人高等学校招生统一考试广州商学院考点支援通知
+                </div>
+                <div class="notice-date">2025-10-11</div>
+              </li>
+              <li class="notice-item">
+                <div class="notice-title">
+                  2025年下半年全国计算机等级考试（第76次）广州商学院考点指引
+                </div>
+                <div class="notice-date">2025-09-06</div>
+              </li>
+              <li class="notice-item">
+                <div class="notice-title">
+                  2025广东高校联盟学位外语水平考试广州商学院考点场指引
+                </div>
+                <div class="notice-date">2025-04-23</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // 页面加载时获取用户信息
+      window.addEventListener('DOMContentLoaded', function() {
+        fetchUserInfo();
+      });
+
+      // 获取用户信息
+      async function fetchUserInfo() {
+        try {
+          const response = await fetch('/user/user/my', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              
+              // 如果需要 token，在这里添加
+              // 'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+          });
+
+          const result = await response.json();
+          console.log(result);
+          if (result.code === '200' && result.data) {
+            const user = result.data;
+            
+            // 更新个人信息
+            document.getElementById('userName').textContent = user.name || '-';
+            document.getElementById('userNickname').textContent = user.nickname || '-';
+            document.getElementById('studentNumber').textContent = user.studentNumber || '-';
+            document.getElementById('className').textContent = user.className || '-';
+            document.getElementById('phone').textContent = user.phone || '-';
+            document.getElementById('dormitory').textContent = (user.building || '') + (user.dormitory || '');
+            
+            // 更新头像
+            if (user.avatarUrl) {
+              const userIcon = document.querySelector('.user-icon');
+              if (userIcon) {
+                userIcon.style.backgroundImage = `url('${user.avatarUrl.trim()}')`;
+              }
+            }
+          } else {
+            console.error('获取用户信息失败:', result.message);
+            showError();
+          }
+        } catch (error) {
+          console.error('获取用户信息出错:', error);
+          showError();
+        }
+      }
+
+      // 显示错误信息
+      function showError() {
+        document.getElementById('userName').textContent = '获取失败';
+        document.getElementById('userNickname').textContent = '获取失败';
+        document.getElementById('studentNumber').textContent = '获取失败';
+        document.getElementById('className').textContent = '获取失败';
+        document.getElementById('phone').textContent = '获取失败';
+        document.getElementById('dormitory').textContent = '获取失败';
+      }
+
+      // 菜单项点击高亮
+      document.querySelectorAll(".menu-item").forEach((item) => {
+        item.addEventListener("click", function () {
+          document
+            .querySelectorAll(".menu-item")
+            .forEach((i) => i.classList.remove("active"));
+          this.classList.add("active");
+        });
+      });
+
+      // 通知项点击事件
+      document.querySelectorAll(".notice-item").forEach((item) => {
+        item.addEventListener("click", function () {
+          alert(
+            "查看通知详情: " + this.querySelector(".notice-title").textContent
+          );
+        });
+      });
+
+      // 全部通知链接
+      document
+        .querySelector(".more-link")
+        .addEventListener("click", function () {
+          alert("跳转到全部通知页面");
+        });
+
+      // 退出登录功能
+      function logout() {
+        if (confirm("确定要退出登录吗？")) {
+          // 这里可以添加实际的退出登录逻辑，例如清除cookie、跳转到登录页等
+          alert("已退出登录");
+          // 示例：跳转到登录页面
+          // location.href = '/login.html';
+        }
+      }
+    </script>
+  </body>
+</html>
