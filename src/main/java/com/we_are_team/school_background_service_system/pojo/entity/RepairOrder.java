@@ -1,11 +1,15 @@
 package com.we_are_team.school_background_service_system.pojo.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class RepairOrder {
     private Integer orderId;
@@ -27,4 +31,8 @@ public class RepairOrder {
     private LocalDateTime commentCreatedTime;
     private String address;
     private String phone;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime appointmentBegin;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime appointmentEnd;
 }

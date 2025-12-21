@@ -15,8 +15,8 @@ public interface RepairsMapper {
      * 添加报修单
      */
 
-    @Insert("insert into order_table (user_id, process_status, description,image_urls, created_time, address, phone) " +
-            "values(#{repairOrder.userId},#{repairOrder.processStatus},#{repairOrder.description},#{repairOrder.imageUrls},#{repairOrder.createdTime},#{repairOrder.address},#{repairOrder.phone})")
+    @Insert("insert into order_table (user_id, process_status, description,image_urls, created_time, address, phone,appointment_begin,appointment_end) " +
+            "values(#{repairOrder.userId},#{repairOrder.processStatus},#{repairOrder.description},#{repairOrder.imageUrls},#{repairOrder.createdTime},#{repairOrder.address},#{repairOrder.phone},#{repairOrder.appointmentBegin},#{repairOrder.appointmentEnd})")
     void insert(@Param("repairOrder") RepairOrder repairOrder);
 
 //    @Insert("insert into order_table (user_id, process_status, description, admin_id, reject_reason, completed_time, image_urls, created_time, updated_time, rating, comment, comment_created_time,address,phone) " +
@@ -27,8 +27,8 @@ public interface RepairsMapper {
 /**
  * 获取报修单详情
  */
-    @Select("select * from order_table where order_id = #{orderId}")
-    RepairOrder getRepairDetail(Integer orderId);
+@Select("select order_id, user_id, process_status, description, admin_id, reject_reason, completed_time, image_urls, created_time, updated_time, rating, comment, comment_created_time, address, phone, appointment_begin as appointment_begin, appointment_end as appointment_end from order_table where order_id = #{orderId}")
+RepairOrder getRepairDetail(Integer orderId);
 
     void updateRepairStatus(@Param("repairOrder") RepairOrder repairOrder);
 

@@ -5,6 +5,7 @@ import com.we_are_team.school_background_service_system.pojo.entity.User;
 import com.we_are_team.school_background_service_system.pojo.vo.UserLoginVO;
 import com.we_are_team.school_background_service_system.pojo.vo.UserVO;
 import com.we_are_team.school_background_service_system.result.PageResult;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
@@ -81,4 +82,6 @@ public interface UserService {
      * @return
      */
     User adminGetUserInfo();
+
+
 }
