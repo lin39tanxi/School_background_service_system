@@ -1,6 +1,9 @@
 package com.we_are_team.school_background_service_system.pojo.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 public class GetRepairOrderListVO {
@@ -10,6 +13,8 @@ public class GetRepairOrderListVO {
     private Integer rating;
     private String imageUrl;
     private String address;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdTime;
 
 
 

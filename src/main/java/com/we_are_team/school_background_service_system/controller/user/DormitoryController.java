@@ -46,15 +46,27 @@ public class DormitoryController {
     }
 
     /**
-     * 根据楼栋和楼层获取宿舍列表
+     * 根据楼栋和楼层获取有空位的宿舍号
+     * @param buildingId
+     * @param floorId
+     * @return
+     */
+    @GetMapping("/getEmptyRoomsByBuildingAndFloor")
+    public Result<List<GetRoomsByBuildingAndFloorVO>> getEmptyRoomsByBuildingAndFloor(Integer buildingId, Integer floorId) {
+        List<GetRoomsByBuildingAndFloorVO> rooms = dormitoryService.getEmptyRoomsByBuildingAndFloor(buildingId, floorId);
+        return Result.success("获取宿舍列表成功", rooms);
+    }
+
+    /**
+     * 获取全部空宿舍的列表
      * @param buildingId
      * @param floorId
      * @return
      */
 //    GetRoomsByBuildingAndFloorVO
     @GetMapping("/getAllBuildingAndFloorAndRooms")
-    public Result<PageResult> getEmptyRoomsByBuildingAndFloor(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10")  Integer pageSize, String keyword, Integer buildingId, Integer floorId, Integer roomId, Integer gender) {
-        PageResult pageResult  = dormitoryService.getEmptyRoomsByBuildingAndFloor(pageNum, pageSize, keyword, buildingId, floorId, roomId, gender);
+    public Result<PageResult> getEmptyRoomsAndBuildingAndFloor(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10")  Integer pageSize, String keyword, Integer buildingId, Integer floorId, Integer roomId, Integer gender) {
+        PageResult pageResult  = dormitoryService.getEmptyRoomsAndBuildingAndFloor(pageNum, pageSize, keyword, buildingId, floorId, roomId, gender);
         return Result.success("获取宿舍列表成功", pageResult);
     }
 

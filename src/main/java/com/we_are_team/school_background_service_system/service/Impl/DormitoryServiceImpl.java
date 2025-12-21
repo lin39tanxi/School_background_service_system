@@ -184,8 +184,9 @@ public class DormitoryServiceImpl implements DormitoryService {
         return new PageResult(allBuildingAndFloorAndRooms.getTotal(),allBuildingAndFloorAndRooms);
     }
 
+
     @Override
-    public PageResult getEmptyRoomsByBuildingAndFloor(Integer pageNum, Integer pageSize, String keyword, Integer buildingId, Integer floorId, Integer roomId, Integer gender) {
+    public PageResult getEmptyRoomsAndBuildingAndFloor(Integer pageNum, Integer pageSize, String keyword, Integer buildingId, Integer floorId, Integer roomId, Integer gender) {
         PageHelper page = new PageHelper();
         page.startPage(pageNum,pageSize);
         Page<GetAllBuildingAndFloorAndRoomsVO> allBuildingAndFloorAndRooms = dormitoryMapper.getAllEmptyBuildingAndFloorAndRoomsInfo(keyword,buildingId,floorId,roomId,gender);

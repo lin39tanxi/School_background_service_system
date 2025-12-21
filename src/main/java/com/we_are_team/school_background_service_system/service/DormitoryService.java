@@ -34,7 +34,19 @@ public interface DormitoryService {
 
     void rejectChangeDormitory(RejectionChangeDormitoryDTO rejectionChangeDormitoryDTO);
 
+    /**
+     * 获取宿舍列表
+     * @param pageNum
+     * @param pageSize
+     * @param keyword
+     * @param buildingId
+     * @param floorId
+     * @param roomId
+     * @param gender
+     * @return
+     */
     PageResult getAllBuildingAndFloorAndRoomsInfo(Integer pageNum, Integer pageSize, String keyword, Integer buildingId, Integer floorId, Integer roomId,Integer gender);
 
-    PageResult getEmptyRoomsByBuildingAndFloor(Integer pageNum, Integer pageSize, String keyword, Integer buildingId, Integer floorId, Integer roomId, Integer gender);
+
+    PageResult getEmptyRoomsAndBuildingAndFloor(Integer pageNum, Integer pageSize, String keyword, Integer buildingId, Integer floorId, Integer roomId, Integer gender);
 }
