@@ -51,4 +51,26 @@
         </where>
         ORDER BY dorm_building.building_id ASC, floor.floor_id ASC, dorm_room.room_id ASC
     </select>
+
+<!--    获取我的列表-->
+    <select id="getMyAllChangeDormitory" resultType="ChangeDormitory">
+      select * from dorm_change
+      <where>
+          <if test="userId != null and userId != ''">
+              user_id = #{userId}
+          </if>
+          <if test="keyword != null and keyword != ''">
+              (student_number like concat('%', #{keyword}, '%') or old_dorm_address like concat('%', #{keyword}, '%') or new_dorm_address like concat('%', #{keyword}, '%'))
+          </if>
+          <if test="status != null and status != ''">
+              and status = #{status}
+          </if>
+          <if test="beginTime != null">
+              and created_time >= #{beginTime}
+          </if>
+          <if test="endTime != null">
+              and created_time &gt;= #{endTime}
+          </if>
+      </where>
+    </select>
 </mapper>

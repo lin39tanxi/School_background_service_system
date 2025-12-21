@@ -1,12 +1,14 @@
 package com.we_are_team.school_background_service_system.mapper;
 
 import com.github.pagehelper.Page;
+import com.we_are_team.school_background_service_system.pojo.entity.ApplicationForm;
 import com.we_are_team.school_background_service_system.pojo.entity.RepairOrder;
 import com.we_are_team.school_background_service_system.pojo.vo.GetRepairOrderListVO;
 import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Mapper
 public interface RepairsMapper {
@@ -37,4 +39,7 @@ RepairOrder getRepairDetail(Integer orderId);
 
     @Update("update order_table set rating = null,process_status = 3,comment = null ,order_table.comment_created_time = null where order_id = #{orderId}")
     void deleteComment(Integer orderId);
+
+    @Select("select order_id as id,description as content,created_time ,updated_time,process_status as status from order_table where user_id = #{userId}")
+    List<ApplicationForm> getAppcationFormByUserId(Integer userId);
 }

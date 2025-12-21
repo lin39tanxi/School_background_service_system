@@ -1,11 +1,13 @@
 package com.we_are_team.school_background_service_system.mapper;
 
 import com.github.pagehelper.Page;
+import com.we_are_team.school_background_service_system.pojo.entity.ApplicationForm;
 import com.we_are_team.school_background_service_system.pojo.entity.Feedback;
 import com.we_are_team.school_background_service_system.pojo.vo.GetFeedbackListVO;
 import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Mapper
 public interface FeedbacksMapper {
@@ -25,4 +27,7 @@ public interface FeedbacksMapper {
 
     @Delete("delete from feedback where feedback_id = #{feedbackId}")
     void deleteFeedback(@Param("feedbackId") Integer feedbackId);
+
+    @Select("select feedback_id as id,content,created_time from feedback")
+    List<ApplicationForm> getAppcationFormByUserId(Integer userId);
 }

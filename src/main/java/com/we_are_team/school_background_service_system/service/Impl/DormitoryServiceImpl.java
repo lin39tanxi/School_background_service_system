@@ -19,12 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @Slf4j
-
 public class DormitoryServiceImpl implements DormitoryService {
     @Autowired
     private DormitoryMapper dormitoryMapper;
@@ -128,8 +128,9 @@ public class DormitoryServiceImpl implements DormitoryService {
         String building = dormitoryMapper.getBuildingNameByBuildingId(changeDormitory.getBuildingId());
         String dormitory = dormitoryMapper.getRoomNumberByRoomId(changeDormitory.getRoomId());
         userMapper.updateStudentInfoByStudentNumber(changeDormitory.getStudentNumber(),building,dormitory);
+        Integer adminId = BaseContext.getCurrentId();
 //        更新申请单信息
-        dormitoryMapper.updateStatus(dormChangeId);
+        dormitoryMapper.updateStatus(dormChangeId,adminId);
 
 
 
@@ -191,6 +192,93 @@ public class DormitoryServiceImpl implements DormitoryService {
         page.startPage(pageNum,pageSize);
         Page<GetAllBuildingAndFloorAndRoomsVO> allBuildingAndFloorAndRooms = dormitoryMapper.getAllEmptyBuildingAndFloorAndRoomsInfo(keyword,buildingId,floorId,roomId,gender);
         return new PageResult(allBuildingAndFloorAndRooms.getTotal(),allBuildingAndFloorAndRooms);
+    }
+
+    @Override
+    public void cancelChangeDormitory(Integer dormChangeId) {
+        dormitoryMapper.cancelChangeDormitory(dormChangeId);
+    }
+
+    @Override
+    public void helpChangeDormitory(ChangeDormitoryDTO changeDormitoryDTO) {
+        ChangeDormitory changeDormitory = ChangeDormitory.builder()
+                .createdTime(LocalDateTime.now())
+                .status(1)
+                .userId(BaseContext.getCurrentId())
+                .dormChangeId(changeDormitoryDTO.getDormChangeId())
+                .studentNumber(changeDormitoryDTO.getStudentNumber())
+                .oldDormAddress(changeDormitoryDTO.getOldDormAddress())
+                .newDormAddress(changeDormitoryDTO.getNewDormAddress())
+                .buildingId(changeDormitoryDTO.getBuildingId())
+                .floorId(changeDormitoryDTO.getFloorId())
+                .roomId(changeDormitoryDTO.getRoomId())
+                .reason(changeDormitoryDTO.getReason())
+                .adminId(BaseContext.getCurrentId())
+                .updatedTime(LocalDateTime.now())
+                .build();
+        dormitoryMapper.insert(changeDormitory);
+        DormRoom dormRoom = dormitoryMapper.getDoomRoomByStudentNumber(changeDormitory.getStudentNumber());
+        //        删除到原来的学号，然后入住人数减1
+        String StudentStr = dormRoom.getStudentArray();
+        String[] oldStudentArray = StudentStr.split( ",");
+        StringBuilder newStudentArray = new StringBuilder();
+        for (String s : oldStudentArray) {
+            if (!s.equals(changeDormitory.getStudentNumber())) {
+                if (newStudentArray.length() > 0) {
+                    newStudentArray.append(",");
+                }
+                newStudentArray.append(s);
+            }
+        }
+        String result = newStudentArray.toString();
+        log.info("更新前的宿舍：{}", dormRoom);
+        Integer currentPeople = dormRoom.getCurrentPeople();
+        dormRoom.setStudentArray(result);
+
+        dormRoom.setCurrentPeople(currentPeople - 1);
+        log.info("更新后的宿舍：{}", dormRoom);
+        dormitoryMapper.update(dormRoom);
+
+//        更新新宿舍的学号以及入住人数加1
+        DormRoom newDormRoom = dormitoryMapper.getDoomRoomByRoomId(changeDormitory.getRoomId());
+        String newStudentStr = newDormRoom.getStudentArray();
+        newStudentStr = newStudentStr + "," + changeDormitory.getStudentNumber();
+        newDormRoom.setStudentArray(newStudentStr);
+        newDormRoom.setCurrentPeople(newDormRoom.getCurrentPeople() + 1);
+        dormitoryMapper.update(newDormRoom);
+        //        更新学生表信息
+        String building = dormitoryMapper.getBuildingNameByBuildingId(changeDormitory.getBuildingId());
+        String dormitory = dormitoryMapper.getRoomNumberByRoomId(changeDormitory.getRoomId());
+        userMapper.updateStudentInfoByStudentNumber(changeDormitory.getStudentNumber(),building,dormitory);
+
+    }
+
+    @Override
+    public PageResult getMyAllChangeDormitory(Integer pageNum, Integer pageSize, String keyword, Integer status, LocalDate beginTime, LocalDate endTime) {
+        PageHelper page = new PageHelper();
+        page.startPage(pageNum,pageSize);
+        Integer userId = BaseContext.getCurrentId();
+        Page<ChangeDormitory> myAllChangeDormitory =  dormitoryMapper.getMyAllChangeDormitory(userId,keyword,status,beginTime,endTime);
+        return new PageResult(myAllChangeDormitory.getTotal(),myAllChangeDormitory);
+    }
+/**
+ * 获取我的换宿舍申请信息
+ * @param dormChangeId
+ * @return
+ */
+    @Override
+    public ChangeDormitory getMyChangeDormitoryInfo(Integer dormChangeId) {
+
+        return dormitoryMapper.getMyChangeDormitoryInfo(dormChangeId);
+    }
+
+    @Override
+    public PageResult getAllChangeDormitory(Integer pageNum, Integer pageSize, String keyword, Integer status, LocalDate beginTime, LocalDate endTime) {
+        PageHelper page = new PageHelper();
+        page.startPage(pageNum,pageSize);
+        Integer userId = null;
+        Page<ChangeDormitory> myAllChangeDormitory =  dormitoryMapper.getMyAllChangeDormitory(userId,keyword,status,beginTime,endTime);
+        return new PageResult(myAllChangeDormitory.getTotal(),myAllChangeDormitory);
     }
 
 
