@@ -39,7 +39,7 @@ public class RepairsServiceImpl implements ReparisService {
  */
 
     @Override
-    public void submitRepair(String description, String address,MultipartFile[] imageUrlsArray,String phone) {
+    public void submitRepair(String description, String address,MultipartFile[] imageUrlsArray,String phone,LocalDateTime appointmentBegin,LocalDateTime appointmentEnd) {
         User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
         if(user == null){
             throw new RuntimeException("用户不存在");
@@ -54,6 +54,8 @@ public class RepairsServiceImpl implements ReparisService {
             repairOrder.setProcessStatus(0);
             repairOrder.setPhone(phone);
             repairOrder.setAddress(address);
+            repairOrder.setAppointmentBegin(appointmentBegin);
+            repairOrder.setAppointmentEnd(appointmentEnd);
         List<String> urlsArray = new ArrayList<>();
         if(imageUrlsArray ==  null || imageUrlsArray.length == 0){
             repairsMapper.insert(repairOrder);
@@ -128,6 +130,8 @@ public class RepairsServiceImpl implements ReparisService {
                    .completedTime(repairOrder.getCompletedTime())
                    .address(repairOrder.getAddress())
                    .phone(repairOrder.getPhone())
+                   .appointmentBegin(repairOrder.getAppointmentBegin())
+                   .appointmentEnd(repairOrder.getAppointmentEnd())
                    .build();
            return repairOrderVO;
        }
@@ -267,6 +271,8 @@ public class RepairsServiceImpl implements ReparisService {
                     .updatedTime(repairOrder.getUpdatedTime())
                     .description(repairOrder.getDescription())
                     .completedTime(repairOrder.getCompletedTime())
+                    .appointmentBegin(repairOrder.getAppointmentBegin())
+                    .appointmentEnd(repairOrder.getAppointmentEnd())
                     .build();
             return repairOrderVO;
         }

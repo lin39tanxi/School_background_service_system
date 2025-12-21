@@ -123,5 +123,10 @@ public interface UserMapper {
     Page<UserVO> getAllAdmin();
 
 
-//    void updateStudentByStudentNumber(String studentNumber);
+    /**
+     * 修改学生住宿信息
+
+     */
+    @Update("update student set building = #{building}, dormitory = #{dormitory} where student_number = #{studentNumber}")
+    void updateStudentInfoByStudentNumber(@Param("studentNumber") String studentNumber,@Param("building") String building,@Param("dormitory") String dormitory);
 }

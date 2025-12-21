@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetAllBuildingVO {
-    private String buildingId;
-    private String buildingName;
-    private Integer gender;
+public class GetFloorsByBuildingVO {
+    private String floorId;
+    private Integer floorNumber;
+    private String floorName;
 }

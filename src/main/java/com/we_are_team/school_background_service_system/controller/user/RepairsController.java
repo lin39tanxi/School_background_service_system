@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Slf4j
 @RestController
 @RequestMapping("/user")
@@ -22,9 +24,9 @@ public class RepairsController {
      * 提交保修申请
      */
     @PostMapping("/repairs")
-    public Result submitRepair(@RequestParam String description, @RequestParam String address, @RequestParam(required = false) MultipartFile[] imageUrlsArray,@RequestParam String phone ) {
+    public Result submitRepair(@RequestParam String description, @RequestParam String address, @RequestParam(required = false) MultipartFile[] imageUrlsArray, @RequestParam String phone , @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime appointmentBegin, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")LocalDateTime appointmentEnd) {
 
-        reparisService.submitRepair(description, address,imageUrlsArray,phone);
+        reparisService.submitRepair(description, address,imageUrlsArray,phone,appointmentBegin,appointmentEnd);
         return Result.success("报修提交成功");
     }
 

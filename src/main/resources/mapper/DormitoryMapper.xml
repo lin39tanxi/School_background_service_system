@@ -2,5 +2,53 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.we_are_team.school_background_service_system.mapper.DormitoryMapper">
-
+<!--    获取到所有的宿舍号-->
+ <select id="getAllBuildingAndFloorAndRoomsInfo" resultType="GetAllBuildingAndFloorAndRoomsVO">
+     select dorm_building.building_id,dorm_building.gender,dorm_building.building_name,floor.floor_id,floor.floor_number,floor.floor_name,dorm_room.room_id,dorm_room.room_number,dorm_room.current_people,dorm_room.max_people
+     from dorm_building  left join floor on dorm_building.building_id = floor.building_id
+     inner join dorm_room on floor.floor_id = dorm_room.floor_id
+     <where>
+         <if test="keyword != null and keyword != ''">
+             (dorm_building.building_name like concat('%', #{keyword}, '%') or floor.floor_name like concat('%', #{keyword}, '%') or dorm_room.room_number like concat('%', #{keyword}, '%'))
+         </if>
+          <if test="buildingId != null and buildingId != ''">
+              dorm_building.building_id = #{buildingId}
+          </if>
+           <if test="floorId != null and floorId !=''">
+              and floor.floor_id = #{floorId}
+          </if>
+            <if test="roomId != null and roomId !=''">
+                and dorm_room.room_id = #{roomId}
+            </if>
+            <if test="gender != null and gender!='' ">
+                and dorm_building.gender = #{gender}
+            </if>
+     </where>
+     ORDER BY dorm_building.building_id ASC, floor.floor_id ASC, dorm_room.room_id ASC
+ </select>
+    <!--    获取到所有的宿舍号-->
+    <select id="getAllEmptyBuildingAndFloorAndRoomsInfo" resultType="GetAllBuildingAndFloorAndRoomsVO">
+        select dorm_building.building_id,dorm_building.gender,dorm_building.building_name,floor.floor_id,floor.floor_number,floor.floor_name,dorm_room.room_id,dorm_room.room_number,dorm_room.current_people,dorm_room.max_people
+        from dorm_building  left join floor on dorm_building.building_id = floor.building_id
+        inner join dorm_room on floor.floor_id = dorm_room.floor_id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (dorm_building.building_name like concat('%', #{keyword}, '%') or floor.floor_name like concat('%', #{keyword}, '%') or dorm_room.room_number like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="buildingId != null and buildingId != ''">
+                dorm_building.building_id = #{buildingId}
+            </if>
+            <if test="floorId != null and floorId !=''">
+                and floor.floor_id = #{floorId}
+            </if>
+            <if test="roomId != null and roomId !=''">
+                and dorm_room.room_id = #{roomId}
+            </if>
+            <if test="gender != null and gender!='' ">
+                and dorm_building.gender = #{gender}
+            </if>
+             and dorm_room.max_people > dorm_room.current_people
+        </where>
+        ORDER BY dorm_building.building_id ASC, floor.floor_id ASC, dorm_room.room_id ASC
+    </select>
 </mapper>

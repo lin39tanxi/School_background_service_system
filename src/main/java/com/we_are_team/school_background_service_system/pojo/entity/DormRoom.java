@@ -9,12 +9,13 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class dormRoom {
+public class DormRoom {
     private Integer roomId;
     private Integer buildingId;
     private String floorNumber;
     private String roomNumber;
-    private String currentPeople;
-    private String sumPeople;
+    private Integer currentPeople;
+    private Integer maxPeople;
     private LocalDateTime createTime;
+    private String studentArray;
 }

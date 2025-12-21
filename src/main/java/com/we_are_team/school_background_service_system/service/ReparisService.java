@@ -6,6 +6,7 @@ import com.we_are_team.school_background_service_system.result.PageResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public interface ReparisService {
     /**
@@ -13,7 +14,7 @@ public interface ReparisService {
      * @param description
      * @param imageUrlsArray
      */
-    void submitRepair(String description, String address,MultipartFile[] imageUrlsArray,String phone);
+    void submitRepair(String description, String address, MultipartFile[] imageUrlsArray, String phone, LocalDateTime appointmentBegin, LocalDateTime appointmentEnd);
 
     /**
      * 获取我的报修列表
