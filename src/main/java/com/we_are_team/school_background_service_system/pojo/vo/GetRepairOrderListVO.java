@@ -13,7 +13,7 @@ public class GetRepairOrderListVO {
     private Integer rating;
     private String imageUrl;
     private String address;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdTime;
 
 
