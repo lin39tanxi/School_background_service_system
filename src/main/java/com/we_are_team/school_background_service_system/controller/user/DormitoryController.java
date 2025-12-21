@@ -31,7 +31,7 @@ public class DormitoryController {
     @GetMapping("/getAllBuildingVO")
     public Result<List<GetAllBuildingVO>> getEmptyBuilding() {
         List<GetAllBuildingVO> emptyRoomFloor = dormitoryService.getEmptyBuilding();
-        return Result.success("获取有空位的宿舍楼层成功", emptyRoomFloor);
+        return Result.success("获取有空位的宿舍楼栋", emptyRoomFloor);
     }
 
     /**
@@ -52,7 +52,7 @@ public class DormitoryController {
      * @return
      */
 //    GetRoomsByBuildingAndFloorVO
-    @GetMapping("/getRoomsByBuildingAndFloor")
+    @GetMapping("/getAllBuildingAndFloorAndRooms")
     public Result<PageResult> getEmptyRoomsByBuildingAndFloor(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10")  Integer pageSize, String keyword, Integer buildingId, Integer floorId, Integer roomId, Integer gender) {
         PageResult pageResult  = dormitoryService.getEmptyRoomsByBuildingAndFloor(pageNum, pageSize, keyword, buildingId, floorId, roomId, gender);
         return Result.success("获取宿舍列表成功", pageResult);

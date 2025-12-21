@@ -78,7 +78,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public PageResult getNotificationList(String orderKey,Integer pageNum, Integer pageSize, LocalDate beginTime, LocalDate endTime) {
         User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
-        if(!user.getPermission().contains("0") || !user.getPermission().contains("4")){
+        log.info("获得用户权限,{}", user.getPermission());
+        if(!user.getPermission().contains("0") && !user.getPermission().contains("4")){
             throw new RuntimeException("你没有权限查看通知列表");
         }
         PageHelper pageHelper = new PageHelper();
@@ -92,7 +93,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationVO getNotificationDetail(Integer notificationId) {
         User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
-        if(!user.getPermission().contains("0") || !user.getPermission().contains("4")){
+
+        if(!user.getPermission().contains("0") && !user.getPermission().contains("4")){
             throw new RuntimeException("你没有权限查看通知详情");
         }
         Notification notification = notificationMapper.getNotificationDetail(notificationId);

@@ -88,7 +88,7 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
     @Override
     public List<ItemCategoryVO> getAllItemCategory() {
         User user =  userMapper.getUserByUserId(BaseContext.getCurrentId());
-        if(!user.getPermission().contains("5") || !user.getPermission().contains("0")){
+        if(!user.getPermission().contains("5") && !user.getPermission().contains("0")){
             throw new RuntimeException("没有权限查看物品分类");
         }
         List<ItemCategoryVO> itemCategoryVOList = lostAndFoundMapper.getAllItemCategory();
@@ -98,7 +98,7 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
     @Override
     public List<LocationCategoryVO> getAllLocationCategory() {
         User user =  userMapper.getUserByUserId(BaseContext.getCurrentId());
-        if(!user.getPermission().contains("5") || !user.getPermission().contains("0")){
+        if(!user.getPermission().contains("5") && !user.getPermission().contains("0")){
             throw new RuntimeException("没有权限查看地点分类");
         }
         List<LocationCategoryVO> locationCategoryVOList = lostAndFoundMapper.getAllLocationCategory();
@@ -216,7 +216,7 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
     @Override
     public PageResult getLostAndFoundList(Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime, String status) {
         User user =  userMapper.getUserByUserId(BaseContext.getCurrentId());
-        if (!user.getPermission().contains("0") || !user.getPermission().contains("5")){
+        if (!user.getPermission().contains("0") && !user.getPermission().contains("5")){
             throw new RuntimeException("没有权限查看失物招领信息");
         }
         PageHelper pageHelper = new PageHelper();
@@ -234,7 +234,7 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
     @Override
     public LostAndFoundVO getLostAndFoundDetail(Integer itemId) {
         User user =  userMapper.getUserByUserId(BaseContext.getCurrentId());
-        if (!user.getPermission().contains("0") || !user.getPermission().contains("5")){
+        if (!user.getPermission().contains("0") && !user.getPermission().contains("5")){
             throw new RuntimeException("没有权限查看失物招领信息");
         }
         LostAndFound lostAndFound = lostAndFoundMapper.getLostAndFoundDetail(itemId);
