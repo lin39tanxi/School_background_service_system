@@ -107,8 +107,7 @@
             });
 
             const data = await response.json();
-            console.log('登录响应:', data); // 调试信息
-            console.log('登录token:', data.data.token); // 调试信息
+            
 
             // 根据实际的响应格式判断成功条件
             if (data.code === "200") { // 登录成功
@@ -117,11 +116,12 @@
                 window.location.href = '/user/index';
                 // 跳转到报修页面
             } else {
-                errorMessage.textContent = data.data.message || '登录失败';
+                errorMessage.textContent = data.message? data.message : '登录失败';
             }
         } catch (error) {
             console.error('登录错误:', error);
-            errorMessage.textContent = '网络错误，请稍后重试';
+            errorMessage.textContent = '登录请求失败，请稍后重试';
+            
         }
     });
 </script>
