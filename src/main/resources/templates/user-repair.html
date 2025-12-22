@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>校园后勤管理系统</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Microsoft YaHei", Arial, sans-serif;
+        background-image: url(http://localhost:8081/img/35e1b763c15645c1a6d674accf959f30.jpg);
+        min-height: 100vh;
+        background-size: cover;
+        background-attachment: fixed;
+      }
+
+      /* 顶部导航栏 */
+      .header {
+        background: #3f51b5;
+        color: white;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+      .back-button {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 28px;
+        cursor: pointer;
+        padding: 5px 15px;
+        transition: opacity 0.3s;
+      }
+
+      .back-button:hover {
+        opacity: 0.8;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .header h1 {
+        padding-left: 20px;
+        font-size: 24px;
+        font-weight: normal;
+      }
+
+      .user-icon {
+        width: 45px;
+        height: 45px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        overflow: hidden;
+      }
+
+      .user-icon:hover {
+        transform: scale(1.05);
+        border-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+
+      /* 下拉菜单容器 */
+      .dropdown-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      /* 下拉菜单 */
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        z-index: 1000;
+        width: 150px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+      }
+
+      /* 悬停显示下拉菜单 */
+      .dropdown-container:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      /* 下拉菜单项 */
+      .dropdown-item {
+        width: 100%;
+        padding: 12px 20px;
+        background: none;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        color: #333;
+        font-size: 14px;
+        transition: all 0.2s;
+        outline: none;
+      }
+
+      /* 下拉菜单项悬停效果 */
+      .dropdown-item:hover {
+        background: #f5f5f5;
+        color: #3f51b5;
+      }
+
+      /* 下拉菜单项分隔线 */
+      .dropdown-item:not(:last-child) {
+        border-bottom: 1px solid #eee;
+      }
+
+      /* 主容器 */
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 70px);
+        padding: 20px;
+      }
+
+      /* 表单容器 */
+      .form-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 700px;
+        backdrop-filter: blur(10px);
+      }
+
+      .form-title {
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 30px;
+        text-align: center;
+        font-weight: 500;
+      }
+
+      /* 表单组 */
+      .form-group {
+        margin-bottom: 24px;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-size: 15px;
+        font-weight: 500;
+      }
+
+      .required {
+        color: #f44336;
+        margin-left: 4px;
+      }
+
+      /* 输入框样式 */
+      .form-input,
+      .form-textarea,
+      .form-date {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: all 0.3s;
+        font-family: inherit;
+      }
+
+      .form-input:focus,
+      .form-textarea:focus,
+      .form-date:focus {
+        outline: none;
+        border-color: #3f51b5;
+        box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+      }
+
+      .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      /* 日期时间行 */
+      .date-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      /* 图片上传区域 */
+      .image-upload-area {
+        margin-bottom: 24px;
+      }
+
+      .upload-box {
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        padding: 40px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: #fafafa;
+      }
+
+      .upload-box:hover {
+        border-color: #3f51b5;
+        background: #f5f7ff;
+      }
+
+      .upload-icon {
+        font-size: 48px;
+        color: #999;
+        margin-bottom: 10px;
+      }
+
+      .upload-text {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .upload-limit {
+        color: #999;
+        font-size: 12px;
+        margin-top: 5px;
+      }
+
+      #imageInput {
+        display: none;
+      }
+
+      /* 图片预览 */
+      .image-preview {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+      }
+
+      .preview-item {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid #ddd;
+      }
+
+      .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .remove-image {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+      }
+
+      .remove-image:hover {
+        background: rgba(244, 67, 54, 0.9);
+      }
+
+      /* 提交按钮 */
+      .submit-btn {
+        width: 100%;
+        padding: 14px;
+        background: #3f51b5;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 10px;
+      }
+
+      .submit-btn:hover {
+        background: #303f9f;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(63, 81, 181, 0.3);
+      }
+
+      .submit-btn:active {
+        transform: translateY(0);
+      }
+
+      .submit-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* 错误提示 */
+      .error-message {
+        color: #f44336;
+        font-size: 13px;
+        margin-top: 6px;
+        display: none;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+
+      .form-input.error,
+      .form-textarea.error,
+      .form-date.error {
+        border-color: #f44336;
+      }
+
+      /* 成功提示 */
+      .toast {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        padding: 16px 24px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(400px);
+        transition: all 0.3s;
+        z-index: 9999;
+      }
+
+      .toast.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+      }
+
+      .toast.success {
+        border-left: 4px solid #4caf50;
+      }
+
+      .toast.error {
+        border-left: 4px solid #f44336;
+      }
+
+      .toast-icon {
+        font-size: 24px;
+      }
+
+      .toast.success .toast-icon {
+        color: #4caf50;
+      }
+
+      .toast.error .toast-icon {
+        color: #f44336;
+      }
+
+      .toast-message {
+        color: #333;
+        font-size: 14px;
+      }
+
+      /* 响应式设计 */
+      @media (max-width: 768px) {
+        .form-container {
+          padding: 24px;
+        }
+
+        .form-title {
+          font-size: 24px;
+        }
+
+        .date-row {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+
+        .upload-box {
+          padding: 30px 20px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          padding: 10px;
+        }
+
+        .form-container {
+          padding: 20px;
+        }
+
+        .toast {
+          right: 10px;
+          left: 10px;
+          transform: translateX(0) translateY(-100px);
+        }
+
+        .toast.show {
+          transform: translateX(0) translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 顶部导航栏 -->
+
+    <header class="header">
+      <div class="header-left">
+        <button class="back-button" onclick="history.back()">&lt;</button>
+        <h1>学生主页</h1>
+      </div>
+
+      <div class="dropdown-container">
+        <div
+          class="user-icon"
+          th:style="'background-image: url(' + ${user.avatarUrl} + ');'"
+        ></div>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" onclick="location.href='/user/info'">
+            个人信息
+          </button>
+          <button class="dropdown-item" onclick="logout()">退出登录</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主容器 -->
+    <div class="container">
+      <div class="form-container">
+        <h2 class="form-title">维修预约</h2>
+
+        <form id="repairForm" th:action="@{/user/repairs}" method="post">
+          <!-- 维修地点 -->
+          <div class="form-group">
+            <label class="form-label">
+              维修地点<span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="address"
+              name="address"
+              class="form-input"
+              placeholder="地点信息描述"
+              required
+            />
+            <div class="error-message" id="addressError">请填写维修地点</div>
+          </div>
+
+          <!-- 联系电话 -->
+          <div class="form-group">
+            <label class="form-label">
+              联系电话<span class="required">*</span>
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              class="form-input"
+              placeholder="请输入11位手机号码"
+              pattern="^1[3-9]\d{9}$"
+              required
+            />
+            <div class="error-message" id="phoneError">
+              请输入正确的手机号码
+            </div>
+          </div>
+
+          <!-- 预约时间 -->
+          <div class="date-row">
+            <div class="form-group">
+              <label class="form-label">
+                预约开始时间<span class="required">*</span>
+              </label>
+              <input
+                type="datetime-local"
+                id="appointmentBegin"
+                name="appointmentBegin"
+                class="form-date"
+                required
+              />
+              <div class="error-message" id="beginError">请选择开始时间</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                预约结束时间<span class="required">*</span>
+              </label>
+              <input
+                type="datetime-local"
+                id="appointmentEnd"
+                name="appointmentEnd"
+                class="form-date"
+                required
+              />
+              <div class="error-message" id="endError">
+                结束时间必须晚于开始时间
+              </div>
+            </div>
+          </div>
+
+          <!-- 描述 -->
+          <div class="form-group">
+            <label class="form-label">
+              描述<span class="required">*</span>
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              class="form-textarea"
+              placeholder="维修信息描述"
+              required
+            ></textarea>
+            <div class="error-message" id="descriptionError">
+              请填写维修描述信息
+            </div>
+          </div>
+
+          <!-- 添加图片 -->
+          <div class="image-upload-area">
+            <label class="form-label">添加图片</label>
+            <div
+              class="upload-box"
+              onclick="document.getElementById('imageInput').click()"
+            >
+              <div class="upload-icon">+</div>
+              <div class="upload-text">点击上传图片</div>
+              <div class="upload-limit">最多可选三张图</div>
+            </div>
+            <input
+              type="file"
+              id="imageInput"
+              accept="image/*"
+              multiple
+              max="3"
+            />
+            <div class="image-preview" id="imagePreview"></div>
+          </div>
+
+          <!-- 提交按钮 -->
+          <button type="submit" class="submit-btn">提交</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 提示Toast -->
+    <div class="toast" id="toast">
+      <span class="toast-icon">✓</span>
+      <span class="toast-message" id="toastMessage"></span>
+    </div>
+
+    <script>
+      // 获取用户信息并填充页面
+      window.addEventListener("DOMContentLoaded", function () {
+        fetchUserInfo();
+      });
+      /************************************************************************************************************************************************/
+      /*************************************************************获取用户信息***********************************************************************/
+      /************************************************************************************************************************************************/
+      // 获取用户信息
+      async function fetchUserInfo() {
+        try {
+          const response = await fetch("/user/user/my", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+              // 如果需要 token，在这里添加
+              // 'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+          });
+
+          const result = await response.json();
+          console.log(result);
+          if (result.code === "200" && result.data) {
+            const user = result.data;
+            // 更新头像
+            if (user.avatarUrl) {
+              const userIcon = document.querySelector(".user-icon");
+              const userMainIcon = document.querySelector(".user-main-icon");
+              if (userIcon) {
+                userIcon.style.backgroundImage = `url('${user.avatarUrl.trim()}')`;
+                userMainIcon.style.backgroundImage = `url('${user.avatarUrl.trim()}')`;
+              }
+            }
+          } else {
+            console.error("获取用户信息失败:", result.message);
+          }
+        } catch (error) {
+          console.error("获取用户信息出错:", error);
+        }
+      }
+      /************************************************************************************************************************************************/
+      /*************************************************************验证&提交报修表单********************************************************************/
+      /************************************************************************************************************************************************/
+
+      // 图片上传处理
+      let selectedImages = [];
+      const imageInput = document.getElementById("imageInput");
+      const imagePreview = document.getElementById("imagePreview");
+
+      imageInput.addEventListener("change", function (e) {
+        const files = Array.from(e.target.files);
+
+        // 限制最多3张图片
+        if (selectedImages.length + files.length > 3) {
+          showToast("最多只能上传3张图片", "error");
+          return;
+        }
+
+        files.forEach((file) => {
+          if (file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              selectedImages.push({
+                file: file,
+                url: e.target.result,
+              });
+              renderImagePreview();
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+        // 清空input以允许重复选择同一文件
+        imageInput.value = "";
+      });
+
+      // 渲染图片预览
+      function renderImagePreview() {
+        imagePreview.innerHTML = "";
+        selectedImages.forEach((img, index) => {
+          const previewItem = document.createElement("div");
+          previewItem.className = "preview-item";
+          previewItem.innerHTML = `
+            <img src="${img.url}" alt="预览图${index + 1}">
+            <button type="button" class="remove-image" onclick="removeImage(${index})">×</button>
+          `;
+          imagePreview.appendChild(previewItem);
+        });
+      }
+
+      // 删除图片
+      function removeImage(index) {
+        selectedImages.splice(index, 1);
+        renderImagePreview();
+      }
+
+      // 表单验证
+      function validateForm() {
+        let isValid = true;
+
+        // 验证地址
+        const address = document.getElementById("address");
+        const addressError = document.getElementById("addressError");
+        if (!address.value.trim()) {
+          address.classList.add("error");
+          addressError.classList.add("show");
+          isValid = false;
+        } else {
+          address.classList.remove("error");
+          addressError.classList.remove("show");
+        }
+
+        // 验证手机号
+        const phone = document.getElementById("phone");
+        const phoneError = document.getElementById("phoneError");
+        const phonePattern = /^1[3-9]\d{9}$/;
+        const phoneValue = phone.value.replace(/\s/g, ""); // 去除所有空格
+        if (!phonePattern.test(phoneValue)) {
+          phone.classList.add("error");
+          phoneError.classList.add("show");
+          isValid = false;
+        } else {
+          phone.classList.remove("error");
+          phoneError.classList.remove("show");
+        }
+
+        // 验证预约开始时间
+        const appointmentBegin = document.getElementById("appointmentBegin");
+        const beginError = document.getElementById("beginError");
+        if (!appointmentBegin.value) {
+          appointmentBegin.classList.add("error");
+          beginError.classList.add("show");
+          isValid = false;
+        } else {
+          appointmentBegin.classList.remove("error");
+          beginError.classList.remove("show");
+        }
+
+        // 验证预约结束时间
+        const appointmentEnd = document.getElementById("appointmentEnd");
+        const endError = document.getElementById("endError");
+        if (!appointmentEnd.value) {
+          appointmentEnd.classList.add("error");
+          endError.classList.add("show");
+          isValid = false;
+        } else if (
+          new Date(appointmentEnd.value) <= new Date(appointmentBegin.value)
+        ) {
+          appointmentEnd.classList.add("error");
+          endError.classList.add("show");
+          isValid = false;
+        } else {
+          appointmentEnd.classList.remove("error");
+          endError.classList.remove("show");
+        }
+
+        // 验证描述
+        const description = document.getElementById("description");
+        const descriptionError = document.getElementById("descriptionError");
+        if (!description.value.trim()) {
+          description.classList.add("error");
+          descriptionError.classList.add("show");
+          isValid = false;
+        } else {
+          description.classList.remove("error");
+          descriptionError.classList.remove("show");
+        }
+
+        return isValid;
+      }
+
+      // 表单提交
+      const repairForm = document.getElementById("repairForm");
+      repairForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        // 验证表单
+        if (!validateForm()) {
+          showToast("请检查表单信息", "error");
+          return;
+        }
+
+        // 禁用提交按钮
+        const submitBtn = repairForm.querySelector(".submit-btn");
+        submitBtn.disabled = true;
+        submitBtn.textContent = "提交中...";
+
+        try {
+          // 准备表单数据
+          const formData = new FormData();
+          formData.append("address", document.getElementById("address").value);
+          formData.append(
+            "phone",
+            document.getElementById("phone").value.replace(/\s/g, "")
+          );
+          formData.append(
+            "appointmentBegin",
+            document.getElementById("appointmentBegin").value
+          );
+          formData.append(
+            "appointmentEnd",
+            document.getElementById("appointmentEnd").value
+          );
+          formData.append(
+            "description",
+            document.getElementById("description").value
+          );
+
+          // 添加图片
+          selectedImages.forEach((img, index) => {
+            formData.append("images", img.file);
+          });
+
+          // 提交表单
+          const response = await fetch("/user/repairs", {
+            method: "POST",
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (result.code === "200" || response.ok) {
+            showToast("提交成功！", "success");
+
+            // 2秒后重置表单
+            setTimeout(() => {
+              repairForm.reset();
+              selectedImages = [];
+              renderImagePreview();
+            }, 2000);
+          } else {
+            showToast(result.message || "提交失败，请重试", "error");
+          }
+        } catch (error) {
+          console.error("提交错误:", error);
+          showToast("网络错误，请检查连接", "error");
+        } finally {
+          // 恢复提交按钮
+          submitBtn.disabled = false;
+          submitBtn.textContent = "提交";
+        }
+      });
+
+      // 实时验证
+      document.getElementById("address").addEventListener("blur", function () {
+        if (!this.value.trim()) {
+          this.classList.add("error");
+          document.getElementById("addressError").classList.add("show");
+        } else {
+          this.classList.remove("error");
+          document.getElementById("addressError").classList.remove("show");
+        }
+      });
+
+      document.getElementById("phone").addEventListener("blur", function () {
+        const phonePattern = /^1[3-9]\d{9}$/;
+        const phoneValue = this.value.replace(/\s/g, ""); // 去除所有空格
+        if (!phonePattern.test(phoneValue)) {
+          this.classList.add("error");
+          document.getElementById("phoneError").classList.add("show");
+        } else {
+          this.classList.remove("error");
+          document.getElementById("phoneError").classList.remove("show");
+        }
+      });
+
+      document
+        .getElementById("appointmentEnd")
+        .addEventListener("change", function () {
+          const beginTime = new Date(
+            document.getElementById("appointmentBegin").value
+          );
+          const endTime = new Date(this.value);
+
+          if (endTime <= beginTime) {
+            this.classList.add("error");
+            document.getElementById("endError").classList.add("show");
+          } else {
+            this.classList.remove("error");
+            document.getElementById("endError").classList.remove("show");
+          }
+        });
+
+      document
+        .getElementById("description")
+        .addEventListener("blur", function () {
+          if (!this.value.trim()) {
+            this.classList.add("error");
+            document.getElementById("descriptionError").classList.add("show");
+          } else {
+            this.classList.remove("error");
+            document
+              .getElementById("descriptionError")
+              .classList.remove("show");
+          }
+        });
+
+      // 显示提示信息
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
+        const toastIcon = toast.querySelector(".toast-icon");
+
+        toastMessage.textContent = message;
+        toast.className = "toast " + type;
+
+        if (type === "success") {
+          toastIcon.textContent = "✓";
+        } else {
+          toastIcon.textContent = "✕";
+        }
+
+        toast.classList.add("show");
+
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3000);
+      }
+
+      // 退出登录
+      function logout() {
+        localStorage.removeItem("token");
+        window.location.href = "/user/login";
+      }
+    </script>
+  </body>
+</html>
