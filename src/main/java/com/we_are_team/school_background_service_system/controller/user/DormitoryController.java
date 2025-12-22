@@ -1,6 +1,7 @@
 package com.we_are_team.school_background_service_system.controller.user;
 
 import com.we_are_team.school_background_service_system.pojo.dto.ChangeDormitoryDTO;
+import com.we_are_team.school_background_service_system.pojo.entity.ChangeDormitory;
 import com.we_are_team.school_background_service_system.pojo.vo.GetAllBuildingVO;
 import com.we_are_team.school_background_service_system.pojo.vo.GetFloorsByBuildingVO;
 import com.we_are_team.school_background_service_system.pojo.vo.GetRoomsByBuildingAndFloorVO;
@@ -8,8 +9,10 @@ import com.we_are_team.school_background_service_system.result.PageResult;
 import com.we_are_team.school_background_service_system.result.Result;
 import com.we_are_team.school_background_service_system.service.DormitoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -68,6 +71,29 @@ public class DormitoryController {
     public Result<PageResult> getEmptyRoomsAndBuildingAndFloor(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10")  Integer pageSize, String keyword, Integer buildingId, Integer floorId, Integer roomId, Integer gender) {
         PageResult pageResult  = dormitoryService.getEmptyRoomsAndBuildingAndFloor(pageNum, pageSize, keyword, buildingId, floorId, roomId, gender);
         return Result.success("获取宿舍列表成功", pageResult);
-    }
 
+    }
+    /**
+     * 取消换宿舍申请
+     */
+    @PutMapping("/cancelChangeDormitory/{changeDormitory}")
+    public Result cancelChangeDormitory(@PathVariable Integer dormChangeId) {
+        dormitoryService.cancelChangeDormitory(dormChangeId);
+        return Result.success("取消换宿舍申请成功");
+    }
+/**
+ * 获取所有申请更换宿舍的申请
+ */
+  @GetMapping("/getMyAllChangeDormitory")
+  public Result<PageResult> getMyAllChangeDormitory(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10")  Integer pageSize, String keyword, Integer status, @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate beginTime, @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate endTime) {
+        PageResult pageResult  = dormitoryService.getMyAllChangeDormitory(pageNum, pageSize, keyword, status, beginTime, endTime);
+        return Result.success("获取申请列表成功", pageResult);
+
+    }
+//    获取详细的申请信息
+    @GetMapping("/getMyChangeDormitoryInfo/{dormChangeId}")
+    public Result<ChangeDormitory> getMyChangeDormitoryInfo(@PathVariable Integer dormChangeId) {
+        ChangeDormitory changeDormitory = dormitoryService.getMyChangeDormitoryInfo(dormChangeId);
+        return Result.success("获取申请单详情成功", changeDormitory);
+    }
 }

@@ -4,6 +4,7 @@ import com.we_are_team.school_background_service_system.pojo.dto.ChangePasswordD
 import com.we_are_team.school_background_service_system.pojo.dto.UserLoginDTO;
 import com.we_are_team.school_background_service_system.pojo.dto.UserRegisterDTO;
 import com.we_are_team.school_background_service_system.pojo.dto.UserUpdateDTO;
+import com.we_are_team.school_background_service_system.pojo.entity.ApplicationForm;
 import com.we_are_team.school_background_service_system.pojo.vo.UserLoginVO;
 import com.we_are_team.school_background_service_system.pojo.vo.UserVO;
 import com.we_are_team.school_background_service_system.properties.JwtProperties;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.websocket.Session;
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -99,6 +101,13 @@ public class UserController {
             response.setHeader("Cache-Control", "no-store");
             response.setContentType("image/jpeg");
             log.info("生成的验证码为:{}",session.getAttribute("verifyCode"));
+        }
+
+//        获取申请状态
+        @GetMapping("/user/getApplicationForm")
+        public Result<List<ApplicationForm>> getApplicationForm(){
+           return Result.success("获取申请状态成功",userService.getApplicationForm());
+
         }
     }
 

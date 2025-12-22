@@ -1,12 +1,15 @@
 package com.we_are_team.school_background_service_system.service;
 
 import com.we_are_team.school_background_service_system.pojo.dto.RepairEvaluationCreateDTO;
+import com.we_are_team.school_background_service_system.pojo.entity.ApplicationForm;
 import com.we_are_team.school_background_service_system.pojo.vo.RepairOrderVO;
 import com.we_are_team.school_background_service_system.result.PageResult;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface ReparisService {
     /**
@@ -74,4 +77,6 @@ public interface ReparisService {
  * @param orderId
  */
     void completeRepair(Integer orderId);
+
+
 }

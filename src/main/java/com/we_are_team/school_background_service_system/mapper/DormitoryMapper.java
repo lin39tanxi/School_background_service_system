@@ -1,6 +1,7 @@
 package com.we_are_team.school_background_service_system.mapper;
 
 import com.github.pagehelper.Page;
+import com.we_are_team.school_background_service_system.pojo.entity.ApplicationForm;
 import com.we_are_team.school_background_service_system.pojo.entity.ChangeDormitory;
 import com.we_are_team.school_background_service_system.pojo.entity.DormRoom;
 import com.we_are_team.school_background_service_system.pojo.vo.GetAllBuildingAndFloorAndRoomsVO;
@@ -9,6 +10,7 @@ import com.we_are_team.school_background_service_system.pojo.vo.GetFloorsByBuild
 import com.we_are_team.school_background_service_system.pojo.vo.GetRoomsByBuildingAndFloorVO;
 import org.apache.ibatis.annotations.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Mapper
@@ -28,8 +30,8 @@ public interface DormitoryMapper {
     @Select("select dorm_building.building_id,dorm_building.gender,dorm_building.building_name,floor.floor_id,floor.floor_number,floor.floor_name,dorm_room.room_id,dorm_room.room_number,dorm_room.current_people,dorm_room.max_people from dorm_building left join floor on dorm_building.building_id = floor.building_id left join dorm_room on dorm_building.building_id = dorm_room.building_id")
     List<GetAllBuildingAndFloorAndRoomsVO> getAllBuildingAndFloorAndRooms();
 
-    @Insert("insert into dorm_change(student_number,old_dorm_address,new_dorm_address,building_id,floor_id,room_id,status,created_time,reason) " +
-            "values (#{changeDormitory.studentNumber},#{changeDormitory.oldDormAddress},#{changeDormitory.newDormAddress},#{changeDormitory.buildingId},#{changeDormitory.floorId},#{changeDormitory.roomId},#{changeDormitory.status},#{changeDormitory.createdTime},#{changeDormitory.reason})")
+    @Insert("insert into dorm_change(student_number,old_dorm_address,new_dorm_address,building_id,floor_id,room_id,status,created_time,reason,user_id,admin_id) " +
+            "values (#{changeDormitory.studentNumber},#{changeDormitory.oldDormAddress},#{changeDormitory.newDormAddress},#{changeDormitory.buildingId},#{changeDormitory.floorId},#{changeDormitory.roomId},#{changeDormitory.status},#{changeDormitory.createdTime},#{changeDormitory.reason},#{changeDormitory.userId},#{changeDormitory.adminId})")
     void insert(@Param("changeDormitory") ChangeDormitory changeDormitory);
 
     @Select("select * from dorm_change where dorm_change_id=#{dormChangeId}")
@@ -47,8 +49,8 @@ public interface DormitoryMapper {
 
      @Select("select room_number from dorm_room where room_id= #{roomId}")
     String getRoomNumberByRoomId(String roomId);
-    @Update("update dorm_change set status=1 where dorm_change_id=#{dormChangeId}")
-    void updateStatus(Integer dormChangeId);
+    @Update("update dorm_change set status=1,dorm_change.admin_id = #{adminId} where dorm_change_id=#{dormChangeId}")
+    void updateStatus(@Param("dormChangeId") Integer dormChangeId,@Param("adminId") Integer adminId);
 
 /**
      * 获取所有空宿舍
@@ -79,4 +81,15 @@ public interface DormitoryMapper {
     Page<GetAllBuildingAndFloorAndRoomsVO> getAllBuildingAndFloorAndRoomsInfo(@Param("keyword") String keyword,@Param("buildingId") Integer buildingId,@Param("floorId") Integer floorId,@Param("roomId") Integer roomId,@Param("gender") Integer gender);
 
     Page<GetAllBuildingAndFloorAndRoomsVO> getAllEmptyBuildingAndFloorAndRoomsInfo(@Param("keyword") String keyword,@Param("buildingId") Integer buildingId,@Param("floorId") Integer floorId,@Param("roomId") Integer roomId,@Param("gender") Integer gender);
+
+    @Update("UPDATE dorm_change SET status = 4 WHERE dorm_change_id = #{dormChangeId}")
+    void cancelChangeDormitory(@Param("changeDormitory") Integer dormChangeId);
+
+    Page<ChangeDormitory> getMyAllChangeDormitory(@Param("userId") Integer userId, @Param("keyword") String keyword, @Param("status") Integer status, @Param("beginTime")LocalDate beginTime, @Param("endTime")LocalDate endTime);
+
+    @Select("SELECT * FROM dorm_change WHERE dorm_change_id = #{dormChangeId}")
+    ChangeDormitory getMyChangeDormitoryInfo(Integer dormChangeId);
+
+    @Select("select dorm_change_id as id,reason as content,created_time,updated_time,status from dorm_change")
+    List<ApplicationForm> getAppcationFormByUserId(Integer userId);
 }

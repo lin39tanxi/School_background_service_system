@@ -5,8 +5,13 @@ package com.we_are_team.school_background_service_system.service.Impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.we_are_team.school_background_service_system.context.BaseContext;
+import com.we_are_team.school_background_service_system.mapper.DormitoryMapper;
+import com.we_are_team.school_background_service_system.mapper.FeedbacksMapper;
+import com.we_are_team.school_background_service_system.mapper.RepairsMapper;
 import com.we_are_team.school_background_service_system.mapper.UserMapper;
 import com.we_are_team.school_background_service_system.pojo.dto.*;
+import com.we_are_team.school_background_service_system.pojo.entity.ApplicationForm;
+import com.we_are_team.school_background_service_system.pojo.entity.RepairOrder;
 import com.we_are_team.school_background_service_system.pojo.entity.Student;
 import com.we_are_team.school_background_service_system.pojo.entity.User;
 import com.we_are_team.school_background_service_system.pojo.vo.UserLoginVO;
@@ -14,6 +19,9 @@ import com.we_are_team.school_background_service_system.pojo.vo.UserVO;
 import com.we_are_team.school_background_service_system.properties.JwtProperties;
 
 import com.we_are_team.school_background_service_system.result.PageResult;
+import com.we_are_team.school_background_service_system.service.DormitoryService;
+import com.we_are_team.school_background_service_system.service.FeedbacksService;
+import com.we_are_team.school_background_service_system.service.ReparisService;
 import com.we_are_team.school_background_service_system.service.UserService;
 import com.we_are_team.school_background_service_system.utils.AliOssUtil;
 import com.we_are_team.school_background_service_system.utils.JwtUtil;
@@ -27,10 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -42,6 +47,13 @@ public class UserServiceImpl implements UserService {
       private UserMapper userMapper;
       @Autowired
       private AliOssUtil aliOssUtil;
+      @Autowired
+      private DormitoryMapper dormitoryMapper;
+      @Autowired
+      private RepairsMapper repairsMapper;
+      @Autowired
+      private FeedbacksMapper feedbacksMapper;
+
 
       /**
      * 用户注册
@@ -323,6 +335,60 @@ public class UserServiceImpl implements UserService {
     public User adminGetUserInfo() {
         Integer userId = BaseContext.getCurrentId();
         return userMapper.getUserByUserId(userId);
+    }
+
+    @Override
+    public List<ApplicationForm> getApplicationForm() {
+//        @Autowired
+//        private DormitoryService dormitoryService;
+//        @Autowired
+//        private ReparisService reparisService;
+//        @Autowired
+//        private FeedbacksService feedbacksService;
+        Integer userId = BaseContext.getCurrentId();
+//        保修单
+        List<ApplicationForm> repairsApplicationForms = repairsMapper.getAppcationFormByUserId(userId);
+        for (ApplicationForm repairsApplicationForm : repairsApplicationForms) {
+            repairsApplicationForm.setTitle("维修预约");
+            repairsApplicationForm.setType(0);
+            if(repairsApplicationForm.getUpdatedTime() != null){
+                repairsApplicationForm.setCreatedTime(repairsApplicationForm.getUpdatedTime());
+            }
+        }
+        //   意见反馈
+        List<ApplicationForm> feedbacksApplicationForms = feedbacksMapper.getAppcationFormByUserId(userId);
+
+        for (ApplicationForm feedbacksApplicationForm : feedbacksApplicationForms) {
+            feedbacksApplicationForm.setTitle("意见反馈");
+            feedbacksApplicationForm.setType(1);
+            feedbacksApplicationForm.setStatus(0);
+        }
+        log.info("反馈单,{}",feedbacksApplicationForms);
+
+//        申请表
+        List<ApplicationForm> dormitoryApplicationForms = dormitoryMapper.getAppcationFormByUserId(userId);
+        for (ApplicationForm dormitoryApplicationForm : dormitoryApplicationForms) {
+            dormitoryApplicationForm.setTitle("宿舍调换");
+            dormitoryApplicationForm.setType(2);
+            for (ApplicationForm applicationForm : dormitoryApplicationForms) {
+                if(applicationForm.getUpdatedTime() != null){
+                    applicationForm.setCreatedTime(applicationForm.getUpdatedTime());
+                }
+            }
+        }
+        log.info("申请表,{}",dormitoryApplicationForms);
+        // 创建合并后的列表
+        List<ApplicationForm> mergedList = new ArrayList<>();
+
+        // 添加所有元素
+        mergedList.addAll(repairsApplicationForms);
+        mergedList.addAll(feedbacksApplicationForms);
+        mergedList.addAll(dormitoryApplicationForms);
+
+        // 排序
+        mergedList.sort(Comparator.comparing(ApplicationForm::getCreatedTime, Comparator.nullsLast(Comparator.reverseOrder())));
+
+        return mergedList;
     }
 
 
