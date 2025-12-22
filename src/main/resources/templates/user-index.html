@@ -764,7 +764,10 @@
 
               // 添加点击事件
               li.addEventListener("click", function () {
-                alert("查看通知详情: " + notification.title);
+                const search = new URLSearchParams({
+              notificationId: notification.notificationId,  
+            }).toString();
+                window.location.href = `/user/notice/item?${search}`;
               });
 
               noticeList.appendChild(li);
@@ -800,9 +803,7 @@
       // 通知项点击事件
       document.querySelectorAll(".notice-item").forEach((item) => {
         item.addEventListener("click", function () {
-          alert(
-            "查看通知详情: " + this.querySelector(".notice-title").textContent
-          );
+          window.location.href = `/user/notice/item?${search}`;
         });
       });
 
