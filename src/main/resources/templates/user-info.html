@@ -1488,10 +1488,37 @@
         >
           <div class="content-card">
             <h2 class="card-title">宿舍调换申请记录</h2>
-            <div class="info-form">
-              <div class="form-row">
-                <div class="form-value">
-                  这里将展示宿舍调换申请记录列表或详情，请在此补充具体内容。
+            <div id="dormChangeListContainer">
+              <div class="repair-list-header">
+                <div class="repair-list-col">时间</div>
+                <div class="repair-list-col">地点</div>
+                <div class="repair-list-col">理由</div>
+                <div class="repair-list-col">状态</div>
+              </div>
+
+              <div id="dormChangeRecordsList" class="repair-list-content">
+                <!-- 宿舍调换记录将通过 JavaScript 动态生成 -->
+              </div>
+
+              <div class="pagination-container">
+                <div class="pagination-info">
+                  <span>共 <span id="dormTotalRecords">0</span> 条记录</span>
+                  <select id="dormPageSizeSelect" class="page-size-select">
+                    <option value="5">每页 5 条</option>
+                    <option value="10">每页 10 条</option>
+                    <option value="20">每页 20 条</option>
+                  </select>
+                </div>
+                <div class="pagination-controls">
+                  <button id="dormPrevPage" class="pagination-btn" disabled>
+                    上一页
+                  </button>
+                  <div class="page-numbers dorm-page-numbers">
+                    <!-- 页码按钮通过 JS 生成 -->
+                  </div>
+                  <button id="dormNextPage" class="pagination-btn" disabled>
+                    下一页
+                  </button>
                 </div>
               </div>
             </div>
@@ -2104,6 +2131,12 @@
       let feedbackTotalRecords = 0;
       let feedbackTotalPages = 0;
 
+      // 宿舍调换记录相关变量
+      let dormCurrentPage = 1;
+      let dormPageSize = 5;
+      let dormTotalRecords = 0;
+      let dormTotalPages = 0;
+
       // 状态映射
       const statusMap = {
         0: "申请中",
@@ -2111,6 +2144,12 @@
         2: "已完成",
         3: "已拒绝",
         4: "已取消",
+      };
+
+      const dormStatusMap = {
+        0: "申请中",
+        1: "已通过",
+        2: "已拒绝",
       };
 
       // 监听侧边栏切换，当切换到维修记录视图时加载数据
@@ -2141,6 +2180,10 @@
 
           if (view === "feedbacks") {
             loadFeedbackRecords();
+          }
+
+          if (view === "dormitory-change") {
+            loadDormChangeRecords();
           }
         }
       }
@@ -2374,6 +2417,7 @@
       function initAllEvents() {
         initRepairRecordEvents();
         initFeedbackRecordEvents();
+        initDormChangeRecordEvents();
       }
 
       // 页面加载时初始化
@@ -2438,6 +2482,19 @@
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const day = String(date.getDate()).padStart(2, "0");
         return `${year}-${month}-${day}`;
+      }
+
+      function formatDateTime(dateString) {
+        if (!dateString) return "-";
+        const date = new Date(dateString.replace(/-/g, "/"));
+        if (Number.isNaN(date.getTime())) return dateString;
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const seconds = String(date.getSeconds()).padStart(2, "0");
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
       }
 
       // 渲染反馈记录
@@ -2609,6 +2666,208 @@
             feedbackPageSize = parseInt(e.target.value);
             feedbackCurrentPage = 1;
             loadFeedbackRecords();
+          });
+      }
+
+      /************************************************************************************************************************************************/
+      /*************************************************************宿舍调换记录管理*******************************************************************/
+      /************************************************************************************************************************************************/
+
+      async function getDormChangeRecords(pageNum, pageSize) {
+        try {
+          const response = await fetch(
+            `/user/dormitory/getMyAllChangeDormitory?pageNum=${pageNum}&pageSize=${pageSize}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
+          );
+
+          const result = await response.json();
+
+          if (result.code === "200" || result.code === 200) {
+            const data = result.data || {};
+            if (Array.isArray(data.records)) {
+              return {
+                total: data.total || data.records.length || 0,
+                records: data.records,
+              };
+            }
+            if (Array.isArray(data)) {
+              return { total: data.length, records: data };
+            }
+          } else {
+            console.error("获取宿舍调换记录失败:", result.message);
+            return { total: 0, records: [] };
+          }
+        } catch (error) {
+          console.error("获取宿舍调换记录出错:", error);
+          return { total: 0, records: [] };
+        }
+      }
+
+      async function loadDormChangeRecords() {
+        const data = await getDormChangeRecords(dormCurrentPage, dormPageSize);
+        dormTotalRecords = data.total;
+        dormTotalPages = Math.max(
+          1,
+          Math.ceil(dormTotalRecords / dormPageSize)
+        );
+
+        renderDormChangeRecords(data.records);
+        renderDormPagination();
+        updateDormPaginationInfo();
+      }
+
+      function renderDormChangeRecords(records) {
+        const listContainer = document.getElementById("dormChangeRecordsList");
+
+        if (!records || records.length === 0) {
+          listContainer.innerHTML = `
+            <div class="repair-record">
+              <div class="repair-record-col" style="flex: 1 1 100%; text-align: center; padding: 30px;">
+                暂无宿舍调换记录
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        listContainer.innerHTML = records
+          .map((item) => {
+            const statusText = dormStatusMap[Number(item.status)] || "申请中";
+            const statusClass = `status-${item.status ?? 0}`;
+            const created = formatDateTime(item.createdTime);
+            const oldAddr = item.oldDormAddress || "-";
+            const newAddr = item.newDormAddress || "-";
+            const reason = item.reason || "-";
+            const id = item.dormChangeId || "";
+            return `
+              <div class="repair-record" style="cursor:pointer;" onclick="goDormChangeDetail(${id})">
+                <div class="repair-record-col" data-label="时间">${created}</div>
+                <div class="repair-record-col" data-label="地点">
+                  <div>原宿舍：${oldAddr}</div>
+                  <div>目标宿舍：${newAddr}</div>
+                </div>
+                <div class="repair-record-col" data-label="理由">${reason}</div>
+                <div class="repair-record-col" data-label="状态">
+                  <span class="status-badge ${statusClass}">${statusText}</span>
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      function goDormChangeDetail(dormChangeId) {
+        if (!dormChangeId) return;
+        const search = new URLSearchParams({ dormChangeId }).toString();
+        window.location.href = `/user/changeDormitory/item?${search}`;
+      }
+
+      function updateDormPaginationInfo() {
+        document.getElementById("dormTotalRecords").textContent =
+          dormTotalRecords;
+        document.getElementById("dormPageSizeSelect").value = dormPageSize;
+      }
+
+      function renderDormPagination() {
+        const pageNumbersContainer =
+          document.querySelector(".dorm-page-numbers");
+        const prevPageBtn = document.getElementById("dormPrevPage");
+        const nextPageBtn = document.getElementById("dormNextPage");
+
+        prevPageBtn.disabled = dormCurrentPage === 1;
+        nextPageBtn.disabled = dormCurrentPage === dormTotalPages;
+
+        pageNumbersContainer.innerHTML = "";
+
+        if (dormTotalPages <= 1) {
+          return;
+        }
+
+        let startPage = Math.max(1, dormCurrentPage - 2);
+        let endPage = Math.min(dormTotalPages, dormCurrentPage + 2);
+
+        if (endPage - startPage < 4) {
+          if (startPage === 1) {
+            endPage = Math.min(dormTotalPages, startPage + 4);
+          } else if (endPage === dormTotalPages) {
+            startPage = Math.max(1, endPage - 4);
+          }
+        }
+
+        if (startPage > 1) {
+          const firstPageBtn = createDormPageButton(1);
+          pageNumbersContainer.appendChild(firstPageBtn);
+
+          if (startPage > 2) {
+            const ellipsis1 = document.createElement("span");
+            ellipsis1.textContent = "...";
+            ellipsis1.className = "pagination-ellipsis";
+            pageNumbersContainer.appendChild(ellipsis1);
+          }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+          const pageBtn = createDormPageButton(i);
+          pageNumbersContainer.appendChild(pageBtn);
+        }
+
+        if (endPage < dormTotalPages) {
+          if (endPage < dormTotalPages - 1) {
+            const ellipsis2 = document.createElement("span");
+            ellipsis2.textContent = "...";
+            ellipsis2.className = "pagination-ellipsis";
+            pageNumbersContainer.appendChild(ellipsis2);
+          }
+
+          const lastPageBtn = createDormPageButton(dormTotalPages);
+          pageNumbersContainer.appendChild(lastPageBtn);
+        }
+      }
+
+      function createDormPageButton(pageNum) {
+        const button = document.createElement("button");
+        button.className = `page-btn ${
+          pageNum === dormCurrentPage ? "active" : ""
+        }`;
+        button.textContent = pageNum;
+        button.addEventListener("click", () => {
+          dormCurrentPage = pageNum;
+          loadDormChangeRecords();
+        });
+        return button;
+      }
+
+      function initDormChangeRecordEvents() {
+        document
+          .getElementById("dormPrevPage")
+          .addEventListener("click", () => {
+            if (dormCurrentPage > 1) {
+              dormCurrentPage--;
+              loadDormChangeRecords();
+            }
+          });
+
+        document
+          .getElementById("dormNextPage")
+          .addEventListener("click", () => {
+            if (dormCurrentPage < dormTotalPages) {
+              dormCurrentPage++;
+              loadDormChangeRecords();
+            }
+          });
+
+        document
+          .getElementById("dormPageSizeSelect")
+          .addEventListener("change", (e) => {
+            dormPageSize = parseInt(e.target.value);
+            dormCurrentPage = 1;
+            loadDormChangeRecords();
           });
       }
     </script>

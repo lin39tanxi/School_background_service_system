@@ -442,20 +442,17 @@
         try {
           const token = localStorage.getItem("token") || "";
           const resp = await fetch(
-            `/user/dormitory/getEmptyRoomsByBuildingAndFloor?buildingId=${buildingId}&floorId=${floorId}`,
+            `/user/dormitory/getAllBuildingAndFloorAndRooms?buildingId=${buildingId}&floorId=${floorId}`,
             { headers: { Authorization: token ? "Bearer " + token : "" } }
           );
           const result = await resp.json();
           console.log("房间数据", result);
-          const rooms = Array.isArray(result.data)
-            ? result.data
-            : result.data && Array.isArray(result.data.records)
-            ? result.data.records
-            : [];
-          if ((result.code === "200" || result.code === 200) && rooms.length) {
-            populateSelect("roomSelect", rooms, "roomId", "roomNumber");
+          if ((result.code === "200" || result.code === 200) && Array.isArray(result.data)) {
+            populateSelect("roomSelect", result.data, "roomId", "roomNumber");
+            document.getElementById("roomSelect").disabled = false;
+          } else {
+            document.getElementById("roomSelect").disabled = false;
           }
-          document.getElementById("roomSelect").disabled = false;
         } catch (err) {
           console.error("加载房间失败", err);
         }
