@@ -459,15 +459,24 @@
     <div class="container">
       <!-- 左侧边栏 -->
       <aside class="sidebar">
-        <div class="menu-item active" onclick="window.location.href='/user/repair'">
+        <div
+          class="menu-item active"
+          onclick="window.location.href='/user/repair'"
+        >
           <span>维修预约</span>
           <span>></span>
         </div>
-        <div class="menu-item" onclick="window.location.href='/user/lostAndFound'">
+        <div
+          class="menu-item"
+          onclick="window.location.href='/user/lostAndFound'"
+        >
           <span>失物招领</span>
           <span>></span>
         </div>
-        <div class="menu-item" onclick="window.location.href='/user/changeDormitory'">
+        <div
+          class="menu-item"
+          onclick="window.location.href='/user/changeDormitory'"
+        >
           <span>宿舍调换申请</span>
           <span>></span>
         </div>
@@ -565,83 +574,13 @@
           <!-- 申请进度卡片 -->
           <div class="status-cards-container">
             <h2 class="status-header">申请进度</h2>
-            <div class="status-cards">
-              <div class="status-card">
+            <div class="status-cards" id="applicationList">
+              <div class="status-card" id="applicationPlaceholder">
                 <div class="status-info">
-                  <div class="linebox">
-                    <h3>维修预约</h3>
-                  </div>
                   <div class="status-date-box">
-                    <div class="status-date">2025-11-30</div>
-                    <div class="status-detail">请选择维修项目...</div>
+                    <div class="status-detail">加载中...</div>
                   </div>
                 </div>
-                <div class="status-badge pending">已提约</div>
-              </div>
-
-              <div class="status-card">
-                <div class="status-info">
-                  <div class="linebox">
-                    <h3>宿舍调换</h3>
-                  </div>
-                  <div class="status-date-box">
-                    <div class="status-date">2025-9-21</div>
-                    <div class="status-detail">请选择宿舍...</div>
-                  </div>
-                </div>
-                <div class="status-badge unfinished">未通过</div>
-              </div>
-
-              <div class="status-card">
-                <div class="status-info">
-                  <div class="linebox">
-                    <h3>意见反馈</h3>
-                  </div>
-                  <div class="status-date-box">
-                    <div class="status-date">2025-4-2</div>
-                    <div class="status-detail">基于学生反馈...</div>
-                  </div>
-                </div>
-                <div class="status-badge completed">已受理</div>
-              </div>
-
-              <div class="status-card">
-                <div class="status-info">
-                  <div class="linebox">
-                    <h3>维修预约</h3>
-                  </div>
-                  <div class="status-date-box">
-                    <div class="status-date">2025-3-25</div>
-                    <div class="status-detail">进度：已受理</div>
-                  </div>
-                </div>
-                <div class="status-badge completed">已受理</div>
-              </div>
-
-              <div class="status-card">
-                <div class="status-info">
-                  <div class="linebox">
-                    <h3>失物招领</h3>
-                  </div>
-                  <div class="status-date-box">
-                    <div class="status-date">2025-2-15</div>
-                    <div class="status-detail">遗失物品：钥匙</div>
-                  </div>
-                </div>
-                <div class="status-badge pending">处理中</div>
-              </div>
-
-              <div class="status-card">
-                <div class="status-info">
-                  <div class="linebox">
-                    <h3>维修预约</h3>
-                  </div>
-                  <div class="status-date-box">
-                    <div class="status-date">2025-1-10</div>
-                    <div class="status-detail">宿舍水龙头维修</div>
-                  </div>
-                </div>
-                <div class="status-badge completed">已完成</div>
               </div>
             </div>
           </div>
@@ -667,6 +606,7 @@
       // 页面加载时获取用户信息和通知列表
       window.addEventListener("DOMContentLoaded", function () {
         fetchUserInfo();
+        fetchApplicationForms();
         fetchNotifications();
       });
 
@@ -719,6 +659,132 @@
         }
       }
 
+      // 申请类型标签
+      function getApplicationTypeLabel(type) {
+        if (type === 0) return "维修预约";
+        if (type === 1) return "意见反馈";
+        if (type === 2) return "宿舍调换";
+        return "未知类型";
+      }
+
+      // 截断内容到前10个字
+      function truncateContent(content) {
+        if (!content) return "暂无内容";
+        return content.length > 10 ? content.slice(0, 10) + "..." : content;
+      }
+
+      function getApplicationStatusBadge(type, status) {
+        if (type === 1) {
+          return "";
+        }
+
+        let label = "未知状态";
+        let cls = "pending";
+
+        if (type === 0) {
+          if (status === 0) {
+            label = "申请中";
+            cls = "pending";
+          } else if (status === 1) {
+            label = "已受理";
+            cls = "completed";
+          } else if (status === 2) {
+            label = "已完成";
+            cls = "completed";
+          } else if (status === 3) {
+            label = "已拒绝";
+            cls = "unfinished";
+          }
+        } else if (type === 2) {
+          if (status === 0) {
+            label = "申请中";
+            cls = "pending";
+          } else if (status === 1) {
+            label = "已通过";
+            cls = "completed";
+          } else if (status === 2) {
+            label = "已拒绝";
+            cls = "unfinished";
+          }
+        }
+
+        return `<div class="status-badge ${cls}">${label}</div>`;
+      }
+
+      async function fetchApplicationForms() {
+        const listEl = document.getElementById("applicationList");
+
+        try {
+          const response = await fetch("/user/user/getApplicationForm", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          });
+
+          const result = await response.json();
+          if (result.code === "200") {
+            renderApplicationCards(result.data || []);
+          } else {
+            console.error("获取申请状态失败:", result.message);
+            renderApplicationCards([]);
+          }
+        } catch (error) {
+          console.error("获取申请状态出错:", error);
+          renderApplicationCards([]);
+        } finally {
+          if (listEl) {
+            const placeholder = document.getElementById(
+              "applicationPlaceholder"
+            );
+            if (placeholder) {
+              placeholder.remove();
+            }
+          }
+        }
+      }
+
+      function renderApplicationCards(applications) {
+        const listEl = document.getElementById("applicationList");
+        if (!listEl) return;
+
+        listEl.innerHTML = "";
+
+        if (!applications || applications.length === 0) {
+          listEl.innerHTML = `
+            <div class="status-card">
+              <div class="status-info">
+                <div class="status-date-box">
+                  <div class="status-detail">暂无申请记录</div>
+                </div>
+              </div>
+            </div>`;
+          return;
+        }
+
+        applications.forEach((item) => {
+          const badge = getApplicationStatusBadge(item.type, item.status);
+          const card = document.createElement("div");
+          card.className = "status-card";
+          card.innerHTML = `
+            <div class="status-info">
+              <div class="linebox">
+                <h3>${getApplicationTypeLabel(item.type)}</h3>
+              </div>
+              <div class="status-date-box">
+                <div class="status-date">${formatDate(item.createdTime)}</div>
+                <div class="status-detail">${truncateContent(
+                  item.content
+                )}</div>
+              </div>
+            </div>
+            ${badge}
+          `;
+          listEl.appendChild(card);
+        });
+      }
+
       // 格式化日期，只显示年月日
       function formatDate(dateString) {
         if (!dateString) return "";
@@ -765,8 +831,8 @@
               // 添加点击事件
               li.addEventListener("click", function () {
                 const search = new URLSearchParams({
-              notificationId: notification.notificationId,  
-            }).toString();
+                  notificationId: notification.notificationId,
+                }).toString();
                 window.location.href = `/user/notice/item?${search}`;
               });
 
