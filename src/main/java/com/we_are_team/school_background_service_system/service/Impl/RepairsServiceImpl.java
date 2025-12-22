@@ -150,6 +150,8 @@ public class RepairsServiceImpl implements ReparisService {
                    .completedTime(repairOrder.getCompletedTime())
                    .address(repairOrder.getAddress())
                    .phone(repairOrder.getPhone())
+                   .appointmentBegin(repairOrder.getAppointmentBegin())
+                   .appointmentEnd(repairOrder.getAppointmentEnd())
                    .imageUrls(urls).build();
            return repairOrderVO;
        }
@@ -289,6 +291,8 @@ public class RepairsServiceImpl implements ReparisService {
                     .updatedTime(repairOrder.getUpdatedTime())
                     .description(repairOrder.getDescription())
                     .completedTime(repairOrder.getCompletedTime())
+                    .appointmentBegin(repairOrder.getAppointmentBegin())
+                    .appointmentEnd(repairOrder.getAppointmentEnd())
                     .imageUrls(urls).build();
             return repairOrderVO;
         }
