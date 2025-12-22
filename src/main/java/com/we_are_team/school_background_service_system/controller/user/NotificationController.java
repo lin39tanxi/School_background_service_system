@@ -33,6 +33,7 @@ public class NotificationController {
     public Result<NotificationVO> getNotificationDetail(@PathVariable Integer notificationId){
         log.info("获取通知详情,{}", notificationId);
         NotificationVO notificationVO = notificationService.getNotificationDetail(notificationId);
+
         return Result.success("获取详细成功", notificationVO);
     }
 }

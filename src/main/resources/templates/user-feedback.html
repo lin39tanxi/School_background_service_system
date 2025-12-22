@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>校园后勤管理系统</title>
+    <title>用户反馈 - 校园后勤管理系统</title>
     <style>
       * {
         margin: 0;
@@ -19,7 +19,6 @@
         background-attachment: fixed;
       }
 
-      /* 顶部导航栏 */
       .header {
         background: #3f51b5;
         color: white;
@@ -29,6 +28,7 @@
         align-items: center;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
       }
+
       .back-button {
         background: none;
         border: none;
@@ -73,13 +73,11 @@
         box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
       }
 
-      /* 下拉菜单容器 */
       .dropdown-container {
         position: relative;
         display: inline-block;
       }
 
-      /* 下拉菜单 */
       .dropdown-menu {
         position: absolute;
         top: 100%;
@@ -97,14 +95,12 @@
         transition: all 0.3s ease;
       }
 
-      /* 悬停显示下拉菜单 */
       .dropdown-container:hover .dropdown-menu {
         opacity: 1;
         visibility: visible;
         transform: translateY(0);
       }
 
-      /* 下拉菜单项 */
       .dropdown-item {
         width: 100%;
         padding: 12px 20px;
@@ -118,30 +114,240 @@
         outline: none;
       }
 
-      /* 下拉菜单项悬停效果 */
       .dropdown-item:hover {
         background: #f5f5f5;
         color: #3f51b5;
       }
 
-      /* 下拉菜单项分隔线 */
       .dropdown-item:not(:last-child) {
         border-bottom: 1px solid #eee;
       }
 
-      /* 主容器 */
       .container {
         display: flex;
+        justify-content: center;
+        align-items: flex-start;
         min-height: calc(100vh - 70px);
+        padding: 24px 16px 32px;
       }
-      
 
-      
+      .form-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 28px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        max-width: 720px;
+        width: 100%;
+        backdrop-filter: blur(4px);
+      }
+
+      .form-title {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 18px;
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      .form-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+        color: #555;
+        font-size: 15px;
+        font-weight: 500;
+      }
+
+      .required {
+        color: #f44336;
+      }
+
+      .textarea {
+        width: 100%;
+        min-height: 140px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px 14px;
+        font-size: 14px;
+        resize: vertical;
+        transition: all 0.2s ease;
+        font-family: inherit;
+      }
+
+      .textarea:focus {
+        outline: none;
+        border-color: #3f51b5;
+        box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+      }
+
+      .radio-group {
+        display: flex;
+        gap: 12px;
+      }
+
+      .radio-group label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #444;
+      }
+
+      .upload-box {
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        padding: 26px;
+        text-align: center;
+        cursor: pointer;
+        background: #fafafa;
+        transition: all 0.2s ease;
+      }
+
+      .upload-box:hover {
+        border-color: #3f51b5;
+        background: #f5f7ff;
+      }
+
+      .upload-hint {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .upload-limit {
+        color: #999;
+        font-size: 12px;
+        margin-top: 4px;
+      }
+
+      #imageInput {
+        display: none;
+      }
+
+      .preview-list {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+
+      .preview-item {
+        position: relative;
+        width: 110px;
+        height: 110px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #ddd;
+        background: #f7f7f7;
+      }
+
+      .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .remove-btn {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 22px;
+        height: 22px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 14px;
+        background: #3f51b5;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .submit-btn:hover {
+        background: #3143a5;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(63, 81, 181, 0.25);
+      }
+
+      .submit-btn:disabled {
+        background: #9fa8da;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .toast {
+        position: fixed;
+        top: 80px;
+        right: 16px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(120%);
+        transition: all 0.25s ease;
+        z-index: 1200;
+        border-left: 4px solid #3f51b5;
+      }
+
+      .toast.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+      }
+
+      .toast.success {
+        border-left-color: #4caf50;
+      }
+
+      .toast.error {
+        border-left-color: #f44336;
+      }
+
+      .toast-icon {
+        font-size: 20px;
+      }
+
+      .error-text {
+        color: #f44336;
+        font-size: 13px;
+        margin-top: 6px;
+        display: none;
+      }
+
+      .error-text.show {
+        display: block;
+      }
+
+      @media (max-width: 768px) {
+        .form-card {
+          padding: 20px;
+        }
+
+        .form-title {
+          font-size: 22px;
+        }
+      }
     </style>
   </head>
   <body>
-    <!-- 顶部导航栏 -->
-
     <header class="header">
       <div class="header-left">
         <button class="back-button" onclick="history.back()">&lt;</button>
@@ -162,18 +368,68 @@
       </div>
     </header>
 
-    <!-- 主容器 -->
-    
+    <div class="container">
+      <div class="form-card">
+        <div class="form-title">提交反馈</div>
+        <form id="feedbackForm">
+          <div class="form-group">
+            <label class="form-label"
+              >反馈内容 <span class="required">*</span></label
+            >
+            <textarea
+              id="comment"
+              name="comment"
+              class="textarea"
+              placeholder="请描述问题或建议"
+              required
+            ></textarea>
+            <div class="error-text" id="commentError">请填写反馈内容</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">是否匿名</label>
+            <div class="radio-group">
+              <label>
+                <input type="radio" name="isAnonymous" value="0" checked /> 匿名
+              </label>
+              <label>
+                <input type="radio" name="isAnonymous" value="1" /> 实名
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">上传图片（可选）</label>
+            <div
+              class="upload-box"
+              onclick="document.getElementById('imageInput').click()"
+            >
+              <div class="upload-hint">点击或拖拽上传图片</div>
+              <div class="upload-limit">最多 3 张，支持 jpg/png/jpeg</div>
+            </div>
+            <input type="file" id="imageInput" accept="image/*" multiple />
+            <div class="preview-list" id="previewList"></div>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">提交</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="toast" id="toast">
+      <span class="toast-icon" id="toastIcon">✓</span>
+      <span id="toastMsg"></span>
+    </div>
 
     <script>
-      // 获取用户信息并填充页面
-      window.addEventListener("DOMContentLoaded", function () {
+      let selectedImages = [];
+
+      window.addEventListener("DOMContentLoaded", () => {
         fetchUserInfo();
+        bindUpload();
+        bindSubmit();
       });
-      /************************************************************************************************************************************************/
-      /*************************************************************获取用户信息***********************************************************************/
-      /************************************************************************************************************************************************/
-      // 获取用户信息
+
       async function fetchUserInfo() {
         try {
           const response = await fetch("/user/user/my", {
@@ -181,37 +437,142 @@
             headers: {
               "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token"),
-              // 如果需要 token，在这里添加
-              // 'Authorization': 'Bearer ' + localStorage.getItem('token')
             },
           });
-
           const result = await response.json();
-          console.log(result);
-          if (result.code === "200" && result.data) {
-            const user = result.data;
-            // 更新头像
-            if (user.avatarUrl) {
-              const userIcon = document.querySelector(".user-icon");
-              const userMainIcon = document.querySelector(".user-main-icon");
-              if (userIcon) {
-                userIcon.style.backgroundImage = `url('${user.avatarUrl.trim()}')`;
-                userMainIcon.style.backgroundImage = `url('${user.avatarUrl.trim()}')`;
-              }
+          if (result.code === "200" && result.data && result.data.avatarUrl) {
+            const userIcon = document.querySelector(".user-icon");
+            if (userIcon) {
+              userIcon.style.backgroundImage = `url('${result.data.avatarUrl.trim()}')`;
             }
-          } else {
-            console.error("获取用户信息失败:", result.message);
-            
           }
         } catch (error) {
           console.error("获取用户信息出错:", error);
-          
         }
       }
 
-      
+      function bindUpload() {
+        const input = document.getElementById("imageInput");
+        input.addEventListener("change", (e) => {
+          const files = Array.from(e.target.files || []);
+          if (selectedImages.length + files.length > 3) {
+            showToast("最多上传3张图片", "error");
+            return;
+          }
+          files.forEach((file) => {
+            if (!file.type.startsWith("image/")) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              selectedImages.push({ file, url: ev.target.result });
+              renderPreview();
+            };
+            reader.readAsDataURL(file);
+          });
+          input.value = "";
+        });
+      }
 
-      
+      function renderPreview() {
+        const list = document.getElementById("previewList");
+        list.innerHTML = "";
+        selectedImages.forEach((item, idx) => {
+          const div = document.createElement("div");
+          div.className = "preview-item";
+          div.innerHTML = `
+            <img src="${item.url}" alt="预览图${idx + 1}" />
+            <button type="button" class="remove-btn" onclick="removeImage(${idx})">×</button>
+          `;
+          list.appendChild(div);
+        });
+      }
+
+      function removeImage(idx) {
+        selectedImages.splice(idx, 1);
+        renderPreview();
+      }
+
+      function bindSubmit() {
+        const form = document.getElementById("feedbackForm");
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          if (!validate()) return;
+
+          const submitBtn = document.getElementById("submitBtn");
+          submitBtn.disabled = true;
+          submitBtn.textContent = "提交中...";
+
+          try {
+            const fd = new FormData();
+            fd.append(
+              "comment",
+              document.getElementById("comment").value.trim()
+            );
+            const isAnonymous =
+              document.querySelector('input[name="isAnonymous"]:checked')
+                ?.value || "0";
+            fd.append("isAnonymous", isAnonymous);
+            selectedImages.forEach((item) =>
+              fd.append("imageUrlsArray", item.file)
+            );
+
+            const resp = await fetch("/user/feedbacks", {
+              method: "POST",
+              headers: {
+                Authorization:
+                  "Bearer " + (localStorage.getItem("token") || ""),
+              },
+              body: fd,
+            });
+
+            const result = await resp.json();
+            if (result.code === "200" || resp.ok) {
+              showToast("提交成功", "success");
+              form.reset();
+              selectedImages = [];
+              renderPreview();
+            } else {
+              showToast(result.message || "提交失败", "error");
+            }
+          } catch (err) {
+            console.error("提交反馈出错:", err);
+            showToast("网络错误，请重试", "error");
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "提交";
+          }
+        });
+      }
+
+      function validate() {
+        const comment = document.getElementById("comment");
+        const error = document.getElementById("commentError");
+        if (!comment.value.trim()) {
+          error.classList.add("show");
+          comment.focus();
+          return false;
+        }
+        error.classList.remove("show");
+        return true;
+      }
+
+      function showToast(msg, type = "success") {
+        const toast = document.getElementById("toast");
+        const icon = document.getElementById("toastIcon");
+        const text = document.getElementById("toastMsg");
+        text.textContent = msg;
+        toast.className = `toast ${type} show`;
+        icon.textContent = type === "success" ? "✓" : "✕";
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 2500);
+      }
+
+      function logout() {
+        if (confirm("确定要退出登录吗？")) {
+          localStorage.removeItem("token");
+          window.location.href = "/users/login";
+        }
+      }
     </script>
   </body>
 </html>

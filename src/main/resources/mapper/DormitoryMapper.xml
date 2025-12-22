@@ -69,7 +69,7 @@
               and created_time >= #{beginTime}
           </if>
           <if test="endTime != null">
-              and created_time &gt;= #{endTime}
+              and created_time &lt;= #{endTime}
           </if>
       </where>
       ORDER BY created_time DESC

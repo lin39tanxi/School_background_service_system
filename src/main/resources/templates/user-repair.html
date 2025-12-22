@@ -772,6 +772,7 @@
         try {
           // 准备表单数据
           const formData = new FormData();
+          console.log(appointmentBegin.value, appointmentEnd.value);
           formData.append("address", document.getElementById("address").value);
           formData.append(
             "phone",
@@ -792,7 +793,7 @@
 
           // 添加图片
           selectedImages.forEach((img, index) => {
-            formData.append("images", img.file);
+            formData.append("imageUrlsArray", img.file);
           });
 
           // 提交表单

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>维修详情 - 校园后勤管理系统</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Microsoft YaHei", Arial, sans-serif;
+        background-image: url(http://localhost:8081/img/35e1b763c15645c1a6d674accf959f30.jpg);
+        min-height: 100vh;
+        background-size: cover;
+        background-attachment: fixed;
+      }
+
+      .header {
+        background: #3f51b5;
+        color: #fff;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .back-button {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 28px;
+        cursor: pointer;
+        padding: 5px 15px;
+        transition: opacity 0.3s;
+      }
+
+      .back-button:hover {
+        opacity: 0.8;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .header h1 {
+        padding-left: 20px;
+        font-size: 24px;
+        font-weight: normal;
+      }
+
+      .user-icon {
+        width: 45px;
+        height: 45px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        overflow: hidden;
+      }
+
+      .user-icon:hover {
+        transform: scale(1.05);
+        border-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+
+      .dropdown-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        z-index: 1000;
+        width: 150px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+      }
+
+      .dropdown-container:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .dropdown-item {
+        width: 100%;
+        padding: 12px 20px;
+        background: none;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        color: #333;
+        font-size: 14px;
+        transition: all 0.2s;
+        outline: none;
+      }
+
+      .dropdown-item:hover {
+        background: #f5f5f5;
+        color: #3f51b5;
+      }
+
+      .dropdown-item:not(:last-child) {
+        border-bottom: 1px solid #eee;
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 24px auto 40px;
+        padding: 0 16px;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.94);
+        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        backdrop-filter: blur(4px);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 16px;
+        border-bottom: 1px solid #e8e8e8;
+        padding-bottom: 12px;
+      }
+
+      .title {
+        font-size: 22px;
+        color: #333;
+        margin-bottom: 6px;
+      }
+
+      .meta-line {
+        color: #7a8099;
+        font-size: 13px;
+      }
+
+      .status-chip {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        background: #3f51b5;
+        margin-bottom: 6px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+
+      .info-item {
+        background: #f8f9fd;
+        border: 1px solid #eef1f6;
+        border-radius: 10px;
+        padding: 12px 14px;
+      }
+
+      .info-item label {
+        display: block;
+        font-size: 13px;
+        color: #8b94b5;
+        margin-bottom: 6px;
+      }
+
+      .info-item .value {
+        color: #2f2f2f;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .info-block {
+        margin-bottom: 18px;
+        background: #fff;
+        border: 1px solid #eef1f6;
+        border-radius: 10px;
+        padding: 14px 16px;
+      }
+
+      .block-title {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .block-content {
+        font-size: 15px;
+        color: #444;
+        line-height: 1.7;
+        white-space: pre-line;
+      }
+
+      .image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+      }
+
+      .image-grid img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #eef1f6;
+        cursor: pointer;
+        background: #f7f9fc;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .image-grid img:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+      }
+
+      .status-line {
+        text-align: center;
+        color: #888;
+        font-size: 14px;
+        margin-top: 6px;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+      }
+
+      .modal-overlay.hidden {
+        display: none;
+      }
+
+      .modal-overlay img {
+        max-width: 90vw;
+        max-height: 90vh;
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: #fff;
+        font-size: 28px;
+        cursor: pointer;
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 20px;
+        }
+        .card {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-left">
+        <button class="back-button" onclick="goBack()">&lt;</button>
+        <h1>维修详情</h1>
+      </div>
+
+      <div class="dropdown-container">
+        <div
+          class="user-icon"
+          th:style="'background-image: url(' + ${user.avatarUrl} + ');'"
+        ></div>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" onclick="location.href='/user/info'">
+            个人信息
+          </button>
+          <button class="dropdown-item" onclick="logout()">退出登录</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="status-chip" id="statusChip">加载中...</div>
+            <div class="title">维修单详情</div>
+            <div class="meta-line">
+              订单号：<span id="detailOrderId">-</span>
+            </div>
+          </div>
+          <div class="meta-line">
+            <div>创建时间：<span id="detailCreated">-</span></div>
+            <div>预约时间：<span id="detailAppointment">-</span></div>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <label>维修地址</label>
+            <div class="value" id="detailAddress">-</div>
+          </div>
+          <div class="info-item">
+            <label>联系电话</label>
+            <div class="value" id="detailPhone">-</div>
+          </div>
+          <div class="info-item">
+            <label>处理状态</label>
+            <div class="value" id="detailStatus">-</div>
+          </div>
+          <div class="info-item">
+            <label>完成时间</label>
+            <div class="value" id="detailCompleted">-</div>
+          </div>
+        </div>
+
+        <div id="rejectBlock" class="info-block hidden">
+          <div class="block-title">拒绝原因</div>
+          <div class="block-content" id="detailReject">-</div>
+        </div>
+
+        <div class="info-block">
+          <div class="block-title">报修描述</div>
+          <div class="block-content" id="detailDescription">-</div>
+        </div>
+
+        <div id="commentBlock" class="info-block hidden">
+          <div class="block-title">评价与备注</div>
+          <div class="block-content" id="detailComment">-</div>
+        </div>
+
+        <div id="imageBlock" class="info-block">
+          <div class="block-title">现场图片</div>
+          <div class="image-grid" id="imageGrid"></div>
+        </div>
+
+        <div class="status-line" id="statusMessage"></div>
+      </section>
+    </main>
+
+    <div
+      id="imageModal"
+      class="modal-overlay hidden"
+      onclick="closeImageModal(event)"
+    >
+      <span class="modal-close" aria-label="关闭">×</span>
+      <img id="modalImage" src="" alt="预览" />
+    </div>
+
+    <script>
+      const statusMap = {
+        0: "申请中",
+        1: "已受理",
+        2: "已完成",
+        3: "已拒绝",
+        4: "已取消",
+      };
+
+      window.addEventListener("DOMContentLoaded", () => {
+        fetchUserInfo();
+        const orderId = getOrderId();
+        if (!orderId) {
+          setStatusMessage("未找到订单参数");
+          return;
+        }
+        loadRepairDetail(orderId);
+      });
+
+      function getOrderId() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("orderId");
+      }
+
+      async function fetchUserInfo() {
+        try {
+          const response = await fetch("/user/user/my", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          });
+
+          const result = await response.json();
+          if (result.code === "200" && result.data && result.data.avatarUrl) {
+            const userIcon = document.querySelector(".user-icon");
+            if (userIcon) {
+              userIcon.style.backgroundImage = `url('${result.data.avatarUrl.trim()}')`;
+            }
+          }
+        } catch (error) {
+          console.error("获取用户信息出错:", error);
+        }
+      }
+
+      async function loadRepairDetail(orderId) {
+        setStatusMessage("加载中...");
+        try {
+          const token = localStorage.getItem("token") || "";
+          const response = await fetch(`/user/repairs/${orderId}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token ? "Bearer " + token : "",
+            },
+          });
+
+          const result = await response.json();
+          if (result.code === "200" && result.data) {
+            renderDetail(result.data);
+            setStatusMessage("");
+          } else {
+            setStatusMessage(result.message || "加载失败");
+          }
+        } catch (error) {
+          console.error("获取维修详情出错:", error);
+          setStatusMessage("加载失败，请稍后重试");
+        }
+      }
+
+      function renderDetail(data) {
+        document.getElementById("detailOrderId").textContent =
+          data.orderId || "-";
+        document.getElementById("detailAddress").textContent =
+          data.address || "-";
+        document.getElementById("detailPhone").textContent = data.phone || "-";
+        document.getElementById("detailStatus").textContent =
+          statusMap[data.processStatus] || "-";
+        document.getElementById("detailCreated").textContent = formatDateTime(
+          data.createdTime
+        );
+        document.getElementById("detailCompleted").textContent = formatDateTime(
+          data.completedTime
+        );
+        document.getElementById("detailAppointment").textContent = formatRange(
+          data.appointmentBegin,
+          data.appointmentEnd
+        );
+        document.getElementById("detailDescription").textContent =
+          data.description || "-";
+
+        const statusChip = document.getElementById("statusChip");
+        statusChip.textContent = statusMap[data.processStatus] || "-";
+        statusChip.style.background = getStatusColor(data.processStatus);
+
+        const rejectBlock = document.getElementById("rejectBlock");
+        if (data.processStatus === 3 && data.rejectReason) {
+          document.getElementById("detailReject").textContent =
+            data.rejectReason;
+          rejectBlock.classList.remove("hidden");
+        } else {
+          rejectBlock.classList.add("hidden");
+        }
+
+        const commentBlock = document.getElementById("commentBlock");
+        if (data.comment || data.rating) {
+          const ratingText = data.rating ? `评分：${data.rating}` : "";
+          const pieces = [ratingText, data.comment || ""].filter(Boolean);
+          document.getElementById("detailComment").textContent =
+            pieces.join("\n");
+          commentBlock.classList.remove("hidden");
+        } else {
+          commentBlock.classList.add("hidden");
+        }
+
+        renderImages(data.imageUrls);
+      }
+
+      function renderImages(imageUrls) {
+        const grid = document.getElementById("imageGrid");
+        grid.innerHTML = "";
+
+        const urls = normalizeImages(imageUrls);
+        if (urls.length === 0) {
+          const placeholder = document.createElement("div");
+          placeholder.textContent = "暂无图片";
+          placeholder.style.color = "#888";
+          grid.appendChild(placeholder);
+          return;
+        }
+
+        urls.forEach((src) => {
+          const img = document.createElement("img");
+          img.src = src;
+          img.alt = "报修图片";
+          img.addEventListener("click", () => openImageModal(src));
+          grid.appendChild(img);
+        });
+      }
+
+      function normalizeImages(imageUrls) {
+        if (!imageUrls) return [];
+        if (Array.isArray(imageUrls)) return imageUrls;
+        if (typeof imageUrls === "string") {
+          return imageUrls
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+        }
+        return [];
+      }
+
+      function formatDateTime(val) {
+        if (!val) return "-";
+        if (typeof val === "string" && val.includes("T"))
+          return val.replace("T", " ");
+        return val.toString();
+      }
+
+      function formatRange(begin, end) {
+        if (!begin && !end) return "-";
+        const left = begin ? formatDateTime(begin) : "";
+        const right = end ? formatDateTime(end) : "";
+        return `${left} - ${right}`.trim();
+      }
+
+      function getStatusColor(status) {
+        switch (status) {
+          case 2:
+            return "#4caf50";
+          case 1:
+            return "#2196f3";
+          case 3:
+            return "#f44336";
+          case 4:
+            return "#9e9e9e";
+          default:
+            return "#3f51b5";
+        }
+      }
+
+      function setStatusMessage(message) {
+        const el = document.getElementById("statusMessage");
+        el.textContent = message || "";
+      }
+
+      function goBack() {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = "/user/info";
+        }
+      }
+
+      function logout() {
+        if (confirm("确定要退出登录吗？")) {
+          localStorage.removeItem("token");
+          window.location.href = "/users/login";
+        }
+      }
+
+      function openImageModal(src) {
+        const modal = document.getElementById("imageModal");
+        const img = document.getElementById("modalImage");
+        img.src = src;
+        modal.classList.remove("hidden");
+      }
+
+      function closeImageModal(event) {
+        if (
+          !event ||
+          event.target === event.currentTarget ||
+          event.target.classList.contains("modal-close")
+        ) {
+          document.getElementById("imageModal").classList.add("hidden");
+        }
+      }
+    </script>
+  </body>
+</html>

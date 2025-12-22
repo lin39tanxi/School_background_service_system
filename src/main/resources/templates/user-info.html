@@ -2203,23 +2203,26 @@
         }
 
         listContainer.innerHTML = records
-          .map(
-            (record) => `
-          <div class="repair-record">
+          .map((record) => {
+            const firstImage = getFirstImageUrl(record);
+            return `
+          <div class="repair-record" onclick="goRepairDetail(${
+            record.orderId != null ? record.orderId : "null"
+          })" style="cursor:pointer;">
             <div class="repair-record-col" data-label="时间">${
               record.createdTime || "-"
             }</div>
             <div class="repair-record-col" data-label="地点">${
-              record.address
+              record.address || "-"
             }</div>
             <div class="repair-record-col" data-label="描述">${
-              record.description
+              record.description || "-"
             }</div>
             <div class="repair-record-col" data-label="图片">
               ${
-                record.imageUrl
+                firstImage
                   ? '<img src="' +
-                    record.imageUrl +
+                    firstImage +
                     '" alt="维修图片" class="repair-image">'
                   : "-"
               }
@@ -2230,9 +2233,30 @@
             }</span>
             </div>
           </div>
-        `
-          )
+        `;
+          })
           .join("");
+      }
+
+      function getFirstImageUrl(record) {
+        if (!record) return "";
+        if (Array.isArray(record.imageUrls) && record.imageUrls.length > 0) {
+          return record.imageUrls[0];
+        }
+        if (typeof record.imageUrls === "string") {
+          const arr = record.imageUrls
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+          if (arr.length > 0) return arr[0];
+        }
+        return record.imageUrl || "";
+      }
+
+      function goRepairDetail(orderId) {
+        if (!orderId) return;
+        const search = new URLSearchParams({ orderId }).toString();
+        window.location.href = `/user/repair/item?${search}`;
       }
 
       // 更新分页信息
@@ -2437,7 +2461,7 @@
             const statusClass = isAnon
               ? "feedback-status-anon"
               : "feedback-status-non";
-            const statusText = isAnon ? "匿名" : "实名";
+            const statusText = isAnon ? "实名" : "匿名";
 
             const imageUrls = (record.imageUrls || "")
               .split(",")
@@ -2446,7 +2470,9 @@
             const firstImage = imageUrls[0] || "";
 
             return `
-              <div class="repair-record">
+              <div class="repair-record" style="cursor:pointer;" onclick="goFeedbackDetail(${
+                record.feedbackId || "null"
+              })">
                 <div class="repair-record-col" data-label="时间">${formatDate(
                   record.createdTime
                 )}</div>
@@ -2469,6 +2495,12 @@
             `;
           })
           .join("");
+      }
+
+      function goFeedbackDetail(feedbackId) {
+        if (!feedbackId) return;
+        const search = new URLSearchParams({ feedbackId }).toString();
+        window.location.href = `/user/feedback/item?${search}`;
       }
 
       // 更新分页信息（反馈）
