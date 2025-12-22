@@ -1,7 +1,5 @@
 package com.we_are_team.school_background_service_system.controller.user;
 
-import com.we_are_team.school_background_service_system.pojo.vo.ItemCategoryVO;
-import com.we_are_team.school_background_service_system.pojo.vo.LocationCategoryVO;
 import com.we_are_team.school_background_service_system.pojo.vo.LostAndFoundVO;
 import com.we_are_team.school_background_service_system.result.PageResult;
 import com.we_are_team.school_background_service_system.result.Result;
@@ -12,7 +10,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Slf4j
 @RequestMapping("/user/lostAndFound")
@@ -20,7 +17,6 @@ import java.util.List;
 public class LostAndFoundController {
     @Autowired
     private LostAndFoundService lostAndFoundService;
-
     /**
      * 获取失物招领列表
      */
@@ -41,17 +37,5 @@ public class LostAndFoundController {
     @GetMapping("/getLostAndFoundDetail/{itemId}")
     public Result<LostAndFoundVO> getLostAndFoundDetail(@PathVariable Integer itemId){
         return Result.success("获取失物招领物品详情成功",lostAndFoundService.getLostAndFoundDetail(itemId));
-    }
-//    获取失物招领物品分类列表
-@GetMapping("/getAllItemCategory")
-public Result<List<ItemCategoryVO>> getAllItemCategory(){
-    return Result.success("获取所有分类成功",lostAndFoundService.getAllItemCategory());
-}
-    /**
-     * 获取所有地点分类
-     */
-    @GetMapping("/getAllLocationCategory")
-    public Result<List<LocationCategoryVO>> getAllLocationCategory(){
-        return Result.success("获取所有地点成功",lostAndFoundService.getAllLocationCategory());
     }
 }
