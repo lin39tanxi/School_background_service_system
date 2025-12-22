@@ -447,10 +447,7 @@
           th:style="'background-image: url(' + ${user.avatarUrl} + ');'"
         ></div>
         <div class="dropdown-menu">
-          <button
-            class="dropdown-item"
-            onclick="location.href='/user/info'"
-          >
+          <button class="dropdown-item" onclick="location.href='/user/info'">
             个人信息
           </button>
           <button class="dropdown-item" onclick="logout()">退出登录</button>
@@ -462,23 +459,23 @@
     <div class="container">
       <!-- 左侧边栏 -->
       <aside class="sidebar">
-        <div class="menu-item active" onclick="location.href='/repair.html'">
+        <div class="menu-item active" onclick="window.location.href='/user/repair'">
           <span>维修预约</span>
           <span>></span>
         </div>
-        <div class="menu-item" onclick="alert('功能开发中')">
+        <div class="menu-item" onclick="window.location.href='/user/lostAndFound'">
           <span>失物招领</span>
           <span>></span>
         </div>
-        <div class="menu-item" onclick="alert('功能开发中')">
+        <div class="menu-item" onclick="window.location.href='/user/changeDormitory'">
           <span>宿舍调换申请</span>
           <span>></span>
         </div>
-        <div class="menu-item" onclick="alert('功能开发中')">
+        <div class="menu-item" onclick="window.location.href='/user/notice'">
           <span>学校通知</span>
           <span>></span>
         </div>
-        <div class="menu-item" onclick="alert('功能开发中')">
+        <div class="menu-item" onclick="window.location.href='/user/feedback'">
           <span>问题反馈</span>
           <span>></span>
         </div>
@@ -658,43 +655,8 @@
               <h2>校园通知</h2>
               <a class="more-link">全部通知>></a>
             </div>
-            <ul class="notice-list">
-              <li class="notice-item">
-                <div class="notice-title">
-                  广东省2026年考试录用公务员笔试广州商学院考点指引
-                </div>
-                <div class="notice-date">2025-12-03</div>
-              </li>
-              <li class="notice-item">
-                <div class="notice-title">
-                  中央机关及其直属机构2026年度考试录用公务员笔试考点指引
-                </div>
-                <div class="notice-date">2025-11-26</div>
-              </li>
-              <li class="notice-item">
-                <div class="notice-title">
-                  广州商学院关于开展省级质量工程项目2025年度校内结题验收收集结果的公示
-                </div>
-                <div class="notice-date">2025-11-07</div>
-              </li>
-              <li class="notice-item">
-                <div class="notice-title">
-                  关于2025年全国成人高等学校招生统一考试广州商学院考点支援通知
-                </div>
-                <div class="notice-date">2025-10-11</div>
-              </li>
-              <li class="notice-item">
-                <div class="notice-title">
-                  2025年下半年全国计算机等级考试（第76次）广州商学院考点指引
-                </div>
-                <div class="notice-date">2025-09-06</div>
-              </li>
-              <li class="notice-item">
-                <div class="notice-title">
-                  2025广东高校联盟学位外语水平考试广州商学院考点场指引
-                </div>
-                <div class="notice-date">2025-04-23</div>
-              </li>
+            <ul class="notice-list" id="noticeList">
+              <!-- 通知列表将通过JavaScript动态生成 -->
             </ul>
           </div>
         </div>
@@ -702,9 +664,10 @@
     </div>
 
     <script>
-      // 页面加载时获取用户信息
+      // 页面加载时获取用户信息和通知列表
       window.addEventListener("DOMContentLoaded", function () {
         fetchUserInfo();
+        fetchNotifications();
       });
 
       // 获取用户信息
@@ -727,13 +690,18 @@
 
             // 更新个人信息
             document.getElementById("userName").textContent = user.name || "-";
-            document.getElementById("userNickname").textContent = user.nickname || "-";
-            document.getElementById("studentNumber").textContent = user.studentNumber || "-";
-            document.getElementById("className").textContent = user.className || "-";
+            document.getElementById("userNickname").textContent =
+              user.nickname || "-";
+            document.getElementById("studentNumber").textContent =
+              user.studentNumber || "-";
+            document.getElementById("className").textContent =
+              user.className || "-";
             document.getElementById("phone").textContent = user.phone || "-";
-            document.getElementById("dormitory").textContent = (user.building || "") + (user.dormitory || "");
-            document.getElementById("birthday").textContent = user.birthDate || "-";
-            
+            document.getElementById("dormitory").textContent =
+              (user.building || "") + "栋 " + (user.dormitory || "") + "室";
+            document.getElementById("birthday").textContent =
+              user.birthDate || "-";
+
             // 更新头像
             if (user.avatarUrl) {
               const userIcon = document.querySelector(".user-icon");
@@ -748,6 +716,64 @@
         } catch (error) {
           console.error("获取用户信息出错:", error);
           showError();
+        }
+      }
+
+      // 格式化日期，只显示年月日
+      function formatDate(dateString) {
+        if (!dateString) return "";
+        // 将完整日期时间格式转换为只显示日期部分（YYYY-MM-DD）
+        return dateString.split(" ")[0];
+      }
+
+      // 获取通知列表
+      async function fetchNotifications() {
+        try {
+          // 发送GET请求，携带pageNum和pageSize参数
+          const response = await fetch(
+            `/user/notification?pageNum=1&pageSize=5`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
+          );
+
+          const result = await response.json();
+          console.log("通知列表数据:", result);
+
+          if (result.code === "200" && result.data) {
+            const notifications = result.data.records || [];
+            const noticeList = document.getElementById("noticeList");
+
+            // 清空现有列表
+            noticeList.innerHTML = "";
+
+            // 动态生成通知列表项
+            notifications.forEach((notification) => {
+              const li = document.createElement("li");
+              li.className = "notice-item";
+              li.innerHTML = `
+              <div class="notice-title">${notification.title}</div>
+              <div class="notice-date">${formatDate(
+                notification.publishTime
+              )}</div>
+            `;
+
+              // 添加点击事件
+              li.addEventListener("click", function () {
+                alert("查看通知详情: " + notification.title);
+              });
+
+              noticeList.appendChild(li);
+            });
+          } else {
+            console.error("获取通知列表失败:", result.message);
+          }
+        } catch (error) {
+          console.error("获取通知列表出错:", error);
         }
       }
 
@@ -784,7 +810,7 @@
       document
         .querySelector(".more-link")
         .addEventListener("click", function () {
-          alert("跳转到全部通知页面");
+          window.location.href = "/user/notice";
         });
 
       // 退出登录功能
@@ -794,7 +820,7 @@
           localStorage.removeItem("token");
           alert("已退出登录");
           // 示例：跳转到登录页面
-          window.location.href = '/users/login';
+          window.location.href = "/users/login";
         }
       }
     </script>

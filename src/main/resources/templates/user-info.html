@@ -214,6 +214,15 @@
         font-weight: 700;
       }
 
+      .menu-item.active .menu-item-left::after {
+        content: "<";
+        position: absolute;
+        right: 0px;
+        transform: translateX(15px);
+        color: currentColor;
+        font-weight: 700;
+      }
+
       .menu-icon {
         width: 20px;
         height: 20px;
@@ -247,13 +256,12 @@
         border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         padding: 30px;
-        height: 95%; /* 固定高度占容器的95% */
+        height: 100%;
         max-width: 100%;
         min-height: unset; /* 移除最小高度限制 */
       }
 
-      #sidebarViewAccount,
-      #sidebarViewPlaceholder {
+      .sidebar-view {
         height: 100%;
       }
 
@@ -775,6 +783,189 @@
         border: 1px solid #bbdefb;
       }
 
+      /* 维修记录列表样式 */
+      .repair-list-header {
+        display: flex;
+        background-color: #f5f5f5;
+        padding: 12px 15px;
+        border-radius: 8px 8px 0 0;
+        font-weight: bold;
+        color: #333;
+        border-bottom: 2px solid #e0e0e0;
+      }
+
+      .repair-list-col {
+        flex: 1;
+        text-align: center;
+      }
+
+      .repair-list-content {
+        border: 1px solid #e0e0e0;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        overflow: hidden;
+      }
+
+      .repair-record {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.2s;
+      }
+
+      .repair-record:last-child {
+        border-bottom: none;
+      }
+
+      .repair-record:hover {
+        background-color: #fafafa;
+      }
+
+      .repair-record-col {
+        flex: 1;
+        text-align: center;
+      }
+
+      .repair-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #e0e0e0;
+      }
+
+      /* 状态样式 */
+      .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .status-0 {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+      }
+
+      .status-1 {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+      }
+
+      .status-2 {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .status-3 {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .status-4 {
+        background-color: #e2e3e5;
+        color: #383d41;
+        border: 1px solid #d6d8db;
+      }
+
+      /* 反馈状态样式 */
+      .feedback-status-anon {
+        background-color: #e8eaf6;
+        color: #3f51b5;
+        border: 1px solid #c5cae9;
+      }
+
+      .feedback-status-non {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #c8e6c9;
+      }
+
+      /* 分页样式 */
+      .pagination-container {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+      }
+
+      .pagination-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #666;
+      }
+
+      .page-size-select {
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: white;
+        font-size: 14px;
+      }
+
+      .pagination-controls {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .pagination-btn {
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: white;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 14px;
+      }
+
+      .pagination-btn:hover:not(:disabled) {
+        background-color: #f0f0f0;
+        border-color: #ccc;
+      }
+
+      .pagination-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .page-numbers {
+        display: flex;
+        gap: 5px;
+      }
+
+      .page-btn {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: white;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 14px;
+        min-width: 32px;
+        text-align: center;
+      }
+
+      .page-btn:hover:not(.active) {
+        background-color: #f0f0f0;
+      }
+
+      .page-btn.active {
+        background-color: #3f51b5;
+        color: white;
+        border-color: #3f51b5;
+      }
+
       /* 响应式设计 */
       @media (max-width: 768px) {
         .verify-code-group {
@@ -792,6 +983,57 @@
 
         .btn {
           width: 100%;
+        }
+
+        /* 维修记录列表响应式 */
+        .repair-list-header,
+        .repair-record {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .repair-list-col,
+        .repair-record-col {
+          text-align: left;
+          width: 100%;
+        }
+
+        .repair-list-col::before,
+        .repair-record-col::before {
+          content: attr(data-label) ": ";
+          font-weight: bold;
+        }
+
+        .repair-list-header .repair-list-col::before {
+          display: none;
+        }
+
+        /* 分页响应式 */
+        .pagination-container {
+          flex-direction: column;
+          gap: 15px;
+          align-items: stretch;
+        }
+
+        .pagination-info {
+          justify-content: center;
+        }
+
+        .pagination-controls {
+          justify-content: center;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .repair-image {
+          width: 60px;
+          height: 60px;
+        }
+
+        .page-numbers {
+          overflow-x: auto;
+          padding: 5px;
         }
       }
     </style>
@@ -880,7 +1122,8 @@
 
       <!-- 主内容区域 -->
       <main class="main-content">
-        <div id="sidebarViewAccount">
+        <!-- 账号管理视图 -->
+        <div id="sidebarViewAccount" class="sidebar-view">
           <div class="content-card">
             <h2 class="card-title">账户信息</h2>
 
@@ -1143,13 +1386,112 @@
           </div>
         </div>
 
-        <div id="sidebarViewPlaceholder" style="display: none">
+        <!-- 维修申请记录视图 -->
+        <div id="sidebarViewRepairs" class="sidebar-view" style="display: none">
           <div class="content-card">
-            <h2 class="card-title" id="sidebarPlaceholderTitle"></h2>
+            <h2 class="card-title">维修申请记录</h2>
+
+            <!-- 维修记录列表 -->
+            <div id="repairListContainer">
+              <!-- 列表头部 -->
+              <div class="repair-list-header">
+                <div class="repair-list-col">时间</div>
+                <div class="repair-list-col">地点</div>
+                <div class="repair-list-col">描述</div>
+                <div class="repair-list-col">图片</div>
+                <div class="repair-list-col">状态</div>
+              </div>
+
+              <!-- 列表内容 -->
+              <div id="repairRecordsList" class="repair-list-content">
+                <!-- 记录将通过JavaScript动态生成 -->
+              </div>
+
+              <!-- 分页控件 -->
+              <div class="pagination-container">
+                <div class="pagination-info">
+                  <span>共 <span id="totalRecords">0</span> 条记录</span>
+                  <select id="pageSizeSelect" class="page-size-select">
+                    <option value="5">每页 5 条</option>
+                    <option value="10">每页 10 条</option>
+                    <option value="20">每页 20 条</option>
+                  </select>
+                </div>
+                <div class="pagination-controls">
+                  <button id="prevPage" class="pagination-btn" disabled>
+                    上一页
+                  </button>
+                  <div class="page-numbers">
+                    <!-- 页码按钮将通过JavaScript动态生成 -->
+                  </div>
+                  <button id="nextPage" class="pagination-btn" disabled>
+                    下一页
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 反馈记录视图 -->
+        <div
+          id="sidebarViewFeedbacks"
+          class="sidebar-view"
+          style="display: none"
+        >
+          <div class="content-card">
+            <h2 class="card-title">反馈记录</h2>
+            <div id="feedbackListContainer">
+              <div class="repair-list-header">
+                <div class="repair-list-col">时间</div>
+                <div class="repair-list-col">描述</div>
+                <div class="repair-list-col">图片</div>
+                <div class="repair-list-col">状态</div>
+              </div>
+
+              <div id="feedbackRecordsList" class="repair-list-content">
+                <!-- 反馈记录将通过 JavaScript 动态生成 -->
+              </div>
+
+              <div class="pagination-container">
+                <div class="pagination-info">
+                  <span
+                    >共 <span id="feedbackTotalRecords">0</span> 条记录</span
+                  >
+                  <select id="feedbackPageSizeSelect" class="page-size-select">
+                    <option value="5">每页 5 条</option>
+                    <option value="10">每页 10 条</option>
+                    <option value="20">每页 20 条</option>
+                  </select>
+                </div>
+                <div class="pagination-controls">
+                  <button id="feedbackPrevPage" class="pagination-btn" disabled>
+                    上一页
+                  </button>
+                  <div class="page-numbers feedback-page-numbers">
+                    <!-- 页码按钮通过 JS 生成 -->
+                  </div>
+                  <button id="feedbackNextPage" class="pagination-btn" disabled>
+                    下一页
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 宿舍调换申请记录视图 -->
+        <div
+          id="sidebarViewDormitoryChange"
+          class="sidebar-view"
+          style="display: none"
+        >
+          <div class="content-card">
+            <h2 class="card-title">宿舍调换申请记录</h2>
             <div class="info-form">
               <div class="form-row">
                 <div class="form-value">
-                  该功能页面暂未实现，仅完成侧边栏交互与状态显示。
+                  这里将展示宿舍调换申请记录列表或详情，请在此补充具体内容。
                 </div>
               </div>
             </div>
@@ -1187,6 +1529,9 @@
         fetchUserInfo();
         refreshVerifyCode();
       });
+      /************************************************************************************************************************************************/
+      /*************************************************************获取用户信息***********************************************************************/
+      /************************************************************************************************************************************************/
       // 获取用户信息
       async function fetchUserInfo() {
         try {
@@ -1219,7 +1564,7 @@
             document.getElementById("userPhone").textContent =
               user.phone || "-";
             document.getElementById("dormitory").textContent =
-              (user.building || "") + (user.dormitory || "");
+              (user.building || "") + "栋 " + (user.dormitory || "") + "室";
             document.getElementById("userGender").textContent =
               user.gender || "-";
             // 更新头像
@@ -1375,29 +1720,25 @@
       }
 
       function switchSidebarView(view) {
-        const accountView = document.getElementById("sidebarViewAccount");
-        const placeholderView = document.getElementById(
-          "sidebarViewPlaceholder"
-        );
-        const placeholderTitle = document.getElementById(
-          "sidebarPlaceholderTitle"
-        );
-
-        if (view === "account") {
-          accountView.style.display = "block";
-          placeholderView.style.display = "none";
-          return;
-        }
-
-        const titleMap = {
-          repairs: "维修申请记录",
-          feedbacks: "反馈记录",
-          "dormitory-change": "宿舍调换申请记录",
+        const viewMap = {
+          account: document.getElementById("sidebarViewAccount"),
+          repairs: document.getElementById("sidebarViewRepairs"),
+          feedbacks: document.getElementById("sidebarViewFeedbacks"),
+          "dormitory-change": document.getElementById(
+            "sidebarViewDormitoryChange"
+          ),
         };
 
-        placeholderTitle.textContent = titleMap[view] || "功能页面";
-        accountView.style.display = "none";
-        placeholderView.style.display = "block";
+        Object.values(viewMap).forEach((el) => {
+          if (el) {
+            el.style.display = "none";
+          }
+        });
+
+        const target = viewMap[view] || viewMap.account;
+        if (target) {
+          target.style.display = "block";
+        }
       }
 
       // 侧边栏菜单交互：不跳转/不刷新，动态切换右侧内容
@@ -1423,9 +1764,10 @@
           location.href = "/users/login";
         }
       }
-
-      /* ******************************头像上传功能*********************************** */
-      /* ************************包含文件选择、预览、上传功能************************** */
+      /************************************************************************************************************************************************/
+      /*************************************************************获取用户信息***********************************************************************/
+      /******************************************************包含文件选择、预览、上传功能***************************************************************/
+      /************************************************************************************************************************************************/
       let selectedAvatarFile = null;
 
       // 监听文件选择事件
@@ -1557,8 +1899,9 @@
         .addEventListener("click", function () {
           document.getElementById("avatarFileInput").click();
         });
-
-      // 密码修改功能
+      /************************************************************************************************************************************************/
+      /*************************************************************修改密码***************************************************************************/
+      /************************************************************************************************************************************************/
       document.addEventListener("DOMContentLoaded", function () {
         // 监听新密码和确认密码的输入事件，实时验证一致性
         const newPasswordInput = document.getElementById("newPassword");
@@ -1598,7 +1941,7 @@
           return;
         }
 
-        const url = "/user/generateVerifyCode?t=" + Date.now();
+        const url = "/user/generateVerifyCode";
 
         try {
           const response = await fetch(url, {
@@ -1647,7 +1990,9 @@
           "form-status";
         refreshVerifyCode();
       }
-
+      /************************************************************************************************************************************************/
+      /*************************************************************密码修改功能***********************************************************************/
+      /************************************************************************************************************************************************/
       // 提交密码修改表单
       async function changePassword() {
         const oldPassword = document.getElementById("oldPassword").value.trim();
@@ -1703,6 +2048,12 @@
 
           if (result.code === "200") {
             showPasswordStatus("密码修改成功", "success");
+            // 清除本地存储的 token
+            localStorage.removeItem("token");
+            // 2秒后跳转到登录页
+            setTimeout(() => {
+              window.location.href = "/users/login";
+            }, 2000);
             // 重置表单
             setTimeout(() => {
               resetPasswordForm();
@@ -1727,6 +2078,506 @@
         const statusElement = document.getElementById("passwordChangeStatus");
         statusElement.textContent = message;
         statusElement.className = `form-status ${type}`;
+      }
+
+      // 重置密码修改表单
+      function resetPasswordForm() {
+        document.getElementById("oldPassword").value = "";
+        document.getElementById("newPassword").value = "";
+        document.getElementById("confirmPassword").value = "";
+        document.getElementById("verifyCode").value = "";
+        showPasswordStatus("", "");
+      }
+
+      /************************************************************************************************************************************************/
+      /*************************************************************维修申请记录管理*******************************************************************/
+      /************************************************************************************************************************************************/
+      // 维修记录相关变量
+      let currentPage = 1;
+      let pageSize = 5;
+      let totalRecords = 0;
+      let totalPages = 0;
+
+      // 反馈记录相关变量
+      let feedbackCurrentPage = 1;
+      let feedbackPageSize = 5;
+      let feedbackTotalRecords = 0;
+      let feedbackTotalPages = 0;
+
+      // 状态映射
+      const statusMap = {
+        0: "申请中",
+        1: "已受理",
+        2: "已完成",
+        3: "已拒绝",
+        4: "已取消",
+      };
+
+      // 监听侧边栏切换，当切换到维修记录视图时加载数据
+      function switchSidebarView(view) {
+        const viewMap = {
+          account: document.getElementById("sidebarViewAccount"),
+          repairs: document.getElementById("sidebarViewRepairs"),
+          feedbacks: document.getElementById("sidebarViewFeedbacks"),
+          "dormitory-change": document.getElementById(
+            "sidebarViewDormitoryChange"
+          ),
+        };
+
+        Object.values(viewMap).forEach((el) => {
+          if (el) {
+            el.style.display = "none";
+          }
+        });
+
+        const target = viewMap[view] || viewMap.account;
+        if (target) {
+          target.style.display = "block";
+
+          // 当切换到维修记录视图时，加载维修记录
+          if (view === "repairs") {
+            loadRepairRecords();
+          }
+
+          if (view === "feedbacks") {
+            loadFeedbackRecords();
+          }
+        }
+      }
+
+      // 获取维修记录
+      async function getRepairRecords(pageNum, pageSize) {
+        try {
+          const response = await fetch(
+            `/user/repairs/my?pageNum=${pageNum}&pageSize=${pageSize}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
+          );
+
+          const result = await response.json();
+
+          if (result.code === "200") {
+            return {
+              total: result.data.total,
+              records: result.data.records || [],
+            };
+          } else {
+            console.error("获取维修记录失败:", result.message);
+            return { total: 0, records: [] };
+          }
+        } catch (error) {
+          console.error("获取维修记录出错:", error);
+          return { total: 0, records: [] };
+        }
+      }
+
+      // 加载维修记录
+      async function loadRepairRecords() {
+        const data = await getRepairRecords(currentPage, pageSize);
+        totalRecords = data.total;
+        totalPages = Math.ceil(totalRecords / pageSize);
+
+        renderRepairRecords(data.records);
+        renderPagination();
+        updatePaginationInfo();
+      }
+
+      // 渲染维修记录
+      function renderRepairRecords(records) {
+        const listContainer = document.getElementById("repairRecordsList");
+
+        if (records.length === 0) {
+          listContainer.innerHTML = `
+            <div class="repair-record">
+              <div class="repair-record-col" style="flex: 1 1 100%; text-align: center; padding: 30px;">
+                暂无维修记录
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        listContainer.innerHTML = records
+          .map(
+            (record) => `
+          <div class="repair-record">
+            <div class="repair-record-col" data-label="时间">${
+              record.createdTime || "-"
+            }</div>
+            <div class="repair-record-col" data-label="地点">${
+              record.address
+            }</div>
+            <div class="repair-record-col" data-label="描述">${
+              record.description
+            }</div>
+            <div class="repair-record-col" data-label="图片">
+              ${
+                record.imageUrl
+                  ? '<img src="' +
+                    record.imageUrl +
+                    '" alt="维修图片" class="repair-image">'
+                  : "-"
+              }
+            </div>
+            <div class="repair-record-col" data-label="状态">
+              <span class="status-badge status-${record.processStatus}">${
+              statusMap[record.processStatus]
+            }</span>
+            </div>
+          </div>
+        `
+          )
+          .join("");
+      }
+
+      // 更新分页信息
+      function updatePaginationInfo() {
+        document.getElementById("totalRecords").textContent = totalRecords;
+        document.getElementById("pageSizeSelect").value = pageSize;
+      }
+
+      // 渲染分页控件
+      function renderPagination() {
+        const pageNumbersContainer = document.querySelector(".page-numbers");
+        const prevPageBtn = document.getElementById("prevPage");
+        const nextPageBtn = document.getElementById("nextPage");
+
+        // 更新按钮状态
+        prevPageBtn.disabled = currentPage === 1;
+        nextPageBtn.disabled = currentPage === totalPages;
+
+        // 生成页码按钮
+        pageNumbersContainer.innerHTML = "";
+
+        if (totalPages <= 1) {
+          return;
+        }
+
+        // 页码范围计算
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, currentPage + 2);
+
+        // 确保显示5个页码
+        if (endPage - startPage < 4) {
+          if (startPage === 1) {
+            endPage = Math.min(totalPages, startPage + 4);
+          } else if (endPage === totalPages) {
+            startPage = Math.max(1, endPage - 4);
+          }
+        }
+
+        // 首页按钮
+        if (startPage > 1) {
+          const firstPageBtn = createPageButton(1);
+          pageNumbersContainer.appendChild(firstPageBtn);
+
+          if (startPage > 2) {
+            const ellipsis1 = document.createElement("span");
+            ellipsis1.textContent = "...";
+            ellipsis1.className = "pagination-ellipsis";
+            pageNumbersContainer.appendChild(ellipsis1);
+          }
+        }
+
+        // 中间页码按钮
+        for (let i = startPage; i <= endPage; i++) {
+          const pageBtn = createPageButton(i);
+          pageNumbersContainer.appendChild(pageBtn);
+        }
+
+        // 末页按钮
+        if (endPage < totalPages) {
+          if (endPage < totalPages - 1) {
+            const ellipsis2 = document.createElement("span");
+            ellipsis2.textContent = "...";
+            ellipsis2.className = "pagination-ellipsis";
+            pageNumbersContainer.appendChild(ellipsis2);
+          }
+
+          const lastPageBtn = createPageButton(totalPages);
+          pageNumbersContainer.appendChild(lastPageBtn);
+        }
+      }
+
+      // 创建页码按钮
+      function createPageButton(pageNum) {
+        const button = document.createElement("button");
+        button.className = `page-btn ${
+          pageNum === currentPage ? "active" : ""
+        }`;
+        button.textContent = pageNum;
+        button.addEventListener("click", () => {
+          currentPage = pageNum;
+          loadRepairRecords();
+        });
+        return button;
+      }
+
+      // 初始化维修记录相关事件监听
+      function initRepairRecordEvents() {
+        // 上一页按钮
+        document.getElementById("prevPage").addEventListener("click", () => {
+          if (currentPage > 1) {
+            currentPage--;
+            loadRepairRecords();
+          }
+        });
+
+        // 下一页按钮
+        document.getElementById("nextPage").addEventListener("click", () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            loadRepairRecords();
+          }
+        });
+
+        // 每页记录数变化
+        document
+          .getElementById("pageSizeSelect")
+          .addEventListener("change", (e) => {
+            pageSize = parseInt(e.target.value);
+            currentPage = 1;
+            loadRepairRecords();
+          });
+      }
+
+      // 初始化所有事件
+      function initAllEvents() {
+        initRepairRecordEvents();
+        initFeedbackRecordEvents();
+      }
+
+      // 页面加载时初始化
+      window.addEventListener("DOMContentLoaded", () => {
+        initAllEvents();
+      });
+
+      /************************************************************************************************************************************************/
+      /*************************************************************反馈记录管理***********************************************************************/
+      /************************************************************************************************************************************************/
+
+      // 获取反馈记录
+      async function getFeedbackRecords(pageNum, pageSize) {
+        try {
+          const response = await fetch(
+            `/user/feedbacks/my?pageNum=${pageNum}&pageSize=${pageSize}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
+          );
+
+          const result = await response.json();
+
+          if (result.code === "200") {
+            return {
+              total: result.data.total,
+              records: result.data.records || [],
+            };
+          } else {
+            console.error("获取反馈记录失败:", result.message);
+            return { total: 0, records: [] };
+          }
+        } catch (error) {
+          console.error("获取反馈记录出错:", error);
+          return { total: 0, records: [] };
+        }
+      }
+
+      // 加载反馈记录
+      async function loadFeedbackRecords() {
+        const data = await getFeedbackRecords(
+          feedbackCurrentPage,
+          feedbackPageSize
+        );
+        feedbackTotalRecords = data.total;
+        feedbackTotalPages = Math.ceil(feedbackTotalRecords / feedbackPageSize);
+
+        renderFeedbackRecords(data.records);
+        renderFeedbackPagination();
+        updateFeedbackPaginationInfo();
+      }
+
+      // 日期格式化函数，只保留年月日
+      function formatDate(dateString) {
+        if (!dateString) return "-";
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      // 渲染反馈记录
+      function renderFeedbackRecords(records) {
+        const listContainer = document.getElementById("feedbackRecordsList");
+
+        if (records.length === 0) {
+          listContainer.innerHTML = `
+            <div class="repair-record">
+              <div class="repair-record-col" style="flex: 1 1 100%; text-align: center; padding: 30px;">
+                暂无反馈记录
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        listContainer.innerHTML = records
+          .map((record) => {
+            const isAnon = Number(record.isAnonymous) === 1;
+            const statusClass = isAnon
+              ? "feedback-status-anon"
+              : "feedback-status-non";
+            const statusText = isAnon ? "匿名" : "实名";
+
+            const imageUrls = (record.imageUrls || "")
+              .split(",")
+              .map((u) => u.trim())
+              .filter(Boolean);
+            const firstImage = imageUrls[0] || "";
+
+            return `
+              <div class="repair-record">
+                <div class="repair-record-col" data-label="时间">${formatDate(
+                  record.createdTime
+                )}</div>
+                <div class="repair-record-col" data-label="描述">${
+                  record.content || "-"
+                }</div>
+                <div class="repair-record-col" data-label="图片">
+                  ${
+                    firstImage
+                      ? '<img src="' +
+                        firstImage +
+                        '" alt="反馈图片" class="repair-image">'
+                      : "-"
+                  }
+                </div>
+                <div class="repair-record-col" data-label="状态">
+                  <span class="status-badge ${statusClass}">${statusText}</span>
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      // 更新分页信息（反馈）
+      function updateFeedbackPaginationInfo() {
+        document.getElementById("feedbackTotalRecords").textContent =
+          feedbackTotalRecords;
+        document.getElementById("feedbackPageSizeSelect").value =
+          feedbackPageSize;
+      }
+
+      // 渲染分页（反馈）
+      function renderFeedbackPagination() {
+        const pageNumbersContainer = document.querySelector(
+          ".feedback-page-numbers"
+        );
+        const prevPageBtn = document.getElementById("feedbackPrevPage");
+        const nextPageBtn = document.getElementById("feedbackNextPage");
+
+        prevPageBtn.disabled = feedbackCurrentPage === 1;
+        nextPageBtn.disabled = feedbackCurrentPage === feedbackTotalPages;
+
+        pageNumbersContainer.innerHTML = "";
+
+        if (feedbackTotalPages <= 1) {
+          return;
+        }
+
+        let startPage = Math.max(1, feedbackCurrentPage - 2);
+        let endPage = Math.min(feedbackTotalPages, feedbackCurrentPage + 2);
+
+        if (endPage - startPage < 4) {
+          if (startPage === 1) {
+            endPage = Math.min(feedbackTotalPages, startPage + 4);
+          } else if (endPage === feedbackTotalPages) {
+            startPage = Math.max(1, endPage - 4);
+          }
+        }
+
+        if (startPage > 1) {
+          const firstPageBtn = createFeedbackPageButton(1);
+          pageNumbersContainer.appendChild(firstPageBtn);
+
+          if (startPage > 2) {
+            const ellipsis1 = document.createElement("span");
+            ellipsis1.textContent = "...";
+            ellipsis1.className = "pagination-ellipsis";
+            pageNumbersContainer.appendChild(ellipsis1);
+          }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+          const pageBtn = createFeedbackPageButton(i);
+          pageNumbersContainer.appendChild(pageBtn);
+        }
+
+        if (endPage < feedbackTotalPages) {
+          if (endPage < feedbackTotalPages - 1) {
+            const ellipsis2 = document.createElement("span");
+            ellipsis2.textContent = "...";
+            ellipsis2.className = "pagination-ellipsis";
+            pageNumbersContainer.appendChild(ellipsis2);
+          }
+
+          const lastPageBtn = createFeedbackPageButton(feedbackTotalPages);
+          pageNumbersContainer.appendChild(lastPageBtn);
+        }
+      }
+
+      // 创建页码按钮（反馈）
+      function createFeedbackPageButton(pageNum) {
+        const button = document.createElement("button");
+        button.className = `page-btn ${
+          pageNum === feedbackCurrentPage ? "active" : ""
+        }`;
+        button.textContent = pageNum;
+        button.addEventListener("click", () => {
+          feedbackCurrentPage = pageNum;
+          loadFeedbackRecords();
+        });
+        return button;
+      }
+
+      // 初始化反馈记录事件
+      function initFeedbackRecordEvents() {
+        document
+          .getElementById("feedbackPrevPage")
+          .addEventListener("click", () => {
+            if (feedbackCurrentPage > 1) {
+              feedbackCurrentPage--;
+              loadFeedbackRecords();
+            }
+          });
+
+        document
+          .getElementById("feedbackNextPage")
+          .addEventListener("click", () => {
+            if (feedbackCurrentPage < feedbackTotalPages) {
+              feedbackCurrentPage++;
+              loadFeedbackRecords();
+            }
+          });
+
+        document
+          .getElementById("feedbackPageSizeSelect")
+          .addEventListener("change", (e) => {
+            feedbackPageSize = parseInt(e.target.value);
+            feedbackCurrentPage = 1;
+            loadFeedbackRecords();
+          });
       }
     </script>
   </body>

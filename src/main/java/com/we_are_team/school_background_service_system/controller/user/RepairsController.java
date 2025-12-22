@@ -24,7 +24,14 @@ public class RepairsController {
      * 提交保修申请
      */
     @PostMapping("/repairs")
-    public Result submitRepair(@RequestParam String description, @RequestParam String address, @RequestParam(required = false) MultipartFile[] imageUrlsArray, @RequestParam String phone , @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime appointmentBegin, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")LocalDateTime appointmentEnd) {
+    public Result submitRepair(@RequestParam String description,
+                               @RequestParam String address,
+                               @RequestParam(required = false) MultipartFile[] imageUrlsArray,
+                               @RequestParam String phone ,
+                               @RequestParam("appointmentBegin")
+                                   @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime appointmentBegin,
+                               @RequestParam("appointmentEnd")
+                                   @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")LocalDateTime appointmentEnd) {
 
         reparisService.submitRepair(description, address,imageUrlsArray,phone,appointmentBegin,appointmentEnd);
         return Result.success("报修提交成功");
@@ -33,6 +40,7 @@ public class RepairsController {
     /**
      * 获取我的报修列表
      */
+
     @GetMapping("/repairs/my")
     public Result<PageResult> getMyRepairs( String  status , @RequestParam(defaultValue = "1") Integer pageNum,@RequestParam(defaultValue = "10") Integer pageSize, String orderKey, @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginTime, @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endTime) {
         PageResult pageResult = reparisService.getMyRepairs(status, pageNum, pageSize, orderKey, beginTime, endTime);
