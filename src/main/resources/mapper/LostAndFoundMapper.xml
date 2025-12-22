@@ -43,7 +43,7 @@
         left join location_category l on lf.location_id = l.location_id
         <where>
             <if test="orderKey != null and orderKey != ''">
-                and (lf.item_id LIKE CONCAT('%', #{orderKey}, '%') )
+                and (lf.item_id LIKE CONCAT('%', #{orderKey}, '%' or lf.item_name LIKE CONCAT('%', #{orderKey}, '%')) )
             </if>
             <if test="beginTime != null">
                 and lf.created_time >= #{beginTime}
@@ -55,6 +55,7 @@
                 and lf.status = #{status}
             </if>
         </where>
+        order by lf.item_id  desc
     </select>
     <select id="getLostAndFoundDetail" resultType="com.we_are_team.school_background_service_system.pojo.entity.LostAndFound">
         select lf.item_id, lf.item_name, lf.description, lf.image_urls, lf.status,lf.admin_id,

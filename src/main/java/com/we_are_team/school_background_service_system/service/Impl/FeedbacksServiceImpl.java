@@ -46,9 +46,8 @@ public class FeedbacksServiceImpl implements FeedbacksService {
         if(!user.getPermission().contains("0")){
             throw new RuntimeException("这是用户端提交反馈");
         }
-       if(isAnonymous == 1){
-           feedback.setUserId(BaseContext.getCurrentId());
-       }
+
+        feedback.setUserId(BaseContext.getCurrentId());
         feedback.setContent(comment);
         feedback.setIsAnonymous(isAnonymous);
         feedback.setCreatedTime(LocalDateTime.now());
@@ -183,6 +182,10 @@ public class FeedbacksServiceImpl implements FeedbacksService {
         Integer userId = null;
         Page<GetFeedbackListVO> feedbacks = feedbacksMapper.getList(userId, orderKey, beginTime, endTime);
         feedbacks.getResult().forEach(feedback->{
+             if(feedback.getIsAnonymous() == 0){
+                 feedback.setStudentNumber("匿名用户");
+             }
+//            获取第一张图片
             if (feedback.getImageUrls() != null && !feedback.getImageUrls().equals("")) {
                 String[] imageUrls = feedback.getImageUrls().split(",");
                 feedback.setImageUrls(imageUrls[0]);
@@ -206,19 +209,24 @@ public class FeedbacksServiceImpl implements FeedbacksService {
         if(feedback == null){
             throw new RuntimeException("反馈不存在");
         }
+        FeedbackVO feedbackVO = new FeedbackVO();
+        if(feedback.getIsAnonymous() == 0){
+            feedback.setStudentNumber("匿名用户");
+//
+        }
         if(feedback.getImageUrls() == null || feedback.getImageUrls().equals("")){
-            FeedbackVO feedbackVO = FeedbackVO.builder()
+             feedbackVO = FeedbackVO.builder()
                     .feedbackId(feedback.getFeedbackId())
                     .content(feedback.getContent())
                     .isAnonymous(feedback.getIsAnonymous())
                     .createdTime(feedback.getCreatedTime())
                     .studentNumber(feedback.getStudentNumber())
                     .build();
-            return feedbackVO;
+
         }else {
             String[] urlArray = feedback.getImageUrls().split(",");
             List<String> urls = new ArrayList<>(Arrays.asList(urlArray));
-            FeedbackVO feedbackVO = FeedbackVO.builder()
+             feedbackVO = FeedbackVO.builder()
                     .feedbackId(feedback.getFeedbackId())
                     .content(feedback.getContent())
                     .isAnonymous(feedback.getIsAnonymous())
@@ -226,8 +234,10 @@ public class FeedbacksServiceImpl implements FeedbacksService {
                     .imageUrls(urls)
                     .studentNumber(feedback.getStudentNumber())
                     .build();
-            return feedbackVO;
+
     }
+
+        return feedbackVO;
 }}
 
 

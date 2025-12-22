@@ -391,5 +391,13 @@ public class UserServiceImpl implements UserService {
         return mergedList;
     }
 
+    @Override
+    public void changeMyPhone(String newPhone) {
+        User user =userMapper.getUserByUserId(BaseContext.getCurrentId());
+        String studentNumber = user.getStudentNumber();
+        userMapper.changeMyPhoneByStudentNumber(newPhone,studentNumber);
+
+    }
+
 
 }

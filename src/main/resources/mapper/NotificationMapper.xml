@@ -16,6 +16,7 @@
             AND notification.publish_time &amp;gt= #{endTime}
         </if>
     </where>
+    order by notification.publish_time desc
 </select>
 
 

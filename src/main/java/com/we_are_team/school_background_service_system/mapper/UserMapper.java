@@ -19,7 +19,7 @@ public interface UserMapper {
 
     /**
      * 登录
-     * @param userLoginDTO
+     * @param
      * @return
      */
     @Select("select * from user where student_number=#{studentNumber} and password=#{password}")
@@ -129,4 +129,7 @@ public interface UserMapper {
      */
     @Update("update student set building = #{building}, dormitory = #{dormitory} where student_number = #{studentNumber}")
     void updateStudentInfoByStudentNumber(@Param("studentNumber") String studentNumber,@Param("building") String building,@Param("dormitory") String dormitory);
+
+    @Update("update student set phone = #{newPhone} where student_number = #{studentNumber}")
+    void changeMyPhoneByStudentNumber(@Param("newPhone") String newPhone, @Param("studentNumber") String studentNumber);
 }

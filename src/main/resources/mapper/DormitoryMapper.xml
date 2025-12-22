@@ -72,5 +72,6 @@
               and created_time &gt;= #{endTime}
           </if>
       </where>
+      ORDER BY created_time DESC
     </select>
 </mapper>

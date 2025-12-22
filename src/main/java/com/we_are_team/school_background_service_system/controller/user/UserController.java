@@ -109,6 +109,14 @@ public class UserController {
            return Result.success("获取申请状态成功",userService.getApplicationForm());
 
         }
+//        修改手机号
+    @PutMapping("/user/changePhone")
+    public Result changeMyPhone(String newPhone)
+    {
+        userService.changeMyPhone(newPhone);
+        return Result.success("更换手机号成功!",newPhone);
+    }
+
     }
 
 

@@ -91,4 +91,9 @@ public interface UserService {
      * @return
      */
 List<ApplicationForm> getApplicationForm();
+/**
+     * 修改手机号
+     * @param newPhone
+     */
+    void changeMyPhone(String newPhone);
 }
