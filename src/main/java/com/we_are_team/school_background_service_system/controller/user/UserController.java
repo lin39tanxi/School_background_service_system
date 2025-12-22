@@ -114,7 +114,7 @@ public class UserController {
     public Result changeMyPhone(String newPhone)
     {
         userService.changeMyPhone(newPhone);
-        return Result.success("更换手机号成功!");
+        return Result.success("更换手机号成功!",newPhone);
     }
 
     }
