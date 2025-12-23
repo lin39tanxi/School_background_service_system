@@ -56,8 +56,8 @@ public interface DormitoryMapper {
      * 获取所有空宿舍
      * @return
      */
-    @Select("select distinct dorm_building.building_id, building_name ,gender  from dorm_building left join dorm_room on dorm_building.building_id = dorm_room.building_id where dorm_room.current_people<dorm_room.max_people")
-    List<GetAllBuildingVO> getEmptyBuilding();
+    @Select("select distinct dorm_building.building_id, building_name ,gender  from dorm_building left join dorm_room on dorm_building.building_id = dorm_room.building_id where dorm_room.current_people<dorm_room.max_people and dorm_building.gender=#{gender}")
+    List<GetAllBuildingVO> getEmptyBuilding(@Param("gender") Integer gender);
 
     /**
      * 获取到所有有空位的楼层

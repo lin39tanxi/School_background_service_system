@@ -9,6 +9,8 @@ import com.we_are_team.school_background_service_system.pojo.dto.ChangeDormitory
 import com.we_are_team.school_background_service_system.pojo.dto.RejectionChangeDormitoryDTO;
 import com.we_are_team.school_background_service_system.pojo.entity.ChangeDormitory;
 import com.we_are_team.school_background_service_system.pojo.entity.DormRoom;
+import com.we_are_team.school_background_service_system.pojo.entity.Student;
+import com.we_are_team.school_background_service_system.pojo.entity.User;
 import com.we_are_team.school_background_service_system.pojo.vo.GetAllBuildingAndFloorAndRoomsVO;
 import com.we_are_team.school_background_service_system.pojo.vo.GetAllBuildingVO;
 import com.we_are_team.school_background_service_system.pojo.vo.GetFloorsByBuildingVO;
@@ -144,7 +146,10 @@ public class DormitoryServiceImpl implements DormitoryService {
 
     @Override
     public List<GetAllBuildingVO> getEmptyBuilding() {
-        return dormitoryMapper.getEmptyBuilding();
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        Student student = userMapper.getStudentByStudentNumber(user.getStudentNumber());
+        Integer gender = student.getGender().equals("男") ? 1 : 0;
+        return dormitoryMapper.getEmptyBuilding(gender);
     }
     /**
      * 获取空宿舍楼
