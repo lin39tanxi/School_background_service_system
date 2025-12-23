@@ -90,6 +90,6 @@ public interface DormitoryMapper {
     @Select("SELECT * FROM dorm_change WHERE dorm_change_id = #{dormChangeId}")
     ChangeDormitory getMyChangeDormitoryInfo(Integer dormChangeId);
 
-    @Select("select dorm_change_id as id,reason as content,created_time,updated_time,status from dorm_change")
+    @Select("select dorm_change_id as id,reason as content,created_time,updated_time,status from dorm_change where  user_id = #{userId}")
     List<ApplicationForm> getAppcationFormByUserId(Integer userId);
 }

@@ -28,6 +28,6 @@ public interface FeedbacksMapper {
     @Delete("delete from feedback where feedback_id = #{feedbackId}")
     void deleteFeedback(@Param("feedbackId") Integer feedbackId);
 
-    @Select("select feedback_id as id,is_anonymous as status, content,created_time from feedback")
+    @Select("select feedback_id as id,is_anonymous as status, content,created_time from feedback where  user_id = #{userId}")
     List<ApplicationForm> getAppcationFormByUserId(Integer userId);
 }
