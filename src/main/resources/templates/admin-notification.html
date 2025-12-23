@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>通知管理</title>
+    <style>
+      :root {
+        --bg: radial-gradient(
+          circle at 20% 20%,
+          #e8edff,
+          #f7f9ff 45%,
+          #eef2ff 80%
+        );
+        --card: rgba(255, 255, 255, 0.9);
+        --shadow: 0 10px 40px rgba(54, 74, 186, 0.15);
+        --primary: #3f51b5;
+        --text-main: #1f2a44;
+        --text-sub: #5a6275;
+        --border: #e4e8f2;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        background-image: url(http://localhost:8081/img/35e1b763c15645c1a6d674accf959f30.jpg);
+        background-size: cover;
+        background-attachment: fixed;
+        color: var(--text-main);
+        min-height: 100vh;
+        display: flex;
+      }
+
+      .page {
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
+        overflow: hidden;
+      }
+
+      .sidebar {
+        width: 230px;
+        background: rgba(255, 255, 255, 0.85);
+        color: #000;
+        padding: 28px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        box-shadow: 6px 0 20px rgba(0, 0, 0, 0.18);
+      }
+
+      .brand {
+        color: #000;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+
+      .menu {
+        display: grid;
+        gap: 12px;
+      }
+
+      .menu-item {
+        background: rgba(229, 229, 229, 0.659);
+        color: #1f1f1f;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 14px 16px;
+        text-align: left;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .menu-item.active {
+        background: linear-gradient(135deg, #3f51b5, #5f6fd6);
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(63, 81, 181, 0.25);
+      }
+
+      .menu-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #7ba3ff;
+        box-shadow: 0 0 0 6px rgba(123, 163, 255, 0.18);
+      }
+
+      .content {
+        flex: 1;
+        padding: 28px 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        padding: 20px 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .title {
+        font-size: 18px;
+        font-weight: 700;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .pill {
+        padding: 6px 10px;
+        background: rgba(63, 81, 181, 0.1);
+        color: var(--primary);
+        border-radius: 999px;
+        font-size: 12px;
+      }
+
+      .panel {
+        display: none;
+      }
+
+      .panel.active {
+        display: block;
+      }
+
+      .placeholder-text {
+        color: var(--text-sub);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      @media (max-width: 960px) {
+        .sidebar {
+          display: none;
+        }
+        .content {
+          padding: 20px;
+        }
+        .card {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <aside class="sidebar">
+        <div class="brand">通知管理</div>
+        <div class="menu" id="menuList">
+          <div class="menu-item active" data-target="notice-list">
+            <span class="menu-dot"></span>
+            <span>通知列表 >></span>
+          </div>
+          <div class="menu-item" data-target="upload-notice">
+            <span class="menu-dot"></span>
+            <span>上传通知 >></span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="card panel active" id="notice-list">
+          <div class="card-header">
+            <div class="title">
+              通知列表 <span class="pill">待接入接口</span>
+            </div>
+          </div>
+          <p class="placeholder-text">
+            这里将展示全部通知记录，可在后续接入分页、筛选、发布和删除等操作。
+          </p>
+        </section>
+
+        <section class="card panel" id="upload-notice">
+          <div class="card-header">
+            <div class="title">
+              上传通知 <span class="pill">待接入表单</span>
+            </div>
+          </div>
+          <p class="placeholder-text">
+            在这里放置发布通知的表单，例如标题、正文、发布对象、发布时间等字段。
+          </p>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const menuItems = document.querySelectorAll(".menu-item");
+      const panels = document.querySelectorAll(".panel");
+
+      function switchPanel(targetId) {
+        menuItems.forEach((item) => {
+          item.classList.toggle("active", item.dataset.target === targetId);
+        });
+        panels.forEach((panel) => {
+          panel.classList.toggle("active", panel.id === targetId);
+        });
+      }
+
+      menuItems.forEach((item) => {
+        item.addEventListener("click", () => switchPanel(item.dataset.target));
+      });
+    </script>
+  </body>
+</html>
