@@ -53,7 +53,7 @@ public class DormitoryServiceImpl implements DormitoryService {
     }
 
     /**
-     * 根据楼栋id和楼层id获取所有空宿舍
+     * 根据楼栋id和楼层id获取所有宿舍
      * @param buildingId
      * @param floorId
      * @return

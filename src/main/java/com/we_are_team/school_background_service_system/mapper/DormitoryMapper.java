@@ -27,7 +27,7 @@ public interface DormitoryMapper {
     @Select("select room_id, room_number from dorm_room where building_id=#{buildingId} and floor_id= #{floorId}")
     List<GetRoomsByBuildingAndFloorVO> getRoomsByBuildingAndFloor(@Param("buildingId") Integer buildingId, @Param("floorId") Integer floorId);
 
-    @Select("select dorm_building.building_id,dorm_building.gender,dorm_building.building_name,floor.floor_id,floor.floor_number,floor.floor_name,dorm_room.room_id,dorm_room.room_number,dorm_room.current_people,dorm_room.max_people from dorm_building left join floor on dorm_building.building_id = floor.building_id left join dorm_room on dorm_building.building_id = dorm_room.building_id")
+    @Select("select dorm_building.building_id,dorm_building.gender,dorm_building.building_name,floor.floor_id,floor.floor_number,floor.floor_name,dorm_room.room_id,dorm_room.room_number,dorm_room.current_people,dorm_room.max_people,dorm_room.studentArray from dorm_building left join floor on dorm_building.building_id = floor.building_id left join dorm_room on dorm_building.building_id = dorm_room.building_id")
     List<GetAllBuildingAndFloorAndRoomsVO> getAllBuildingAndFloorAndRooms();
 
     @Insert("insert into dorm_change(student_number,old_dorm_address,new_dorm_address,building_id,floor_id,room_id,status,created_time,reason,user_id,admin_id) " +

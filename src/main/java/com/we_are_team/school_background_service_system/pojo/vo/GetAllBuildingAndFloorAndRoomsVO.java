@@ -19,4 +19,5 @@ public class GetAllBuildingAndFloorAndRoomsVO {
     private Integer currentPeople;
     private Integer maxPeople;
     private Integer gender;
+    private String studentArray;
 }

@@ -4,7 +4,7 @@
 <mapper namespace="com.we_are_team.school_background_service_system.mapper.DormitoryMapper">
 <!--    获取到所有的宿舍号-->
  <select id="getAllBuildingAndFloorAndRoomsInfo" resultType="GetAllBuildingAndFloorAndRoomsVO">
-     select dorm_building.building_id,dorm_building.gender,dorm_building.building_name,floor.floor_id,floor.floor_number,floor.floor_name,dorm_room.room_id,dorm_room.room_number,dorm_room.current_people,dorm_room.max_people
+     select dorm_room.studentArray,dorm_building.building_id,dorm_building.gender,dorm_building.building_name,floor.floor_id,floor.floor_number,floor.floor_name,dorm_room.room_id,dorm_room.room_number,dorm_room.current_people,dorm_room.max_people
      from dorm_building  left join floor on dorm_building.building_id = floor.building_id
      inner join dorm_room on floor.floor_id = dorm_room.floor_id
      <where>
