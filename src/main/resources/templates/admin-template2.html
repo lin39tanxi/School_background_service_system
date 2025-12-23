@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>校园后勤管理系统</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Microsoft YaHei", Arial, sans-serif;
+        background-image: url(http://localhost:8081/img/35e1b763c15645c1a6d674accf959f30.jpg);
+        min-height: 100vh;
+        background-size: cover;
+        background-attachment: fixed;
+      }
+
+      /* 顶部导航栏 */
+      .header {
+        background: #3f51b5;
+        color: white;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+      .back-button {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 28px;
+        cursor: pointer;
+        padding: 5px 15px;
+        transition: opacity 0.3s;
+      }
+
+      .back-button:hover {
+        opacity: 0.8;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .header h1 {
+        padding-left: 20px;
+        font-size: 24px;
+        font-weight: normal;
+      }
+
+      .user-name {
+        min-width: 120px;
+        padding: 10px 14px;
+        background: #3f51b5;
+        border-radius: 5px;
+        color: #fff;
+        font-weight: 600;
+        text-align: center;
+        cursor: default;
+      }
+
+      /* 下拉菜单容器 */
+      .dropdown-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      /* 下拉菜单 */
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        z-index: 1000;
+        width: 150px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+      }
+
+      /* 悬停显示下拉菜单 */
+      .dropdown-container:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      /* 下拉菜单项 */
+      .dropdown-item {
+        width: 100%;
+        padding: 12px 20px;
+        background: none;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        color: #333;
+        font-size: 14px;
+        transition: all 0.2s;
+        outline: none;
+      }
+
+      /* 下拉菜单项悬停效果 */
+      .dropdown-item:hover {
+        background: #f5f5f5;
+        color: #3f51b5;
+      }
+
+      /* 下拉菜单项分隔线 */
+      .dropdown-item:not(:last-child) {
+        border-bottom: 1px solid #eee;
+      }
+
+     
+    </style>
+  </head>
+  <body>
+    <!-- 顶部导航栏 -->
+
+    <header class="header">
+      <div class="header-left">
+        <h1>校园后勤管理系统后台</h1>
+      </div>
+
+      <div class="dropdown-container">
+        <div class="user-name" id="adminUsername">管理员</div>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" onclick="location.href='/admin/info'">
+            个人信息
+          </button>
+          <button class="dropdown-item" onclick="logout()">退出登录</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主容器 -->
+
+
+    <script>
+      // 获取用户信息并填充页面
+      window.addEventListener("DOMContentLoaded", async function () {
+        await fetchUserInfo();
+        initSidebar();
+      });
+      /************************************************************************************************************************************************/
+      /*************************************************************获取用户信息***********************************************************************/
+      /************************************************************************************************************************************************/
+      // 获取用户信息
+      async function fetchUserInfo() {
+        try {
+          const response = await fetch("/admin/user/getUserInfo", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              admintoken: localStorage.getItem("adminToken"),
+              // 如果需要 token，在这里添加
+              // 'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+          });
+
+          const result = await response.json();
+          console.log(result);
+          if (result.code === "200" && result.data) {
+            const user = result.data;
+            console.log(user);
+            const nameEl = document.getElementById("adminUsername");
+            if (nameEl) nameEl.textContent = user.username || "管理员";
+            if (user.permission) {
+              localStorage.setItem("role", user.permission);
+            }
+          } else {
+            console.error("获取用户信息失败:", result.message);
+          }
+        } catch (error) {
+          console.error("获取用户信息出错:", error);
+        }
+      }
+     
+      function logout() {
+        if (confirm("确定要退出登录吗？")) {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("role");
+          window.location.href = "/admins/login";
+        }
+      }
+    </script>
+  </body>
+</html>
