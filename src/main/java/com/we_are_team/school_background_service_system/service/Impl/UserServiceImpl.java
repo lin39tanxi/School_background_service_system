@@ -145,8 +145,9 @@ public class UserServiceImpl implements UserService {
         userVO.setUsername(user.getUsername());
         userVO.setNickname(user.getNickname());
         userVO.setAvatarUrl(user.getAvatarUrl());
-        userVO.setCreatedTime(user.getRegisteredTime());
+//        userVO.setCreatedTime(user.getRegisteredTime());
         userVO.setUpdatedTime(user.getUpdatedTime());
+        userVO.setRegisteredTime(user.getRegisteredTime());
         userVO.setPhone(student.getPhone());
         return userVO;
     }

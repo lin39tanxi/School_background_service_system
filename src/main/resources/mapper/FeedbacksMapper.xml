@@ -10,7 +10,7 @@
             f.user_id = #{userId}
         </if>
         <if test="orderKey != null">
-            and (f.feedback_id LIKE CONCAT('%', #{orderKey}, '%') )
+            and (f.feedback_id LIKE CONCAT('%', #{orderKey}, '%') OR f.content LIKE CONCAT('%', #{orderKey}, '%') )
         </if>
         <if test="beginTime != null">
             and f.created_time >= #{beginTime}

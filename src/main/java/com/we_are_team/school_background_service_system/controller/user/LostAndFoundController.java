@@ -29,9 +29,11 @@ public class LostAndFoundController {
                                                   @RequestParam(defaultValue = "10") Integer pageSize,
                                                   String orderKey,
                                                   @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginTime,
-                                                  @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endTime)
+                                                  @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endTime,
+                                                  Integer categoryId,
+                                                  Integer locationId)
     {      log.info("获取失物招领列表,{}",status);
-        return Result.success("获取成功",lostAndFoundService.getLostAndFoundList(pageNum, pageSize, orderKey, beginTime, endTime,status));
+        return Result.success("获取成功",lostAndFoundService.getLostAndFoundList(pageNum, pageSize, orderKey, beginTime, endTime,status,categoryId,locationId));
     }
 
     /**

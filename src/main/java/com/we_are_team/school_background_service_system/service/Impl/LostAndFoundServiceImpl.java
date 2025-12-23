@@ -215,14 +215,14 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
     }
 
     @Override
-    public PageResult getLostAndFoundList(Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime, String status) {
+    public PageResult getLostAndFoundList(Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime, String status,Integer categoryId, Integer locationId) {
         User user =  userMapper.getUserByUserId(BaseContext.getCurrentId());
         if (!user.getPermission().contains("0") && !user.getPermission().contains("5")){
             throw new RuntimeException("没有权限查看失物招领信息");
         }
         PageHelper pageHelper = new PageHelper();
         pageHelper.startPage(pageNum, pageSize);
-        Page<GetLostAndFoundVO> lostAndFoundVOList = lostAndFoundMapper.getLostAndFoundList(orderKey,beginTime,endTime,status);
+        Page<GetLostAndFoundVO> lostAndFoundVOList = lostAndFoundMapper.getLostAndFoundList(orderKey,beginTime,endTime,status,categoryId,locationId);
         lostAndFoundVOList.forEach(lostAndFoundVO -> {
             if(lostAndFoundVO.getImageUrls() != null && !lostAndFoundVO.getImageUrls().isEmpty()){
                 String[] imageUrls = lostAndFoundVO.getImageUrls().split(",");

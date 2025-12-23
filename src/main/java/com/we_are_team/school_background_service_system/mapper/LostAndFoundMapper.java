@@ -60,7 +60,7 @@ public interface LostAndFoundMapper {
     @Delete("delete from lost_and_found where item_id = #{itemId} ")
     void deleteLostFound(@Param( "itemId") Integer itemId);
 
-    Page<GetLostAndFoundVO> getLostAndFoundList(@Param("orderKey") String orderKey,@Param("beginTime") LocalDate beginTime,@Param("endTime") LocalDate endTime,@Param("status") String status);
+    Page<GetLostAndFoundVO> getLostAndFoundList(@Param("orderKey") String orderKey,@Param("beginTime") LocalDate beginTime,@Param("endTime") LocalDate endTime,@Param("status") String status,@Param("categoryId") Integer categoryId,@Param("locationId") Integer locationId   );
 
     LostAndFound getLostAndFoundDetail(Integer itemId);
 }

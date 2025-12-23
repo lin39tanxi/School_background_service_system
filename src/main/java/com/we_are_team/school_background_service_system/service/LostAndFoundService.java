@@ -62,10 +62,12 @@ public interface LostAndFoundService {
      * 获取失物列表
      * @param
      */
-    PageResult getLostAndFoundList(Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime, String status);
+
 /**
      * 获取失物详情
      * @param
      */
     LostAndFoundVO getLostAndFoundDetail(Integer itemId);
+    PageResult getLostAndFoundList(Integer pageNum, Integer pageSize, String orderKey, LocalDate beginTime, LocalDate endTime, String status,Integer categoryId, Integer locationId);
+
 }
