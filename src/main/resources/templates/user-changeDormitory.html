@@ -368,7 +368,7 @@
         document.getElementById("userName").value = data.name || "";
         document.getElementById("studentNumber").value =
           data.studentNumber || "";
-        const oldDorm = `${data.building || ""}${data.dormitory || ""}宿舍`;
+        const oldDorm = `${data.building || ""}${data.dormitory || ""}`;
         document.getElementById("oldDorm").value = oldDorm.trim();
 
         if (data.avatarUrl) {
@@ -395,7 +395,10 @@
           });
           const result = await resp.json();
           console.log("楼栋数据", result);
-          if ((result.code === "200" || result.code === 200) && Array.isArray(result.data)) {
+          if (
+            (result.code === "200" || result.code === 200) &&
+            Array.isArray(result.data)
+          ) {
             populateSelect(
               "buildingSelect",
               result.data,
@@ -423,7 +426,10 @@
           );
           const result = await resp.json();
           console.log("楼层数据", result);
-          if ((result.code === "200" || result.code === 200) && Array.isArray(result.data)) {
+          if (
+            (result.code === "200" || result.code === 200) &&
+            Array.isArray(result.data)
+          ) {
             populateSelect("floorSelect", result.data, "floorId", "floorName");
             document.getElementById("floorSelect").disabled = false;
           } else {
@@ -442,13 +448,18 @@
         try {
           const token = localStorage.getItem("token") || "";
           const resp = await fetch(
-            `/user/dormitory/getAllBuildingAndFloorAndRooms?buildingId=${buildingId}&floorId=${floorId}`,
+            `/user/dormitory/getEmptyRoomsByBuildingAndFloor?buildingId=${buildingId}&floorId=${floorId}`,
             { headers: { Authorization: token ? "Bearer " + token : "" } }
           );
           const result = await resp.json();
           console.log("房间数据", result);
-          if ((result.code === "200" || result.code === 200) && Array.isArray(result.data)) {
-            populateSelect("roomSelect", result.data, "roomId", "roomNumber");
+          const rooms = Array.isArray(result.data)
+            ? result.data
+            : Array.isArray(result.data?.records)
+            ? result.data.records
+            : [];
+          if ((result.code === "200" || result.code === 200) && rooms.length) {
+            populateSelect("roomSelect", rooms, "roomId", "roomNumber");
             document.getElementById("roomSelect").disabled = false;
           } else {
             document.getElementById("roomSelect").disabled = false;
@@ -456,9 +467,8 @@
         } catch (err) {
           console.error("加载房间失败", err);
         }
-        
       }
-      
+
       function populateSelect(selectId, list, valueKey, labelKey) {
         const sel = document.getElementById(selectId);
         sel.innerHTML = `<option value="">请选择</option>`;
@@ -500,7 +510,7 @@
           const payload = {
             studentNumber: userInfo?.studentNumber || "",
             oldDormAddress: document.getElementById("oldDorm").value,
-            newDormAddress: `${buildingName}${roomLabel}宿舍`,
+            newDormAddress: `${buildingName}${roomLabel}`,
             buildingId: Number(buildingSel.value),
             floorId: Number(floorSel.value),
             roomId: Number(roomSel.value),

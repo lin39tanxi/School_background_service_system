@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>管理员列表</title>
+    <style>
+      :root {
+        --bg: radial-gradient(
+          circle at 20% 20%,
+          #e8edff,
+          #f7f9ff 45%,
+          #eef2ff 80%
+        );
+        --card: rgba(255, 255, 255, 0.9);
+        --shadow: 0 10px 40px rgba(54, 74, 186, 0.15);
+        --primary: #3f51b5;
+        --text-main: #1f2a44;
+        --text-sub: #5a6275;
+        --border: #e4e8f2;
+        --danger: #d64545;
+        --success: #2f9e5b;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        background-image: url(http://localhost:8081/img/35e1b763c15645c1a6d674accf959f30.jpg);
+        background-size: cover;
+        background-attachment: fixed;
+        color: var(--text-main);
+        min-height: 100vh;
+        display: flex;
+      }
+
+      .page {
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
+        overflow: hidden;
+      }
+
+      .sidebar {
+        width: 230px;
+        background: rgba(255, 255, 255, 0.85);
+        /* background: linear-gradient(180deg, #3f51b5 0%,#3f51b5 60%,  #3346ad 100%); */
+        color: #000;
+        padding: 28px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        box-shadow: 6px 0 20px rgba(0, 0, 0, 0.18);
+      }
+
+      .brand {
+        color: #000;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+
+      .menu {
+        display: grid;
+        gap: 12px;
+      }
+
+      .menu-item {
+        background: rgba(229, 229, 229, 0.659);
+        color: #1f1f1f;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 14px 16px;
+        text-align: left;
+        font-size: 14px;
+        cursor: default;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .menu-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #7ba3ff;
+        box-shadow: 0 0 0 6px rgba(123, 163, 255, 0.18);
+      }
+
+      .content {
+        flex: 1;
+        padding: 28px 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        padding: 20px 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .title {
+        font-size: 18px;
+        font-weight: 700;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .pill {
+        padding: 6px 10px;
+        background: rgba(63, 81, 181, 0.1);
+        color: var(--primary);
+        border-radius: 999px;
+        font-size: 12px;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .btn-ghost {
+        background: rgba(63, 81, 181, 0.08);
+        color: var(--primary);
+      }
+
+      .btn-danger {
+        background: rgba(214, 69, 69, 0.12);
+        color: var(--danger);
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+      }
+
+      .table-wrapper {
+        width: 100%;
+        overflow: auto;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+      }
+
+      thead {
+        background: #f2f4fb;
+      }
+
+      th,
+      td {
+        padding: 12px 14px;
+        text-align: left;
+        font-size: 13px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      th {
+        color: var(--text-sub);
+        font-weight: 600;
+      }
+
+      tbody tr:hover {
+        background: rgba(63, 81, 181, 0.03);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(63, 81, 181, 0.08);
+        color: var(--primary);
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .perm-carousel {
+        position: relative;
+        width: 200px;
+        overflow: hidden; /* allow popup to be visible on hover */
+      }
+
+      .perm-track {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        animation: slide-left 8s linear infinite;
+      }
+
+      .perm-carousel:hover .perm-track {
+        animation-play-state: paused;
+      }
+
+      .perm-carousel.single .perm-track {
+        animation: none;
+      }
+
+      .perm-popup {
+        position: absolute;
+        left: 0;
+        top: 100%;
+        margin-top: 8px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: #fff;
+        border: 1px solid var(--border);
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+        min-width: 220px;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(6px);
+        transition: all 0.2s ease;
+        z-index: 5;
+      }
+
+      .perm-popup-list {
+        list-style: none;
+        display: grid;
+        gap: 8px;
+      }
+
+      .perm-popup-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--text-main);
+      }
+
+      .perm-popup-item::before {
+        content: "•";
+        color: var(--primary);
+        font-weight: 700;
+      }
+
+      .perm-carousel:hover .perm-popup {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      @keyframes slide-left {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-50%);
+        }
+      }
+
+      .empty {
+        padding: 18px;
+        text-align: center;
+        color: var(--text-sub);
+      }
+
+      .status {
+        font-size: 13px;
+        color: var(--text-sub);
+      }
+
+      .pagination {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .page-info {
+        font-size: 13px;
+        color: var(--text-sub);
+      }
+
+      .input {
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        font-size: 13px;
+        width: 72px;
+      }
+
+      /* 弹窗 */
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 16px;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-card {
+        background: #fff;
+        width: min(420px, 96vw);
+        border-radius: 14px;
+        padding: 20px 22px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .modal-title {
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field label {
+        font-size: 13px;
+        color: var(--text-sub);
+      }
+
+      .field input {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        font-size: 14px;
+      }
+
+      .field select {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        font-size: 14px;
+        background: #fff;
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 4px;
+      }
+
+      /* 悬浮添加按钮 */
+      .fab {
+        position: fixed;
+        right: 26px;
+        bottom: 26px;
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        border: none;
+        background: var(--primary);
+        color: #fff;
+        font-size: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 14px 36px rgba(63, 81, 181, 0.35);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        z-index: 1200;
+      }
+
+      .fab:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 18px 42px rgba(63, 81, 181, 0.42);
+      }
+
+      .fab-tooltip {
+        position: fixed;
+        right: 92px;
+        bottom: 40px;
+        background: #1f1f1f;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-size: 13px;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(6px);
+        transition: opacity 0.18s ease, transform 0.18s ease;
+        z-index: 1199;
+        white-space: nowrap;
+      }
+
+      .fab:hover + .fab-tooltip,
+      .fab:focus-visible + .fab-tooltip {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @media (max-width: 960px) {
+        .sidebar {
+          display: none;
+        }
+        .content {
+          padding: 20px;
+        }
+        .card {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <aside class="sidebar">
+        <div class="brand">功能模块</div>
+        <div class="menu">
+          <div class="menu-item">
+            <span class="menu-dot"></span>
+            <span>管理员列表 >></span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="card">
+          <div class="card-header">
+            <div class="title">
+              管理员列表
+              <span class="pill">pageSize = 10</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-ghost" id="refreshBtn">刷新</button>
+            </div>
+          </div>
+
+          <div class="status" id="statusText">加载中...</div>
+
+          <div class="table-wrapper" id="tableWrapper" style="display: none">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>用户名</th>
+                  <th>权限</th>
+                  <th>创建时间</th>
+                  <th style="width: 220px">操作</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="empty" id="emptyState" style="display: none">
+            暂无数据
+          </div>
+
+          <div class="pagination" id="pagination" style="display: none">
+            <button class="btn btn-ghost" id="prevBtn">上一页</button>
+            <button class="btn btn-ghost" id="nextBtn">下一页</button>
+            <span class="page-info" id="pageInfo"></span>
+            <span class="page-info" id="totalInfo"></span>
+            <label class="page-info" for="jumpInput">跳转到</label>
+            <input class="input" id="jumpInput" type="number" min="1" />
+            <button class="btn btn-primary" id="jumpBtn">跳转</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal" id="passwordModal">
+      <div class="modal-card">
+        <div class="modal-title">修改管理员密码</div>
+        <div class="field">
+          <label for="newPassword">新密码</label>
+          <input id="newPassword" type="password" placeholder="输入新密码" />
+        </div>
+        <div class="field">
+          <label for="confirmPassword">确认新密码</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            placeholder="再次输入新密码"
+          />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="cancelModal">取消</button>
+          <button class="btn btn-primary" id="submitPassword">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="addAdminModal">
+      <div class="modal-card">
+        <div class="modal-title">添加管理员</div>
+        <div class="field">
+          <label for="addNickname">昵称</label>
+          <input id="addNickname" type="text" placeholder="输入昵称" />
+        </div>
+        <div class="field">
+          <label for="addUsername">用户名</label>
+          <input id="addUsername" type="text" placeholder="输入用户名" />
+        </div>
+        <div class="field">
+          <label for="addPassword">密码</label>
+          <input id="addPassword" type="password" placeholder="输入密码" />
+        </div>
+        <div class="field">
+          <label for="addPermission">权限</label>
+          <select id="addPermission"></select>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="cancelAddAdmin">取消</button>
+          <button class="btn btn-primary" id="submitAddAdmin">确定</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="fab" id="openAddAdmin" aria-label="添加管理员">+</button>
+    <div class="fab-tooltip" aria-hidden="true">添加管理员</div>
+
+    <script>
+      const tableBody = document.getElementById("tableBody");
+      const statusText = document.getElementById("statusText");
+      const tableWrapper = document.getElementById("tableWrapper");
+      const emptyState = document.getElementById("emptyState");
+      const pagination = document.getElementById("pagination");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const pageInfo = document.getElementById("pageInfo");
+      const totalInfo = document.getElementById("totalInfo");
+      const jumpBtn = document.getElementById("jumpBtn");
+      const jumpInput = document.getElementById("jumpInput");
+      const refreshBtn = document.getElementById("refreshBtn");
+
+      const passwordModal = document.getElementById("passwordModal");
+      const newPasswordInput = document.getElementById("newPassword");
+      const confirmPasswordInput = document.getElementById("confirmPassword");
+      const cancelModalBtn = document.getElementById("cancelModal");
+      const submitPasswordBtn = document.getElementById("submitPassword");
+
+      const addAdminModal = document.getElementById("addAdminModal");
+      const openAddAdminBtn = document.getElementById("openAddAdmin");
+      const cancelAddAdminBtn = document.getElementById("cancelAddAdmin");
+      const submitAddAdminBtn = document.getElementById("submitAddAdmin");
+      const addNicknameInput = document.getElementById("addNickname");
+      const addUsernameInput = document.getElementById("addUsername");
+      const addPasswordInput = document.getElementById("addPassword");
+      const addPermissionSelect = document.getElementById("addPermission");
+
+      const PAGE_SIZE = 10;
+      let pageNum = 1;
+      let total = 0;
+      let currentUserId = null;
+
+      const permissionMap = {
+        1: "管理员管理",
+        2: "维修管理",
+        3: "意见反馈管理",
+        4: "通知管理",
+        5: "失物招领管理",
+        6: "宿舍管理",
+      };
+
+      function parsePermissions(raw) {
+        if (!raw) return [];
+        const uniqueDigits = Array.from(new Set(raw.split("")));
+        return uniqueDigits
+          .map((digit) => permissionMap[digit] || digit)
+          .filter(Boolean);
+      }
+
+      function formatDate(value) {
+        return value || "-";
+      }
+
+      function populatePermissionSelect() {
+        const options = Object.keys(permissionMap)
+          .sort((a, b) => Number(a) - Number(b))
+          .map(
+            (key) =>
+              `<option value="${key}">${permissionMap[key]}（${key}）</option>`
+          )
+          .join("");
+        addPermissionSelect.innerHTML = `<option value="">请选择权限</option>${options}`;
+      }
+
+      function openAddModal() {
+        addNicknameInput.value = "";
+        addUsernameInput.value = "";
+        addPasswordInput.value = "";
+        addPermissionSelect.value = "";
+        addAdminModal.classList.add("active");
+      }
+
+      function closeAddModal() {
+        addAdminModal.classList.remove("active");
+      }
+
+      async function submitAddAdmin() {
+        const nickname = addNicknameInput.value.trim();
+        const username = addUsernameInput.value.trim();
+        const password = addPasswordInput.value.trim();
+        const permission = addPermissionSelect.value;
+
+        if (!nickname || !username || !password || !permission) {
+          alert("请完整填写信息");
+          return;
+        }
+
+        try {
+          const res = await fetch("/admin/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              admintoken: localStorage.getItem("adminToken") || "",
+            },
+            body: JSON.stringify({ nickname, username, password, permission }),
+          });
+
+          const result = await res.json();
+          if (result.code === "200") {
+            alert("添加成功");
+            closeAddModal();
+            fetchAdmins(pageNum);
+          } else {
+            alert(result.message || "添加失败");
+          }
+        } catch (error) {
+          console.error(error);
+          alert("请求出错，请稍后重试");
+        }
+      }
+
+      function setLoading(text) {
+        statusText.textContent = text;
+        statusText.style.display = "block";
+        tableWrapper.style.display = "none";
+        emptyState.style.display = "none";
+        pagination.style.display = "none";
+      }
+
+      function showModal(userId) {
+        currentUserId = userId;
+        newPasswordInput.value = "";
+        confirmPasswordInput.value = "";
+        passwordModal.classList.add("active");
+      }
+
+      function closeModal() {
+        passwordModal.classList.remove("active");
+      }
+
+      async function fetchAdmins(page = 1) {
+        pageNum = page;
+        setLoading("加载中...");
+        try {
+          const res = await fetch(
+            `/admin/user/getAllUsers?pageNum=${pageNum}&pageSize=${PAGE_SIZE}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+            }
+          );
+
+          const result = await res.json();
+          if (result.code !== "200") {
+            statusText.textContent = result.message || "获取列表失败";
+            return;
+          }
+
+          const data = result.data || {};
+          const records = data.records || [];
+          total = data.total || 0;
+
+          if (!records.length) {
+            tableWrapper.style.display = "none";
+            emptyState.style.display = "block";
+            statusText.style.display = "none";
+            pagination.style.display = "none";
+            return;
+          }
+
+          renderTable(records);
+          updatePagination();
+          statusText.style.display = "none";
+          tableWrapper.style.display = "block";
+          emptyState.style.display = "none";
+          pagination.style.display = "flex";
+        } catch (error) {
+          statusText.textContent = "请求出错，请稍后重试";
+          console.error(error);
+        }
+      }
+
+      function renderTable(rows) {
+        tableBody.innerHTML = rows
+          .map((row) => {
+            const permissions = parsePermissions(row.permission);
+            const loopList =
+              permissions.length > 1
+                ? permissions.concat(permissions)
+                : permissions;
+            return `
+              <tr>
+                <td>${row.userId ?? "-"}</td>
+                <td>${row.username ?? "-"}</td>
+                <td>
+                  <div class="perm-carousel ${
+                    permissions.length <= 1 ? "single" : ""
+                  }">
+                    <div class="perm-track">
+                      ${loopList
+                        .map((text) => `<span class="badge">${text}</span>`)
+                        .join("")}
+                    </div>
+                    <div class="perm-popup">
+                      <ul class="perm-popup-list">
+                        ${permissions
+                          .map(
+                            (text) => `<li class="perm-popup-item">${text}</li>`
+                          )
+                          .join("")}
+                      </ul>
+                    </div>
+                  </div>
+                </td>
+                <td>${formatDate(row.registeredTime)}</td>
+                <td>
+                  <button class="btn btn-primary" data-action="change" data-id="${
+                    row.userId
+                  }">修改密码</button>
+                  <button class="btn btn-danger" data-action="delete" data-id="${
+                    row.userId
+                  }">删除</button>
+                </td>
+              </tr>
+            `;
+          })
+          .join("");
+      }
+
+      function updatePagination() {
+        const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        pageInfo.textContent = `第 ${pageNum} / ${totalPages} 页`;
+        totalInfo.textContent = `共 ${total} 条`;
+        prevBtn.disabled = pageNum <= 1;
+        nextBtn.disabled = pageNum >= totalPages;
+      }
+
+      async function deleteAdmin(userId) {
+        if (!confirm("确定删除该管理员吗？")) return;
+        try {
+          const res = await fetch(`/admin/user/${userId}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              admintoken: localStorage.getItem("adminToken") || "",
+            },
+          });
+          const result = await res.json();
+          if (result.code === "200") {
+            fetchAdmins(pageNum);
+          } else {
+            alert(result.message || "删除失败");
+          }
+        } catch (error) {
+          console.error(error);
+          alert("请求出错，请稍后重试");
+        }
+      }
+
+      async function changePassword(userId, newPassword) {
+        try {
+          const res = await fetch("/admin/user/changePassword", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              admintoken: localStorage.getItem("adminToken") || "",
+            },
+            body: JSON.stringify({ userId, newPassword }),
+          });
+          const result = await res.json();
+          if (result.code === "200") {
+            alert("修改成功");
+            closeModal();
+            fetchAdmins(pageNum);
+          } else {
+            alert(result.message || "修改失败");
+          }
+        } catch (error) {
+          console.error(error);
+          alert("请求出错，请稍后重试");
+        }
+      }
+
+      tableBody.addEventListener("click", (e) => {
+        const target = e.target;
+        if (target.dataset.action === "change") {
+          showModal(target.dataset.id);
+        }
+        if (target.dataset.action === "delete") {
+          deleteAdmin(target.dataset.id);
+        }
+      });
+
+      prevBtn.addEventListener("click", () => {
+        if (pageNum > 1) fetchAdmins(pageNum - 1);
+      });
+
+      nextBtn.addEventListener("click", () => {
+        fetchAdmins(pageNum + 1);
+      });
+
+      jumpBtn.addEventListener("click", () => {
+        const targetPage = Number(jumpInput.value);
+        const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        if (!targetPage || targetPage < 1 || targetPage > totalPages) {
+          alert("请输入有效页码");
+          return;
+        }
+        fetchAdmins(targetPage);
+      });
+
+      refreshBtn.addEventListener("click", () => fetchAdmins(pageNum));
+
+      cancelModalBtn.addEventListener("click", closeModal);
+      passwordModal.addEventListener("click", (e) => {
+        if (e.target === passwordModal) closeModal();
+      });
+
+      submitPasswordBtn.addEventListener("click", () => {
+        const newPwd = newPasswordInput.value.trim();
+        const confirmPwd = confirmPasswordInput.value.trim();
+        if (!newPwd) return alert("请输入新密码");
+        if (newPwd !== confirmPwd) return alert("两次输入不一致");
+        if (!currentUserId) return alert("未选择管理员");
+        changePassword(currentUserId, newPwd);
+      });
+
+      openAddAdminBtn.addEventListener("click", openAddModal);
+      cancelAddAdminBtn.addEventListener("click", closeAddModal);
+      addAdminModal.addEventListener("click", (e) => {
+        if (e.target === addAdminModal) closeAddModal();
+      });
+      submitAddAdminBtn.addEventListener("click", submitAddAdmin);
+
+      document.addEventListener("DOMContentLoaded", () => {
+        populatePermissionSelect();
+        fetchAdmins(1);
+      });
+    </script>
+  </body>
+</html>
