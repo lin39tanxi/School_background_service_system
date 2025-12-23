@@ -104,6 +104,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserLoginVO login(UserLoginDTO userLoginDTO) {
         User user = new User();
+
         user.setStudentNumber(userLoginDTO.getStudentNumber());
         user.setPassword(userLoginDTO.getPassword());
         user.setUsername(userLoginDTO.getUsername());
@@ -112,6 +113,9 @@ public class UserServiceImpl implements UserService {
         log.info("用户登录信息：{}",user);
         if(user == null || user.equals("")){
             throw new RuntimeException("账号或密码错误");
+        }
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("该用户没有权限用户登录");
         }
         Map<String, Object> claims = new HashMap<>();
 

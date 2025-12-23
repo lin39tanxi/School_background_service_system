@@ -33,13 +33,18 @@ public class DormitoryServiceImpl implements DormitoryService {
     @Autowired
     private UserMapper userMapper;
 
+
     /**
      * 获取所有宿舍楼栋
      * @return
      */
     @Override
     public List<GetAllBuildingVO> getAllBuilding() {
-       return dormitoryMapper.getAllBuilding();
+       User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+       if(!user.getPermission().contains("6")){
+           throw new RuntimeException("没有宿舍权限");
+       }
+        return dormitoryMapper.getAllBuilding();
     }
 
     /**
@@ -49,6 +54,10 @@ public class DormitoryServiceImpl implements DormitoryService {
      */
     @Override
     public List<GetFloorsByBuildingVO> getFloorsByBuildingId(Integer buildingId) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("6")){
+            throw new RuntimeException("没有宿舍权限");
+        }
         return dormitoryMapper.getFloorsByBuildingId(buildingId);
     }
 
@@ -60,6 +69,10 @@ public class DormitoryServiceImpl implements DormitoryService {
      */
     @Override
     public List<GetRoomsByBuildingAndFloorVO> getRoomsByBuildingAndFloor(Integer buildingId, Integer floorId) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("6")){
+            throw new RuntimeException("没有宿舍权限");
+        }
         return dormitoryMapper.getRoomsByBuildingAndFloor(buildingId, floorId);
     }
 
@@ -72,6 +85,10 @@ public class DormitoryServiceImpl implements DormitoryService {
  */
     @Override
     public void changeDormitory(ChangeDormitoryDTO changeDormitoryDTO) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("6") && !user.getPermission().contains("0")){
+            throw new RuntimeException("无法提交更换宿舍的请求");
+        }
         ChangeDormitory changeDormitory = ChangeDormitory.builder()
                 .createdTime(LocalDateTime.now())
                 .status(0)
@@ -92,6 +109,10 @@ public class DormitoryServiceImpl implements DormitoryService {
  */
     @Override
     public void agreeChangeDormitory(Integer dormChangeId) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("6")){
+            throw new RuntimeException("没有同意更换宿舍权限");
+        }
         ChangeDormitory changeDormitory = dormitoryMapper.getChangeDormitoryByChangeDormitoryId(dormChangeId);
         if(changeDormitory == null){
             throw new RuntimeException("不存在这个申请");
@@ -147,6 +168,9 @@ public class DormitoryServiceImpl implements DormitoryService {
     @Override
     public List<GetAllBuildingVO> getEmptyBuilding() {
         User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("你不是用户!");
+        }
         Student student = userMapper.getStudentByStudentNumber(user.getStudentNumber());
         Integer gender = student.getGender().equals("男") ? 1 : 0;
         return dormitoryMapper.getEmptyBuilding(gender);
@@ -156,6 +180,10 @@ public class DormitoryServiceImpl implements DormitoryService {
      */
     @Override
     public List<GetFloorsByBuildingVO> getEmptyFloorsByBuilding(Integer buildingId) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("你不是用户!");
+        }
         return dormitoryMapper.getEmptyFloorsByBuilding(buildingId);
     }
 /**
@@ -163,6 +191,10 @@ public class DormitoryServiceImpl implements DormitoryService {
  */
     @Override
     public List<GetRoomsByBuildingAndFloorVO> getEmptyRoomsByBuildingAndFloor(Integer buildingId, Integer floorId) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("你不是用户!");
+        }
         return dormitoryMapper.getEmptyRoomsByBuildingAndFloor(buildingId, floorId);
     }
 /**
@@ -170,6 +202,10 @@ public class DormitoryServiceImpl implements DormitoryService {
  */
     @Override
     public void rejectChangeDormitory(RejectionChangeDormitoryDTO rejectionChangeDormitoryDTO) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("6")){
+            throw new RuntimeException("你没有权限拒绝更换宿舍请求");
+        }
         ChangeDormitory changeDormitory = ChangeDormitory.builder()
                 .updatedTime(LocalDateTime.now())
                 .status(2)
@@ -184,6 +220,10 @@ public class DormitoryServiceImpl implements DormitoryService {
 
     @Override
     public PageResult getAllBuildingAndFloorAndRoomsInfo(Integer pageNum, Integer pageSize, String keyword, Integer buildingId, Integer floorId, Integer roomId,Integer gender) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("6")){
+            throw new RuntimeException("你没有权限获得宿舍列表!");
+        }
         PageHelper page = new PageHelper();
         page.startPage(pageNum,pageSize);
         Page<GetAllBuildingAndFloorAndRoomsVO> allBuildingAndFloorAndRooms = dormitoryMapper.getAllBuildingAndFloorAndRoomsInfo(keyword,buildingId,floorId,roomId,gender);
@@ -193,6 +233,10 @@ public class DormitoryServiceImpl implements DormitoryService {
 
     @Override
     public PageResult getEmptyRoomsAndBuildingAndFloor(Integer pageNum, Integer pageSize, String keyword, Integer buildingId, Integer floorId, Integer roomId, Integer gender) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("你没有权限获得宿舍列表!");
+        }
         PageHelper page = new PageHelper();
         page.startPage(pageNum,pageSize);
         Page<GetAllBuildingAndFloorAndRoomsVO> allBuildingAndFloorAndRooms = dormitoryMapper.getAllEmptyBuildingAndFloorAndRoomsInfo(keyword,buildingId,floorId,roomId,gender);
@@ -201,11 +245,19 @@ public class DormitoryServiceImpl implements DormitoryService {
 
     @Override
     public void cancelChangeDormitory(Integer dormChangeId) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("你没有权限取消换宿舍请求!");
+        }
         dormitoryMapper.cancelChangeDormitory(dormChangeId);
     }
 
     @Override
     public void helpChangeDormitory(ChangeDormitoryDTO changeDormitoryDTO) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("6")){
+            throw new RuntimeException("你没有权限帮助用户更换宿舍!");
+        }
         ChangeDormitory changeDormitory = ChangeDormitory.builder()
                 .createdTime(LocalDateTime.now())
                 .status(1)
@@ -263,6 +315,10 @@ public class DormitoryServiceImpl implements DormitoryService {
         PageHelper page = new PageHelper();
         page.startPage(pageNum,pageSize);
         Integer userId = BaseContext.getCurrentId();
+        User user = userMapper.getUserByUserId(userId);
+        if(!user.getPermission().contains("0")){
+            throw new RuntimeException("你没有权限获得换宿舍申请列表!");
+        }
         Page<ChangeDormitory> myAllChangeDormitory =  dormitoryMapper.getMyAllChangeDormitory(userId,keyword,status,beginTime,endTime);
         return new PageResult(myAllChangeDormitory.getTotal(),myAllChangeDormitory);
     }
@@ -273,6 +329,10 @@ public class DormitoryServiceImpl implements DormitoryService {
  */
     @Override
     public ChangeDormitory getMyChangeDormitoryInfo(Integer dormChangeId) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("6") && !user.getPermission().contains("0")){
+            throw new RuntimeException("你没有权限获得换宿舍申请的详细信息!");
+        }
 
         return dormitoryMapper.getMyChangeDormitoryInfo(dormChangeId);
     }
@@ -281,6 +341,10 @@ public class DormitoryServiceImpl implements DormitoryService {
     public PageResult getAllChangeDormitory(Integer pageNum, Integer pageSize, String keyword, Integer status, LocalDate beginTime, LocalDate endTime) {
         PageHelper page = new PageHelper();
         page.startPage(pageNum,pageSize);
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("6")){
+            throw new RuntimeException("你没有权限获得换宿舍申请列表!");
+        }
         Integer userId = null;
         Page<ChangeDormitory> myAllChangeDormitory =  dormitoryMapper.getMyAllChangeDormitory(userId,keyword,status,beginTime,endTime);
         return new PageResult(myAllChangeDormitory.getTotal(),myAllChangeDormitory);

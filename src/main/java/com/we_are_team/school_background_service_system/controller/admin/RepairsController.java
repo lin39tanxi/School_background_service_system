@@ -24,7 +24,7 @@ public class RepairsController {
      * 获取我的报修列表
      */
     @GetMapping("/repairs")
-    public Result<PageResult> getMyRepairs(String  status ,@RequestParam(defaultValue = "1") Integer pageNum,@RequestParam(defaultValue = "10") Integer pageSize, String orderKey, @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginTime, @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endTime) {
+    public Result<PageResult> getMyRepairs(String  status ,@RequestParam(defaultValue = "1") Integer pageNum,@RequestParam(defaultValue = "1000") Integer pageSize, String orderKey, @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginTime, @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endTime) {
         PageResult pageResult = reparisService.AdminGetMyRepairs(status, pageNum, pageSize, orderKey, beginTime, endTime);
         return Result.success("获取报单列表成功", pageResult);
     }

@@ -74,7 +74,7 @@ public class UserController {
     @GetMapping("/user/getAllUsers")
     public Result<PageResult> getAllUsers(
             @RequestParam(defaultValue = "1") Integer pageNum,
-            @RequestParam(defaultValue = "10") Integer pageSize)
+            @RequestParam(defaultValue = "1000") Integer pageSize)
     {
         PageResult pageResult = userService.getAllAdmin(pageNum, pageSize);
         return Result.success("获取管理员列表成功",pageResult);

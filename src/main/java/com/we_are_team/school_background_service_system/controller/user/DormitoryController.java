@@ -68,7 +68,7 @@ public class DormitoryController {
      */
 //    GetRoomsByBuildingAndFloorVO
     @GetMapping("/getAllBuildingAndFloorAndRooms")
-    public Result<PageResult> getEmptyRoomsAndBuildingAndFloor(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10")  Integer pageSize, String keyword, Integer buildingId, Integer floorId, Integer roomId, Integer gender) {
+    public Result<PageResult> getEmptyRoomsAndBuildingAndFloor(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "1000")  Integer pageSize, String keyword, Integer buildingId, Integer floorId, Integer roomId, Integer gender) {
         PageResult pageResult  = dormitoryService.getEmptyRoomsAndBuildingAndFloor(pageNum, pageSize, keyword, buildingId, floorId, roomId, gender);
         return Result.success("获取宿舍列表成功", pageResult);
 
@@ -85,7 +85,7 @@ public class DormitoryController {
  * 获取所有申请更换宿舍的申请
  */
   @GetMapping("/getMyAllChangeDormitory")
-  public Result<PageResult> getMyAllChangeDormitory(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10")  Integer pageSize, String keyword, Integer status, @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate beginTime, @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate endTime) {
+  public Result<PageResult> getMyAllChangeDormitory(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "1000")  Integer pageSize, String keyword, Integer status, @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate beginTime, @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate endTime) {
         PageResult pageResult  = dormitoryService.getMyAllChangeDormitory(pageNum, pageSize, keyword, status, beginTime, endTime);
         return Result.success("获取申请列表成功", pageResult);
 

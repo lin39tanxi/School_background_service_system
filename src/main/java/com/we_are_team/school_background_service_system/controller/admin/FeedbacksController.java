@@ -20,7 +20,7 @@ public class FeedbacksController {
     private FeedbacksService feedbacksService;
     @GetMapping("/list")
     public Result<PageResult> getMyFeedbacks(@RequestParam(defaultValue = "1") Integer pageNum,
-                                             @RequestParam(defaultValue = "10") Integer pageSize,
+                                             @RequestParam(defaultValue = "1000") Integer pageSize,
                                              @RequestParam(defaultValue = "") String orderKey,
                                              @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginTime,
                                              @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate endTime)

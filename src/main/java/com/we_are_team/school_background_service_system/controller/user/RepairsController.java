@@ -49,7 +49,7 @@ public class RepairsController {
     @GetMapping("/repairs/my")
     public Result<PageResult> getMyRepairs( String  status ,
                                             @RequestParam(defaultValue = "1") Integer pageNum,
-                                            @RequestParam(defaultValue = "10") Integer pageSize, String orderKey,
+                                            @RequestParam(defaultValue = "1000") Integer pageSize, String orderKey,
                                             @RequestParam(defaultValue = "")
                                                 @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginTime,
                                             @RequestParam(defaultValue = "")

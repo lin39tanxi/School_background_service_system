@@ -23,7 +23,7 @@ public class NotificationController {
     @GetMapping
     public Result<PageResult> getNotificationList(@RequestParam(required = false) String orderKey,
                                                   @RequestParam(required = false ,defaultValue ="1") Integer pageNum,
-                                                  @RequestParam(required = false, defaultValue ="10") Integer pageSize,
+                                                  @RequestParam(required = false, defaultValue ="1000") Integer pageSize,
                                                   @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginTime,
                                                   @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endTime) {
         PageResult pageResult = notificationService.getNotificationList(orderKey, pageNum, pageSize, beginTime, endTime);

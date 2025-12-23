@@ -26,7 +26,7 @@ public class LostAndFoundController {
     @GetMapping("/getLostAndFoundList")
     public Result<PageResult> getLostAndFoundList(String status ,
                                                   @RequestParam(defaultValue = "1") Integer pageNum,
-                                                  @RequestParam(defaultValue = "10") Integer pageSize,
+                                                  @RequestParam(defaultValue = "1000") Integer pageSize,
                                                   String orderKey,
                                                   @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginTime,
                                                   @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endTime,
