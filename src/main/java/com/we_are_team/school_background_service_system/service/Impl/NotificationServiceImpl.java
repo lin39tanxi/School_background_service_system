@@ -40,7 +40,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void addNotification(String title, String content, MultipartFile[] imageUrlsArray) {
         User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
-        if(!user.getPermission().equals("4")){
+        if(!user.getPermission().contains("4")){
             throw new RuntimeException("你没有权限提交通知");
         }
         Notification notification = new Notification();
