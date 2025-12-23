@@ -25,7 +25,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtTokenUserInterceptor)
                 .addPathPatterns("/user/**")
                 .excludePathPatterns("/user/login")
-                .excludePathPatterns("/user/register");
+                .excludePathPatterns("/user/register")
+                .excludePathPatterns("/user/register/page");
 
         registry.addInterceptor(jwtTokenAdminInterceptor)
                 .addPathPatterns("/admin/**")
@@ -57,6 +58,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addViewController("/user/notice/item").setViewName("forward:/user-notice-item.html");
         registry.addViewController("/user/feedback").setViewName("forward:/user-feedback.html");
         registry.addViewController("/user/feedback/item").setViewName("forward:/user-feedback-item.html");
+        registry.addViewController("/user/register/page").setViewName("forward:/user-register.html");
 
     }
 

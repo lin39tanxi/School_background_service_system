@@ -134,9 +134,189 @@
         display: flex;
         min-height: calc(100vh - 70px);
       }
-      
+      .page {
+        width: 100%;
+        max-width: 1200px;
+        margin: 30px auto;
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        padding: 24px 28px;
+      }
 
-      
+      .page-title {
+        font-size: 22px;
+        color: #1f2c4c;
+        margin-bottom: 16px;
+      }
+
+      .filters {
+        background: #f7f8fb;
+        border: 1px solid #e4e7f0;
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 18px;
+      }
+
+      .filter-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+        gap: 10px;
+      }
+
+      .filter-label {
+        min-width: 52px;
+        color: #606a88;
+        font-size: 14px;
+      }
+
+      .chip-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .filter-chip {
+        padding: 8px 12px;
+        border-radius: 18px;
+        border: 1px solid #d9dff1;
+        background: #fff;
+        color: #30416b;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.2s;
+      }
+
+      .filter-chip:hover {
+        border-color: #3f51b5;
+        color: #3f51b5;
+      }
+
+      .filter-chip.active {
+        background: #3f51b5;
+        color: #fff;
+        border-color: #3f51b5;
+      }
+
+      .more-toggle {
+        border: none;
+        background: none;
+        color: #3f51b5;
+        cursor: pointer;
+        font-size: 13px;
+      }
+
+      .date-row input {
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid #d9dff1;
+        font-size: 13px;
+      }
+
+      .btn {
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+      }
+
+      .btn-primary {
+        background: #3f51b5;
+        color: #fff;
+      }
+
+      .btn-ghost {
+        background: #fff;
+        color: #3f51b5;
+        border: 1px solid #d9dff1;
+      }
+
+      .table-card {
+        border: 1px solid #e4e7f0;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      thead {
+        background: #eef2fb;
+      }
+
+      th,
+      td {
+        padding: 12px 10px;
+        font-size: 13px;
+        color: #27314d;
+        border-bottom: 1px solid #f1f3fa;
+        text-align: left;
+      }
+
+      tbody tr:hover {
+        background: #f9fbff;
+      }
+
+      .status-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+      }
+
+      .status-pending {
+        background: #fff6e5;
+        color: #e69500;
+      }
+
+      .status-done {
+        background: #e8f8ed;
+        color: #34a853;
+      }
+
+      .item-img {
+        width: 72px;
+        height: 48px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid #e4e7f0;
+      }
+
+      .empty-row {
+        text-align: center;
+        color: #8a92a6;
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 10px;
+        background: #f7f8fb;
+      }
+
+      .pager {
+        display: inline-flex;
+        gap: 8px;
+      }
+
+      .pager button {
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid #d9dff1;
+        background: #fff;
+        cursor: pointer;
+      }
+
+      .pager button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
     </style>
   </head>
   <body>
@@ -162,18 +342,80 @@
       </div>
     </header>
 
-    <!-- 主容器 -->
-    
+    <main class="page">
+      <div class="page-title">失物招领列表</div>
+
+      <section class="filters">
+        <div class="filter-row">
+          <span class="filter-label">地点：</span>
+          <div class="chip-group" id="locationChips"></div>
+          <button class="more-toggle" id="locationMore">更多 ▾</button>
+        </div>
+        <div class="filter-row">
+          <span class="filter-label">物品：</span>
+          <div class="chip-group" id="categoryChips"></div>
+          <button class="more-toggle" id="categoryMore">更多 ▾</button>
+        </div>
+        <div class="filter-row date-row">
+          <span class="filter-label">时间：</span>
+          <input type="date" id="beginTime" />
+          <span>—</span>
+          <input type="date" id="endTime" />
+          <div style="flex: 1"></div>
+          <button class="btn btn-ghost" id="resetBtn">重置</button>
+          <button class="btn btn-primary" id="searchBtn">筛选</button>
+        </div>
+      </section>
+
+      <section class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 60px">序号</th>
+              <th style="width: 160px">物品名称</th>
+              <th style="width: 120px">分类</th>
+              <th style="width: 120px">地点</th>
+              <th>描述</th>
+              <th style="width: 120px">图片</th>
+              <th style="width: 120px">状态</th>
+            </tr>
+          </thead>
+          <tbody id="lostTableBody">
+            <tr>
+              <td class="empty-row" colspan="7">加载中...</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <div id="pagerInfo">第 1 页</div>
+          <div class="pager">
+            <button id="prevPage">上一页</button>
+            <button id="nextPage">下一页</button>
+          </div>
+        </div>
+      </section>
+    </main>
 
     <script>
-      // 获取用户信息并填充页面
-      window.addEventListener("DOMContentLoaded", function () {
+      const state = {
+        locationId: null,
+        categoryId: null,
+        beginTime: "",
+        endTime: "",
+        pageNum: 1,
+        pageSize: 6,
+        locationExpanded: false,
+        categoryExpanded: false,
+      };
+
+      window.addEventListener("DOMContentLoaded", () => {
         fetchUserInfo();
+        bindFilterActions();
+        loadCategories();
+        fetchLostList();
       });
-      /************************************************************************************************************************************************/
-      /*************************************************************获取用户信息***********************************************************************/
-      /************************************************************************************************************************************************/
-      // 获取用户信息
+
+      // 用户信息
       async function fetchUserInfo() {
         try {
           const response = await fetch("/user/user/my", {
@@ -181,37 +423,256 @@
             headers: {
               "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token"),
-              // 如果需要 token，在这里添加
-              // 'Authorization': 'Bearer ' + localStorage.getItem('token')
             },
           });
 
           const result = await response.json();
-          console.log(result);
           if (result.code === "200" && result.data) {
             const user = result.data;
-            // 更新头像
             if (user.avatarUrl) {
               const userIcon = document.querySelector(".user-icon");
-              const userMainIcon = document.querySelector(".user-main-icon");
               if (userIcon) {
                 userIcon.style.backgroundImage = `url('${user.avatarUrl.trim()}')`;
-                userMainIcon.style.backgroundImage = `url('${user.avatarUrl.trim()}')`;
               }
             }
-          } else {
-            console.error("获取用户信息失败:", result.message);
-            
           }
         } catch (error) {
           console.error("获取用户信息出错:", error);
-          
         }
       }
 
-      
+      // 绑定筛选按钮
+      function bindFilterActions() {
+        document.getElementById("searchBtn").addEventListener("click", () => {
+          state.beginTime = document.getElementById("beginTime").value;
+          state.endTime = document.getElementById("endTime").value;
+          state.pageNum = 1;
+          fetchLostList();
+        });
 
-      
+        document.getElementById("resetBtn").addEventListener("click", () => {
+          state.locationId = null;
+          state.categoryId = null;
+          state.beginTime = "";
+          state.endTime = "";
+          state.pageNum = 1;
+          document.getElementById("beginTime").value = "";
+          document.getElementById("endTime").value = "";
+          markActiveChip("locationChips", null);
+          markActiveChip("categoryChips", null);
+          fetchLostList();
+        });
+
+        document.getElementById("prevPage").addEventListener("click", () => {
+          if (state.pageNum > 1) {
+            state.pageNum -= 1;
+            fetchLostList();
+          }
+        });
+
+        document.getElementById("nextPage").addEventListener("click", () => {
+          state.pageNum += 1;
+          fetchLostList();
+        });
+
+        document
+          .getElementById("locationMore")
+          .addEventListener("click", () => {
+            state.locationExpanded = !state.locationExpanded;
+            toggleMore("locationChips", state.locationExpanded);
+          });
+
+        document
+          .getElementById("categoryMore")
+          .addEventListener("click", () => {
+            state.categoryExpanded = !state.categoryExpanded;
+            toggleMore("categoryChips", state.categoryExpanded);
+          });
+      }
+
+      function toggleMore(containerId, expanded) {
+        const chips = document.querySelectorAll(
+          `#${containerId} .filter-chip[data-extra="true"]`
+        );
+        chips.forEach((chip) => {
+          chip.style.display = expanded ? "inline-flex" : "none";
+        });
+      }
+
+      // 加载分类
+      async function loadCategories() {
+        try {
+          const [locationsRes, categoriesRes] = await Promise.all([
+            fetch("/user/lostAndFound/getAllLocationCategory", {
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }),
+            fetch("/user/lostAndFound/getAllItemCategory", {
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }),
+          ]);
+
+          const locations = await locationsRes.json();
+          const categories = await categoriesRes.json();
+
+          renderChips(
+            locations.code === "200" ? locations.data || [] : [],
+            "locationChips",
+            "locationId"
+          );
+          renderChips(
+            categories.code === "200" ? categories.data || [] : [],
+            "categoryChips",
+            "categoryId"
+          );
+        } catch (error) {
+          console.error("加载分类失败", error);
+        }
+      }
+
+      function renderChips(list, containerId, key) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+
+        const allChip = document.createElement("button");
+        allChip.className = "filter-chip";
+        allChip.textContent = "全部";
+        allChip.dataset.value = "";
+        allChip.addEventListener("click", () => {
+          state[key] = null;
+          state.pageNum = 1;
+          markActiveChip(containerId, null);
+          fetchLostList();
+        });
+        container.appendChild(allChip);
+
+        list.forEach((item, idx) => {
+          const chip = document.createElement("button");
+          chip.className = "filter-chip";
+          chip.textContent = item.categoryName || item.locationName || "未命名";
+          const value = item.categoryId || item.locationId;
+          chip.dataset.value = value;
+          if (idx >= 10) {
+            chip.dataset.extra = "true";
+            chip.style.display = "none";
+          }
+          chip.addEventListener("click", () => {
+            state[key] = value;
+            state.pageNum = 1;
+            markActiveChip(containerId, value);
+            fetchLostList();
+          });
+          container.appendChild(chip);
+        });
+
+        markActiveChip(containerId, state[key]);
+      }
+
+      function markActiveChip(containerId, value) {
+        const chips = document.querySelectorAll(`#${containerId} .filter-chip`);
+        chips.forEach((chip) => {
+          chip.classList.toggle(
+            "active",
+            chip.dataset.value == value || (!value && chip.dataset.value === "")
+          );
+        });
+      }
+
+      // 列表
+      async function fetchLostList() {
+        const body = document.getElementById("lostTableBody");
+        body.innerHTML = `<tr><td class="empty-row" colspan="7">加载中...</td></tr>`;
+
+        const params = new URLSearchParams({
+          pageNum: state.pageNum,
+          pageSize: state.pageSize,
+          locationId: state.locationId || "",
+          categoryId: state.categoryId || "",
+          beginTime: state.beginTime || "",
+          endTime: state.endTime || "",
+        });
+
+        try {
+          const res = await fetch(
+            `/user/lostAndFound/getLostAndFoundList?${params.toString()}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
+          );
+          const result = await res.json();
+          console.log(result);
+          if (result.code === "200" && result.data) {
+            renderTable(result.data.records || [], result.data.total || 0);
+          } else {
+            renderTable([], 0);
+          }
+        } catch (error) {
+          console.error("获取列表失败", error);
+          renderTable([], 0);
+        }
+      }
+
+      function renderTable(list, total) {
+        const body = document.getElementById("lostTableBody");
+        body.innerHTML = "";
+
+        if (!list || list.length === 0) {
+          body.innerHTML = `<tr><td class="empty-row" colspan="7">暂无数据</td></tr>`;
+          updatePager(total);
+          return;
+        }
+
+        list.forEach((item, idx) => {
+          const tr = document.createElement("tr");
+          const index = (state.pageNum - 1) * state.pageSize + idx + 1;
+          const imageCell = item.imageUrls
+            ? `<img class="item-img" src="${item.imageUrls}" alt="item" onerror="this.style.display='none';this.parentElement.textContent='-';" />`
+            : "-";
+          tr.innerHTML = `
+            <td>${index}</td>
+            <td>${item.itemName || "-"}</td>
+            <td>${item.categoryName || "-"}</td>
+            <td>${item.locationName || "-"}</td>
+            <td>${item.description || "-"}</td>
+            <td>${imageCell}</td>
+            <td>${statusTag(item.status)}</td>
+          `;
+          body.appendChild(tr);
+        });
+
+        updatePager(total);
+      }
+
+      function statusTag(status) {
+        if (status === 1 || status === "1") {
+          return '<span class="status-tag status-done">已认领</span>';
+        }
+        return '<span class="status-tag status-pending">未认领</span>';
+      }
+
+      function updatePager(total) {
+        const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+        document.getElementById(
+          "pagerInfo"
+        ).textContent = `第 ${state.pageNum} / ${totalPages} 页，共 ${total} 条`;
+        document.getElementById("prevPage").disabled = state.pageNum <= 1;
+        document.getElementById("nextPage").disabled =
+          state.pageNum >= totalPages;
+      }
+
+      // 退出登录
+      function logout() {
+        if (confirm("确定要退出登录吗？")) {
+          localStorage.removeItem("token");
+          window.location.href = "/users/login";
+        }
+      }
     </script>
   </body>
 </html>
