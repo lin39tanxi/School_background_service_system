@@ -60,7 +60,7 @@ public class UserController {
         userService.updatePermission(updatePermissionDTO);
         return Result.success("修改权限成功");
     }
-    /*
+    /**
     超级管理员删除管理员
      */
     @DeleteMapping("/user/{userId}")

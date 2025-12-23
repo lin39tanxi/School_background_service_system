@@ -286,6 +286,7 @@
         justify-content: space-between;
         align-items: center;
         transition: transform 0.3s, box-shadow 0.3s;
+        cursor: pointer;
       }
 
       .status-card:hover {
@@ -694,6 +695,9 @@
           } else if (status === 3) {
             label = "已拒绝";
             cls = "unfinished";
+          } else if (status === 4) {
+            label = "已取消";
+            cls = "unfinished";
           }
         } else if (type === 2) {
           if (status === 0) {
@@ -781,8 +785,31 @@
             </div>
             ${badge}
           `;
+          card.addEventListener("click", () => goApplicationDetail(item));
           listEl.appendChild(card);
         });
+      }
+
+      function goApplicationDetail(item) {
+        if (!item || item.id == null || item.type == null) return;
+        const id = item.id;
+
+        if (item.type === 0) {
+          const search = new URLSearchParams({ orderId: id }).toString();
+          window.location.href = `/user/repair/item?${search}`;
+          return;
+        }
+
+        if (item.type === 1) {
+          const search = new URLSearchParams({ feedbackId: id }).toString();
+          window.location.href = `/user/feedback/item?${search}`;
+          return;
+        }
+
+        if (item.type === 2) {
+          const search = new URLSearchParams({ dormChangeId: id }).toString();
+          window.location.href = `/user/changeDormitory/item?${search}`;
+        }
       }
 
       // 格式化日期，只显示年月日

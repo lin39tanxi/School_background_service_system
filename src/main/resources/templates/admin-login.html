@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>管理员登录</title>
+    <style>
+      body {
+        background-image: url(http://localhost:8081/img/05969fcd5f6d48348e51bdec8e5ecadc.jpg);
+        min-height: 100vh;
+        background-size: cover;
+        background-attachment: fixed;
+      }
+      .top-bar {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+      }
+      .back-link {
+        color: #000;
+        display: inline-block;
+        text-decoration-line: none;
+      }
+      .back-link:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+      }
+      .login-container {
+        background-color: #ffffff9e;
+        max-width: 400px;
+        margin: 100px auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        box-sizing: border-box;
+      }
+      button {
+        width: 100%;
+        padding: 12px;
+        background-color: #0b6aa2;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background-color: #074c75;
+      }
+      .error-message {
+        color: red;
+        margin-top: 10px;
+        text-align: center;
+        min-height: 20px;
+      }
+      .success-message {
+        color: green;
+        margin-top: 10px;
+        text-align: center;
+        min-height: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <a
+        class="back-link"
+        href="/users/login"
+        aria-label="返回用户登录"
+      >
+        用户登录>>
+      </a>
+    </div>
+
+    <div class="login-container">
+      <h2 style="text-align: center; margin-bottom: 20px">管理员登录</h2>
+      <form id="adminLoginForm" th:action="@{/admin/login}" method="post">
+        <div class="form-group">
+          <label for="adminUsername">账号</label>
+          <input
+            type="text"
+            id="adminUsername"
+            name="username"
+            required
+            placeholder="请输入管理员账号"
+          />
+        </div>
+        <div class="form-group">
+          <label for="adminPassword">密码</label>
+          <input
+            type="password"
+            id="adminPassword"
+            name="password"
+            required
+            placeholder="请输入密码"
+          />
+        </div>
+        <button type="submit">登录</button>
+        <div id="adminSuccess" class="success-message"></div>
+        <div id="adminError" class="error-message"></div>
+      </form>
+    </div>
+
+    <script>
+      // 若已有管理员登录令牌则直接跳转
+      document.addEventListener("DOMContentLoaded", function () {
+        const adminToken = localStorage.getItem("adminToken");
+        if (adminToken) {
+          window.location.href = "/admin/index";
+        }
+      });
+
+      document
+        .getElementById("adminLoginForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const username = document.getElementById("adminUsername").value;
+          const password = document.getElementById("adminPassword").value;
+          const errorMessage = document.getElementById("adminError");
+          const successMessage = document.getElementById("adminSuccess");
+
+          errorMessage.textContent = "";
+          successMessage.textContent = "";
+
+          try {
+            const response = await fetch("/admin/login", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ username, password }),
+            });
+
+            const data = await response.json();
+            fetchUserInfo();
+            if (data.code === "200") {
+              localStorage.setItem("adminToken", data.data);
+              successMessage.textContent = data.message || "管理员登录成功";
+              window.location.href = "/admin/index";
+            } else {
+              errorMessage.textContent = data.message
+                ? data.message
+                : "管理员登录失败";
+            }
+          } catch (error) {
+            console.error("管理员登录错误:", error);
+            errorMessage.textContent = "登录请求失败，请稍后重试";
+          }
+        });
+        
+
+      // 获取用户信息
+      async function fetchUserInfo() {
+        try {
+          const response = await fetch("/admin/user/getUserInfo", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              admintoken: localStorage.getItem("adminToken"),
+              // 如果需要 token，在这里添加
+              // 'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+          });
+          console.log(localStorage.getItem("adminToken"));
+          const result = await response.json();
+          console.log(result);
+          if (result.code === "200" && result.data) {
+            const user = result.data;
+            localStorage.setItem("role", user.permission);
+            
+          } else {
+            console.error("获取用户信息失败:", result.message);
+            showError();
+          }
+        } catch (error) {
+          console.error("获取用户信息出错:", error);
+          showError();
+        }
+      }
+        
+    </script>
+  </body>
+</html>

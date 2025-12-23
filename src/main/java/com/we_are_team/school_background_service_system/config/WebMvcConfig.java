@@ -44,6 +44,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         /* 配置静态资源映射 */
+        /**
+          用户页面
+          */
         registry.addViewController("/").setViewName("forward:/user-login.html");
         registry.addViewController("/users/login").setViewName("forward:/user-login.html");
         registry.addViewController("/user/index").setViewName("forward:/user-index.html");
@@ -59,6 +62,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addViewController("/user/feedback").setViewName("forward:/user-feedback.html");
         registry.addViewController("/user/feedback/item").setViewName("forward:/user-feedback-item.html");
         registry.addViewController("/user/register/page").setViewName("forward:/user-register.html");
+
+        /**
+          管理员页面
+          */
+        registry.addViewController("/admins/login").setViewName("forward:/admin-login.html");
+        registry.addViewController("/admin/index").setViewName("forward:/admin-index.html");
 
     }
 

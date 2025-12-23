@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,6 +10,21 @@
         min-height: 100vh;
         background-size: cover;
         background-attachment: fixed;
+      }
+      .top-bar {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+      }
+      .admin-link {
+        color: #000;
+        display: inline-block;
+        text-decoration-line: none;
+        
+      }
+      .admin-link:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
       }
       .login-container {
         background-color: #ffffff9e;
@@ -64,6 +79,14 @@
     </style>
   </head>
   <body>
+    <div class="top-bar">
+      <a
+        class="admin-link"
+        href="/admins/login"
+        aria-label="管理员登录入口"
+        >管理员登录>></a
+      >
+    </div>
     <div class="login-container">
       <h2 style="text-align: center; margin-bottom: 20px">校园后勤服务系统</h2>
       <form id="loginForm">

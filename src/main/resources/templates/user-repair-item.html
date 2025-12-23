@@ -246,6 +246,28 @@
         margin-top: 6px;
       }
 
+      .status-value {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .inline-button {
+        padding: 6px 12px;
+        font-size: 13px;
+        border-radius: 8px;
+        border: 1px solid #e0e3eb;
+        background: #fff;
+        color: #3f51b5;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .inline-button:hover {
+        background: #eef2ff;
+        border-color: #c7cffc;
+      }
+
       .hidden {
         display: none;
       }
@@ -338,7 +360,17 @@
           </div>
           <div class="info-item">
             <label>处理状态</label>
-            <div class="value" id="detailStatus">-</div>
+            <div class="value status-value">
+              <span id="detailStatus">-</span>
+              <button
+                id="cancelButton"
+                class="inline-button hidden"
+                type="button"
+                onclick="cancelRepair()"
+              >
+                取消
+              </button>
+            </div>
           </div>
           <div class="info-item">
             <label>完成时间</label>
@@ -388,9 +420,12 @@
         4: "已取消",
       };
 
+      let currentOrderId = null;
+
       window.addEventListener("DOMContentLoaded", () => {
         fetchUserInfo();
         const orderId = getOrderId();
+        currentOrderId = orderId;
         if (!orderId) {
           setStatusMessage("未找到订单参数");
           return;
@@ -471,6 +506,13 @@
         document.getElementById("detailDescription").textContent =
           data.description || "-";
 
+        const cancelButton = document.getElementById("cancelButton");
+        if (data.processStatus === 0) {
+          cancelButton.classList.remove("hidden");
+        } else {
+          cancelButton.classList.add("hidden");
+        }
+
         const statusChip = document.getElementById("statusChip");
         statusChip.textContent = statusMap[data.processStatus] || "-";
         statusChip.style.background = getStatusColor(data.processStatus);
@@ -496,6 +538,42 @@
         }
 
         renderImages(data.imageUrls);
+      }
+
+      async function cancelRepair() {
+        if (!currentOrderId) {
+          setStatusMessage("未找到订单参数");
+          return;
+        }
+
+        if (!confirm("确定要取消该维修单吗？")) return;
+
+        setStatusMessage("正在取消...");
+        try {
+          const token = localStorage.getItem("token") || "";
+          const response = await fetch(
+            `/user/repairs/${currentOrderId}/cancel`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: token ? "Bearer " + token : "",
+              },
+              body: JSON.stringify({ orderId: currentOrderId }),
+            }
+          );
+
+          const result = await response.json();
+          if (result.code === "200") {
+            setStatusMessage("取消成功");
+            loadRepairDetail(currentOrderId);
+          } else {
+            setStatusMessage(result.message || "取消失败");
+          }
+        } catch (error) {
+          console.error("取消维修单出错:", error);
+          setStatusMessage("取消失败，请稍后重试");
+        }
       }
 
       function renderImages(imageUrls) {

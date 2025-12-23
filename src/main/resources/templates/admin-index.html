@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>校园后勤管理系统</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Microsoft YaHei", Arial, sans-serif;
+        background-image: url(http://localhost:8081/img/35e1b763c15645c1a6d674accf959f30.jpg);
+        min-height: 100vh;
+        background-size: cover;
+        background-attachment: fixed;
+      }
+
+      /* 顶部导航栏 */
+      .header {
+        background: #3f51b5;
+        color: white;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+      .back-button {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 28px;
+        cursor: pointer;
+        padding: 5px 15px;
+        transition: opacity 0.3s;
+      }
+
+      .back-button:hover {
+        opacity: 0.8;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .header h1 {
+        padding-left: 20px;
+        font-size: 24px;
+        font-weight: normal;
+      }
+
+      .user-name {
+        min-width: 120px;
+        padding: 10px 14px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        color: #fff;
+        font-weight: 600;
+        text-align: center;
+        cursor: default;
+      }
+
+      /* 下拉菜单容器 */
+      .dropdown-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      /* 下拉菜单 */
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        z-index: 1000;
+        width: 150px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+      }
+
+      /* 悬停显示下拉菜单 */
+      .dropdown-container:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      /* 下拉菜单项 */
+      .dropdown-item {
+        width: 100%;
+        padding: 12px 20px;
+        background: none;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        color: #333;
+        font-size: 14px;
+        transition: all 0.2s;
+        outline: none;
+      }
+
+      /* 下拉菜单项悬停效果 */
+      .dropdown-item:hover {
+        background: #f5f5f5;
+        color: #3f51b5;
+      }
+
+      /* 下拉菜单项分隔线 */
+      .dropdown-item:not(:last-child) {
+        border-bottom: 1px solid #eee;
+      }
+
+      /* 主容器 */
+      .container {
+        display: flex;
+        min-height: calc(100vh - 70px);
+         transition: all 0.3s ease;
+      }
+
+        /* 侧边栏 */
+        .sidebar {
+          width: 230px;
+          background: rgba(19, 35, 73, 0.92);
+          color: #f4f6fb;
+          padding: 20px 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          box-shadow: 2px 0 14px rgba(0, 0, 0, 0.18);
+          transition: transform 0.3s ease;
+          position: relative;
+          z-index: 2;
+        }
+
+        .sidebar.collapsed {
+          transform: translateX(-100%);
+        }
+
+        .sidebar h3 {
+          font-size: 16px;
+          font-weight: 600;
+          letter-spacing: 1px;
+          color: #9fb3ff;
+          margin-bottom: 8px;
+        }
+
+        .menu {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .menu-item {
+          background: rgba(255, 255, 255, 0.08);
+          color: #fdfdfd;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 10px;
+          padding: 12px 14px;
+          text-align: left;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-size: 14px;
+        }
+
+        .menu-item:hover {
+          background: rgba(255, 255, 255, 0.16);
+          border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .menu-item.active {
+          background: #4f7cff;
+          border-color: #4f7cff;
+          color: #fff;
+          box-shadow: 0 6px 16px rgba(79, 124, 255, 0.35);
+        }
+
+        .sidebar-footer {
+          margin-top: auto;
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.65);
+        }
+
+        /* 主内容 */
+        .main {
+          flex: 1;
+          background: rgba(255, 255, 255, 0.86);
+          backdrop-filter: blur(3px);
+          padding: 18px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .main-toolbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .toggle-btn {
+          background: #3f51b5;
+          color: #fff;
+          border: none;
+          padding: 10px 14px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          box-shadow: 0 4px 12px rgba(63, 81, 181, 0.35);
+          transition: opacity 0.2s ease;
+        }
+
+        .toggle-btn:hover {
+          opacity: 0.9;
+        }
+
+        .section-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #253156;
+        }
+
+        .content-frame {
+          flex: 1;
+          width: 100%;
+          border: 1px solid #e0e5ef;
+          border-radius: 12px;
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 8px 24px rgba(0, 0, 0, 0.08);
+          overflow: hidden;
+          background: #f6f8fd;
+        }
+
+        .content-frame iframe {
+          width: 100%;
+          height: 100%;
+          border: none;
+          background: transparent;
+        }
+
+        .empty-tip {
+          color: #d32f2f;
+          font-size: 14px;
+          margin-top: 10px;
+        }
+    </style>
+  </head>
+  <body>
+    <!-- 顶部导航栏 -->
+
+    <header class="header">
+      <div class="header-left">
+        <button class="back-button" onclick="history.back()">&lt;</button>
+        <h1>校园后勤管理系统后台</h1>
+      </div>
+
+      <div class="dropdown-container">
+        <div class="user-name" id="adminUsername">管理员</div>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" onclick="location.href='/admin/info'">
+            个人信息
+          </button>
+          <button class="dropdown-item" onclick="logout()">退出登录</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主容器 -->
+
+    <div class="container">
+      <aside class="sidebar" id="sidebar">
+        <h3>权限功能</h3>
+        <div class="menu" id="menuList"></div>
+        <div class="sidebar-footer">根据权限自动显示菜单</div>
+      </aside>
+
+      <main class="main" id="main">
+        <div class="main-toolbar">
+          <button class="toggle-btn" id="toggleSidebar">☰ 菜单</button>
+          <div class="section-title" id="currentSection">请选择功能</div>
+        </div>
+        <div class="content-frame">
+          <iframe id="contentFrame" title="管理内容区域"></iframe>
+        </div>
+        <div class="empty-tip" id="emptyTip" style="display: none">
+          当前账号无可用权限，请联系管理员开通。
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // 获取用户信息并填充页面
+      window.addEventListener("DOMContentLoaded", async function () {
+        await fetchUserInfo();
+        initSidebar();
+      });
+      /************************************************************************************************************************************************/
+      /*************************************************************获取用户信息***********************************************************************/
+      /************************************************************************************************************************************************/
+      // 获取用户信息
+      async function fetchUserInfo() {
+        try {
+          const response = await fetch("/admin/user/getUserInfo", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              admintoken: localStorage.getItem("adminToken"),
+              // 如果需要 token，在这里添加
+              // 'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+          });
+
+          const result = await response.json();
+          console.log(result);
+          if (result.code === "200" && result.data) {
+            const user = result.data;
+            console.log(user);
+            const nameEl = document.getElementById("adminUsername");
+            if (nameEl) nameEl.textContent = user.username || "管理员";
+            if (user.permission) {
+              localStorage.setItem("role", user.permission);
+            }
+          } else {
+            console.error("获取用户信息失败:", result.message);
+          }
+        } catch (error) {
+          console.error("获取用户信息出错:", error);
+        }
+      }
+      function initSidebar() {
+        const role = localStorage.getItem("role") || "";
+        const menuConfig = [
+          { id: "1", label: "管理员管理", url: "/admin/manager.html" },
+          { id: "2", label: "维修管理", url: "/admin/repair.html" },
+          { id: "3", label: "意见反馈管理", url: "/admin/feedback.html" },
+          { id: "4", label: "通知管理", url: "/admin/notification.html" },
+          { id: "5", label: "失物招领管理", url: "/admin/lostAndFound.html" },
+          { id: "6", label: "宿舍管理", url: "/admin/dormitory.html" },
+        ];
+
+        const menuList = document.getElementById("menuList");
+        const iframe = document.getElementById("contentFrame");
+        const titleEl = document.getElementById("currentSection");
+        const emptyTip = document.getElementById("emptyTip");
+
+        menuList.innerHTML = "";
+        const availableMenus = menuConfig.filter((item) => role.includes(item.id));
+
+        if (availableMenus.length === 0) {
+          emptyTip.style.display = "block";
+          iframe.src = "";
+          titleEl.textContent = "无权限";
+          return;
+        }
+
+        emptyTip.style.display = "none";
+
+        availableMenus.forEach((item, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "menu-item";
+          btn.textContent = item.label;
+          btn.dataset.url = item.url;
+          btn.addEventListener("click", function () {
+            document
+              .querySelectorAll(".menu-item")
+              .forEach((el) => el.classList.remove("active"));
+            btn.classList.add("active");
+            iframe.src = item.url;
+            titleEl.textContent = item.label;
+          });
+          if (idx === 0) {
+            btn.classList.add("active");
+            iframe.src = item.url;
+            titleEl.textContent = item.label;
+          }
+          menuList.appendChild(btn);
+        });
+
+        const toggleBtn = document.getElementById("toggleSidebar");
+        const sidebar = document.getElementById("sidebar");
+        toggleBtn.addEventListener("click", function () {
+          sidebar.classList.toggle("collapsed");
+        });
+      }
+      function logout() {
+        if (confirm("确定要退出登录吗？")) {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("role");
+          window.location.href = "/admins/login";
+        }
+      }
+    </script>
+  </body>
+</html>
