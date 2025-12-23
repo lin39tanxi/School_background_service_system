@@ -150,6 +150,7 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
             String result = String.join(",", urlsArray);
             log.info("图片字符串{}",result);
             lostAndFound.setImageUrls(result);
+
         }
 
             lostAndFoundMapper.insert(lostAndFound);

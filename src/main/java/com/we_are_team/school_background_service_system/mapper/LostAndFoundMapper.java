@@ -42,14 +42,14 @@ public interface LostAndFoundMapper {
  * 获取所有物品类别
  * @return
  */
- @Select("select * from item_category")
+ @Select("select * from item_category   ORDER BY created_time ")
  List<ItemCategoryVO> getAllItemCategory();
 
-   @Select("select * from location_category")
+   @Select("select * from location_category  ORDER BY created_time ")
     List<LocationCategoryVO> getAllLocationCategory();
 
-   @Insert("insert into lost_and_found(item_name, description,category_id, location_id, created_time, status,admin_id) " +
-           "VALUES (#{lostAndFound.itemName}, #{lostAndFound.description}, #{lostAndFound.categoryId}, #{lostAndFound.locationId},  #{lostAndFound.createdTime}, #{lostAndFound.status},#{lostAndFound.adminId})")
+   @Insert("insert into lost_and_found(item_name, description,category_id, location_id, created_time, status,admin_id,image_urls) " +
+           "VALUES (#{lostAndFound.itemName}, #{lostAndFound.description}, #{lostAndFound.categoryId}, #{lostAndFound.locationId},  #{lostAndFound.createdTime}, #{lostAndFound.status},#{lostAndFound.adminId},#{lostAndFound.imageUrls})")
     void insert(@Param("lostAndFound") LostAndFound lostAndFound);
  /**
  * 更新失物招领信息
@@ -57,7 +57,7 @@ public interface LostAndFoundMapper {
  */
     void updateLostFoundByItemId(@Param("lostAndFound") LostAndFound lostAndFound);
 
-    @Delete("delete from lost_and_found where item_id = #{itemId}")
+    @Delete("delete from lost_and_found where item_id = #{itemId} ")
     void deleteLostFound(@Param( "itemId") Integer itemId);
 
     Page<GetLostAndFoundVO> getLostAndFoundList(@Param("orderKey") String orderKey,@Param("beginTime") LocalDate beginTime,@Param("endTime") LocalDate endTime,@Param("status") String status);

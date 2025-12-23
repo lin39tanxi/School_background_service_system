@@ -171,7 +171,7 @@ public class RepairsServiceImpl implements ReparisService {
         if(!user.getPermission().contains("0")){
             throw new RuntimeException("这是用户端取消保修单");
         }
-        Integer processStatus = 5; // 状态码为5表示用户取消了保修单
+        Integer processStatus = 4; // 状态码为5表示用户取消了保修单
         RepairOrder repairOrder = new RepairOrder();
         repairOrder.setProcessStatus(processStatus);
         repairOrder.setUpdatedTime(LocalDateTime.now());
@@ -275,6 +275,7 @@ public class RepairsServiceImpl implements ReparisService {
                     .completedTime(repairOrder.getCompletedTime())
                     .appointmentBegin(repairOrder.getAppointmentBegin())
                     .appointmentEnd(repairOrder.getAppointmentEnd())
+                    .phone(repairOrder.getPhone())
                     .build();
             return repairOrderVO;
         }
@@ -293,6 +294,7 @@ public class RepairsServiceImpl implements ReparisService {
                     .completedTime(repairOrder.getCompletedTime())
                     .appointmentBegin(repairOrder.getAppointmentBegin())
                     .appointmentEnd(repairOrder.getAppointmentEnd())
+                    .phone(repairOrder.getPhone())
                     .imageUrls(urls).build();
             return repairOrderVO;
         }
@@ -306,7 +308,7 @@ public class RepairsServiceImpl implements ReparisService {
         }
 
         RepairOrder repairOrder = new RepairOrder();
-        repairOrder.setProcessStatus(2);
+        repairOrder.setProcessStatus(1);
         repairOrder.setOrderId(orderId);
         repairOrder.setUpdatedTime(LocalDateTime.now());
         repairOrder.setAdminId(BaseContext.getCurrentId());
@@ -322,11 +324,12 @@ public class RepairsServiceImpl implements ReparisService {
             throw new RuntimeException("你没有权限拒绝这个报修单");
         }
         RepairOrder repairOrder = new RepairOrder();
-        repairOrder.setProcessStatus(4);
+        repairOrder.setProcessStatus(3);
         repairOrder.setOrderId(orderId);
         repairOrder.setRejectReason(rejectReason);
         repairOrder.setAdminId(BaseContext.getCurrentId());
         repairOrder.setCompletedTime(LocalDateTime.now());
+        repairOrder.setUpdatedTime(LocalDateTime.now());
         repairsMapper.updateRepairStatus(repairOrder);
 
 
@@ -339,10 +342,11 @@ public class RepairsServiceImpl implements ReparisService {
             throw new RuntimeException("你没有权限完成这个报修单");
         }
         RepairOrder repairOrder = new RepairOrder();
-        repairOrder.setProcessStatus(3);
+        repairOrder.setProcessStatus(2);
         repairOrder.setOrderId(orderId);
         repairOrder.setAdminId(BaseContext.getCurrentId());
         repairOrder.setCompletedTime(LocalDateTime.now());
+        repairOrder.setUpdatedTime(LocalDateTime.now());
         repairsMapper.updateRepairStatus(repairOrder);
     }
 
