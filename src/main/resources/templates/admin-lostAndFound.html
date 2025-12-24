@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
@@ -310,6 +310,137 @@
         line-height: 1.6;
       }
 
+      .category-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .category-section {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+      }
+
+      .category-section h3 {
+        font-size: 16px;
+        margin-bottom: 12px;
+        color: var(--text-main);
+        font-weight: 600;
+      }
+
+      .category-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .category-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #fafbff;
+        transition: all 0.2s ease;
+      }
+
+      .category-item:hover {
+        background: #f0f3ff;
+        border-color: #c8d0f9;
+      }
+
+      .category-add-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px 12px;
+        border: 2px dashed var(--primary);
+        border-radius: 8px;
+        background: rgba(63, 81, 181, 0.05);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .category-add-item:hover {
+        background: rgba(63, 81, 181, 0.1);
+        border-color: #5f6fd6;
+      }
+
+      .category-add-item.editing {
+        justify-content: space-between;
+        gap: 8px;
+        cursor: default;
+      }
+
+      .add-icon {
+        font-size: 20px;
+        color: var(--primary);
+        font-weight: bold;
+      }
+
+      .add-input {
+        flex: 1;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 14px;
+        outline: none;
+      }
+
+      .add-input:focus {
+        border-color: var(--primary);
+      }
+
+      .btn-success {
+        background: #4caf50;
+        color: #fff;
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      .btn-success:hover {
+        background: #45a049;
+      }
+
+      .btn-cancel {
+        background: #9e9e9e;
+        color: #fff;
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      .btn-cancel:hover {
+        background: #757575;
+      }
+
+      .category-name {
+        font-size: 14px;
+        color: var(--text-main);
+      }
+
+      .btn-danger {
+        background: #ef5350;
+        color: #fff;
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      .btn-danger:hover {
+        background: #d32f2f;
+      }
+
+      .category-empty {
+        text-align: center;
+        color: var(--text-sub);
+        padding: 20px;
+        font-size: 13px;
+      }
+
       @media (max-width: 960px) {
         .sidebar {
           display: none;
@@ -336,16 +467,13 @@
             <span class="menu-dot"></span>
             <span>分类管理 >></span>
           </div>
-          
         </div>
       </aside>
 
       <main class="content">
         <section class="card panel active" id="lost-list">
           <div class="card-header">
-            <div class="title">
-              失物列表 <span class="pill">pageSize = 10</span>
-            </div>
+            <div class="title">失物列表</div>
             <div class="card-actions">
               <button class="btn btn-ghost" id="lfRefresh">刷新</button>
             </div>
@@ -406,16 +534,26 @@
 
         <section class="card panel" id="category-manage">
           <div class="card-header">
-            <div class="title">
-              分类管理 <span class="pill">待接入接口</span>
+            <div class="title">分类管理</div>
+            <div class="card-actions">
+              <button class="btn btn-ghost" id="categoryRefresh">刷新</button>
             </div>
           </div>
-          <p class="placeholder-text">
-            此区域用于管理失物分类，例如新增、编辑、删除分类。
-          </p>
+          <div class="category-grid">
+            <div class="category-section">
+              <h3>地点分类</h3>
+              <div class="category-list" id="locationList">
+                <div class="category-empty">加载中...</div>
+              </div>
+            </div>
+            <div class="category-section">
+              <h3>物品分类</h3>
+              <div class="category-list" id="categoryList">
+                <div class="category-empty">加载中...</div>
+              </div>
+            </div>
+          </div>
         </section>
-
-        
       </main>
     </div>
 
@@ -544,7 +682,7 @@
           .map((row) => {
             const stat = formatStatus(row.status);
             return `
-              <tr>
+              <tr style="cursor: pointer;" onclick="goToDetail(${row.itemId})">
                 <td>
                   <div class="img-box">
                     <img src="${row.imageUrls || ""}" alt="${
@@ -560,6 +698,10 @@
             `;
           })
           .join("");
+      }
+
+      function goToDetail(itemId) {
+        window.location.href = `/admin/lostAndFounditem?itemId=${itemId}`;
       }
 
       function updateLfPagination() {
@@ -655,10 +797,271 @@
         fetchLostAndFound(1);
       });
 
+      // 分类管理相关功能
+      const locationListEl = document.getElementById("locationList");
+      const categoryListEl = document.getElementById("categoryList");
+      const categoryRefreshBtn = document.getElementById("categoryRefresh");
+
+      async function loadLocationCategories() {
+        locationListEl.innerHTML =
+          '<div class="category-empty">加载中...</div>';
+        try {
+          const res = await fetch(
+            "/admin/lostAndFound/getAllLocationCategory",
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+            }
+          );
+          const result = await res.json();
+          if (result.code === "200" && result.data && result.data.length > 0) {
+            renderLocationList(result.data);
+          } else {
+            locationListEl.innerHTML =
+              '<div class="category-empty">暂无地点分类</div>';
+          }
+        } catch (error) {
+          console.error("加载地点分类失败", error);
+          locationListEl.innerHTML =
+            '<div class="category-empty">加载失败</div>';
+        }
+      }
+
+      async function loadItemCategories() {
+        categoryListEl.innerHTML =
+          '<div class="category-empty">加载中...</div>';
+        try {
+          const res = await fetch("/admin/lostAndFound/getAllItemCategory", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              admintoken: localStorage.getItem("adminToken") || "",
+            },
+          });
+          const result = await res.json();
+          if (result.code === "200" && result.data && result.data.length > 0) {
+            renderCategoryList(result.data);
+          } else {
+            categoryListEl.innerHTML =
+              '<div class="category-empty">暂无物品分类</div>';
+          }
+        } catch (error) {
+          console.error("加载物品分类失败", error);
+          categoryListEl.innerHTML =
+            '<div class="category-empty">加载失败</div>';
+        }
+      }
+
+      function renderLocationList(locations) {
+        const addButton = `
+          <div class="category-add-item" id="locationAddItem" onclick="showLocationInput()">
+            <span class="add-icon">+</span>
+          </div>
+        `;
+        const items = locations
+          .map(
+            (item) => `
+            <div class="category-item">
+              <span class="category-name">${item.locationName || "-"}</span>
+              <button class="btn btn-danger" onclick="deleteLocation(${
+                item.locationId
+              }, '${item.locationName}')">
+                删除
+              </button>
+            </div>
+          `
+          )
+          .join("");
+        locationListEl.innerHTML = addButton + items;
+      }
+
+      function renderCategoryList(categories) {
+        const addButton = `
+          <div class="category-add-item" id="categoryAddItem" onclick="showCategoryInput()">
+            <span class="add-icon">+</span>
+          </div>
+        `;
+        const items = categories
+          .map(
+            (item) => `
+            <div class="category-item">
+              <span class="category-name">${item.categoryName || "-"}</span>
+              <button class="btn btn-danger" onclick="deleteCategory(${
+                item.categoryId
+              }, '${item.categoryName}')">
+                删除
+              </button>
+            </div>
+          `
+          )
+          .join("");
+        categoryListEl.innerHTML = addButton + items;
+      }
+
+      async function deleteLocation(locationId, locationName) {
+        if (!confirm(`确定要删除地点分类"${locationName}"吗？`)) {
+          return;
+        }
+        try {
+          const res = await fetch(
+            `/admin/lostAndFound/deleteLocation/${locationId}`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+            }
+          );
+          const result = await res.json();
+          if (result.code === "200") {
+            alert("删除成功");
+            loadLocationCategories();
+            fetchLocations(); // 刷新筛选框
+          } else {
+            alert(result.message || "删除失败");
+          }
+        } catch (error) {
+          console.error("删除地点分类失败", error);
+          alert("删除失败，请稍后重试");
+        }
+      }
+
+      async function deleteCategory(categoryId, categoryName) {
+        if (!confirm(`确定要删除物品分类"${categoryName}"吗？`)) {
+          return;
+        }
+        try {
+          const res = await fetch(
+            `/admin/lostAndFound/deleteCategory/${categoryId}`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+            }
+          );
+          const result = await res.json();
+          if (result.code === "200") {
+            alert("删除成功");
+            loadItemCategories();
+            fetchCategories(); // 刷新筛选框
+          } else {
+            alert(result.message || "删除失败");
+          }
+        } catch (error) {
+          console.error("删除物品分类失败", error);
+          alert("删除失败，请稍后重试");
+        }
+      }
+
+      async function addNewLocation() {
+        const input = document.getElementById("locationNameInput");
+        const locationName = input ? input.value.trim() : "";
+        if (!locationName) {
+          return;
+        }
+        try {
+          const res = await fetch("/admin/lostAndFound/addLocation", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              admintoken: localStorage.getItem("adminToken") || "",
+            },
+            body: JSON.stringify({ locationName: locationName }),
+          });
+          const result = await res.json();
+          if (result.code === "200") {
+            loadLocationCategories();
+            fetchLocations(); // 刷新筛选框
+          } else {
+            alert(result.message || "添加失败");
+          }
+        } catch (error) {
+          console.error("添加地点分类失败", error);
+          alert("添加失败，请稍后重试");
+        }
+      }
+
+      async function addNewCategory() {
+        const input = document.getElementById("categoryNameInput");
+        const categoryName = input ? input.value.trim() : "";
+        if (!categoryName) {
+          return;
+        }
+        try {
+          const res = await fetch("/admin/lostAndFound/addCategory", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              admintoken: localStorage.getItem("adminToken") || "",
+            },
+            body: JSON.stringify({ categoryName: categoryName }),
+          });
+          const result = await res.json();
+          if (result.code === "200") {
+            loadItemCategories();
+            fetchCategories(); // 刷新筛选框
+          } else {
+            alert(result.message || "添加失败");
+          }
+        } catch (error) {
+          console.error("添加物品分类失败", error);
+          alert("添加失败，请稍后重试");
+        }
+      }
+
+      function showLocationInput() {
+        const addItem = document.getElementById("locationAddItem");
+        if (addItem) {
+          addItem.className = "category-add-item editing";
+          addItem.onclick = null;
+          addItem.innerHTML = `
+            <input type="text" class="add-input" id="locationNameInput" placeholder="请输入地点分类名称" />
+            <button class="btn btn-success" onclick="addNewLocation()">确定</button>
+            <button class="btn btn-cancel" onclick="loadLocationCategories()">取消</button>
+          `;
+          setTimeout(() => {
+            const input = document.getElementById("locationNameInput");
+            if (input) input.focus();
+          }, 50);
+        }
+      }
+
+      function showCategoryInput() {
+        const addItem = document.getElementById("categoryAddItem");
+        if (addItem) {
+          addItem.className = "category-add-item editing";
+          addItem.onclick = null;
+          addItem.innerHTML = `
+            <input type="text" class="add-input" id="categoryNameInput" placeholder="请输入物品分类名称" />
+            <button class="btn btn-success" onclick="addNewCategory()">确定</button>
+            <button class="btn btn-cancel" onclick="loadItemCategories()">取消</button>
+          `;
+          setTimeout(() => {
+            const input = document.getElementById("categoryNameInput");
+            if (input) input.focus();
+          }, 50);
+        }
+      }
+
+      if (categoryRefreshBtn) {
+        categoryRefreshBtn.addEventListener("click", () => {
+          loadLocationCategories();
+          loadItemCategories();
+        });
+      }
+
       document.addEventListener("DOMContentLoaded", () => {
         fetchCategories();
         fetchLocations();
         fetchLostAndFound(1);
+        loadLocationCategories();
+        loadItemCategories();
       });
     </script>
   </body>

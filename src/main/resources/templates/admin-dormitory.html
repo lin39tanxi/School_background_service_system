@@ -391,6 +391,12 @@
               <span class="pill" id="changeSummary">加载中...</span>
             </div>
             <div class="actions">
+              <select class="select" id="statusSelect">
+                <option value="">全部状态</option>
+                <option value="0">申请中</option>
+                <option value="1">已通过</option>
+                <option value="2">已拒绝</option>
+              </select>
               <button class="btn" id="refreshBtn">刷新</button>
             </div>
           </div>
@@ -518,6 +524,10 @@
             loadChangeList(currentPage)
           );
         }
+        const statusSelect = document.getElementById("statusSelect");
+        if (statusSelect) {
+          statusSelect.addEventListener("change", () => loadChangeList(1));
+        }
         loadChangeList(1);
         initDormFilters();
         loadBuildings();
@@ -527,6 +537,8 @@
       async function loadChangeList(pageNum) {
         currentPage = pageNum;
         const tbody = document.getElementById("changeTbody");
+        const statusSelect = document.getElementById("statusSelect");
+        const status = statusSelect ? statusSelect.value : "";
 
         setViewState({ loading: true, error: false, empty: false });
         tbody.innerHTML = "";
@@ -536,6 +548,7 @@
             pageNum: pageNum,
             pageSize: pageSize,
           });
+          if (status) params.append("status", status);
           const response = await fetch(
             `/admin/dormitory/getAllChangeDormitory?${params.toString()}`,
             {

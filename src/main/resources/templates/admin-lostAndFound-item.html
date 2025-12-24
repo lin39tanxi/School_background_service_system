@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>校园后勤管理系统</title>
+    <title>失物招领详情 - 后台</title>
     <style>
       * {
         margin: 0;
@@ -19,19 +19,706 @@
         background-attachment: fixed;
       }
 
-      
+      .header {
+        color: #fff;
+        padding: 14px 22px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
 
-     
+      .back-button {
+        background: rgba(255, 255, 255, 0);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 8px;
+        width: 38px;
+        height: 38px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .back-button:hover {
+        background: rgba(255, 255, 255, 0.24);
+        transform: translateY(-1px);
+      }
+
+      .header h1 {
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 22px auto 38px;
+        padding: 0 14px;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 14px;
+        box-shadow: 0 8px 26px rgba(0, 0, 0, 0.12);
+        padding: 22px;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #e8eaf6;
+        padding-bottom: 12px;
+      }
+
+      .title {
+        font-size: 22px;
+        color: #1f2a44;
+        margin-top: 4px;
+      }
+
+      .meta-line {
+        color: #7a8099;
+        font-size: 13px;
+        margin-top: 4px;
+      }
+
+      .status-chip {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        background: #3f51b5;
+      }
+
+      .action-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        border: 1px solid #d6d9e7;
+        background: #fff;
+        color: #2c2c2c;
+        border-radius: 9px;
+        padding: 10px 16px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.18s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #3f51b5, #5f6fd6);
+        border: none;
+        color: #fff;
+      }
+
+      .btn-warning {
+        background: #f1c40f;
+        border: none;
+        color: #fff;
+      }
+
+      .form-section {
+        margin-bottom: 24px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .form-item {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .form-item label {
+        font-size: 13px;
+        color: #7a8099;
+        font-weight: 600;
+      }
+
+      .form-item input,
+      .form-item select,
+      .form-item textarea {
+        padding: 10px 12px;
+        border: 1px solid #e7eaf5;
+        border-radius: 8px;
+        font-size: 14px;
+        background: #fff;
+        color: #2c2c2c;
+        transition: border-color 0.2s ease;
+      }
+
+      .form-item input:focus,
+      .form-item select:focus,
+      .form-item textarea:focus {
+        outline: none;
+        border-color: #3f51b5;
+      }
+
+      .form-item textarea {
+        min-height: 100px;
+        resize: vertical;
+        font-family: inherit;
+      }
+
+      .image-section {
+        margin-bottom: 24px;
+      }
+
+      .section-title {
+        font-size: 16px;
+        color: #2c2c2c;
+        margin-bottom: 12px;
+        font-weight: 600;
+      }
+
+      .image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+      }
+
+      .image-box {
+        position: relative;
+        border: 1px solid #e7eaf5;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #f7f8fd;
+        padding-bottom: 100%;
+      }
+
+      .image-box img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .upload-section {
+        margin-top: 16px;
+        padding: 16px;
+        background: #f7f8fd;
+        border: 2px dashed #d6d9e7;
+        border-radius: 10px;
+      }
+
+      .upload-btn {
+        background: #fff;
+        border: 1px solid #3f51b5;
+        color: #3f51b5;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s ease;
+      }
+
+      .upload-btn:hover {
+        background: #3f51b5;
+        color: #fff;
+      }
+
+      .upload-preview {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .preview-item {
+        position: relative;
+        border: 1px solid #e7eaf5;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+        padding-bottom: 100%;
+      }
+
+      .preview-item img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .remove-image {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 24px;
+        height: 24px;
+        background: rgba(255, 59, 48, 0.9);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 16px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+      }
+
+      .remove-image:hover {
+        background: #ff3b30;
+        transform: scale(1.1);
+      }
+
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #7a8099;
+        font-size: 14px;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      @media (max-width: 768px) {
+        .card {
+          padding: 16px;
+        }
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
+    <header class="header">
+      <button class="back-button" type="button" onclick="goBack()">←</button>
+      <h1>失物招领详情</h1>
+    </header>
 
-    <!-- 主容器 -->
+    <main class="page">
+      <div id="loadingDiv" class="loading">加载中...</div>
 
+      <section class="card hidden" id="detailCard">
+        <div class="card-header">
+          <div>
+            <div class="status-chip" id="statusChip">加载中...</div>
+            <div class="title">失物招领详情</div>
+            <div class="meta-line">
+              物品ID：<span id="detailItemId">-</span>
+            </div>
+          </div>
+          <div class="action-group">
+            <button
+              id="statusBtn"
+              type="button"
+              class="btn btn-warning"
+              onclick="toggleStatus()"
+            >
+              标记为已认领
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="saveChanges()"
+            >
+              保存修改
+            </button>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-grid">
+            <div class="form-item">
+              <label>物品名称 *</label>
+              <input type="text" id="itemName" placeholder="请输入物品名称" />
+            </div>
+
+            <div class="form-item">
+              <label>分类 *</label>
+              <select id="categoryId">
+                <option value="">请选择分类</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>拾取地点 *</label>
+              <select id="locationId">
+                <option value="">请选择地点</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>创建时间</label>
+              <input type="text" id="createdTime" readonly />
+            </div>
+
+            <div class="form-item">
+              <label>更新时间</label>
+              <input type="text" id="updatedTime" readonly />
+            </div>
+          </div>
+
+          <div class="form-item">
+            <label>物品描述</label>
+            <textarea id="description" placeholder="请输入物品描述"></textarea>
+          </div>
+        </div>
+
+        <div class="image-section">
+          <div class="section-title">物品图片</div>
+          <div class="image-grid" id="imageGrid">
+            <!-- 图片将动态加载 -->
+          </div>
+          <div class="upload-section">
+            <input
+              type="file"
+              id="imageInput"
+              accept="image/*"
+              multiple
+              style="display: none"
+            />
+            <button
+              type="button"
+              class="upload-btn"
+              onclick="document.getElementById('imageInput').click()"
+            >
+              +选择新图片
+            </button>
+            <div class="upload-preview" id="uploadPreview"></div>
+          </div>
+        </div>
+      </section>
+    </main>
 
     <script>
-      
-      
+      let currentItemId = null;
+      let currentData = null;
+      let categories = [];
+      let locations = [];
+      let currentStatus = 0;
+      let newUploadedImages = [];
+
+      function getUrlParam(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+
+      function goBack() {
+        window.history.back();
+      }
+
+      async function fetchCategories() {
+        try {
+          const res = await fetch("/admin/lostAndFound/getAllItemCategory", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              admintoken: localStorage.getItem("adminToken") || "",
+            },
+          });
+          const result = await res.json();
+          if (result.code === "200") {
+            categories = result.data || [];
+            renderCategoryOptions();
+          }
+        } catch (error) {
+          console.error("获取分类失败:", error);
+        }
+      }
+
+      async function fetchLocations() {
+        try {
+          const res = await fetch(
+            "/admin/lostAndFound/getAllLocationCategory",
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+            }
+          );
+          const result = await res.json();
+          if (result.code === "200") {
+            locations = result.data || [];
+            renderLocationOptions();
+          }
+        } catch (error) {
+          console.error("获取地点失败:", error);
+        }
+      }
+
+      function renderCategoryOptions() {
+        const select = document.getElementById("categoryId");
+        const options = ['<option value="">请选择分类</option>'].concat(
+          categories.map(
+            (cat) =>
+              `<option value="${cat.categoryId}">${cat.categoryName}</option>`
+          )
+        );
+        select.innerHTML = options.join("");
+      }
+
+      function renderLocationOptions() {
+        const select = document.getElementById("locationId");
+        const options = ['<option value="">请选择地点</option>'].concat(
+          locations.map(
+            (loc) =>
+              `<option value="${loc.locationId}">${loc.locationName}</option>`
+          )
+        );
+        select.innerHTML = options.join("");
+      }
+
+      async function fetchDetail() {
+        currentItemId = getUrlParam("itemId");
+        if (!currentItemId) {
+          alert("缺少物品ID参数");
+          goBack();
+          return;
+        }
+
+        document.getElementById("loadingDiv").style.display = "block";
+        document.getElementById("detailCard").classList.add("hidden");
+
+        try {
+          const res = await fetch(
+            `/admin/lostAndFound/getLostAndFoundDetail/${currentItemId}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+            }
+          );
+
+          const result = await res.json();
+          if (result.code !== "200") {
+            alert(result.message || "获取详情失败");
+            goBack();
+            return;
+          }
+
+          currentData = result.data;
+          renderDetail(currentData);
+        } catch (error) {
+          console.error("请求失败:", error);
+          alert("请求出错，请稍后重试");
+          goBack();
+        }
+      }
+
+      function renderDetail(data) {
+        document.getElementById("loadingDiv").style.display = "none";
+        document.getElementById("detailCard").classList.remove("hidden");
+
+        // 基本信息
+        document.getElementById("detailItemId").textContent =
+          data.itemId || "-";
+        document.getElementById("itemName").value = data.itemName || "";
+        document.getElementById("description").value = data.description || "";
+        currentStatus = data.status ?? 0;
+        document.getElementById("createdTime").value = data.createdTime || "-";
+        document.getElementById("updatedTime").value = data.updatedTime || "-";
+
+        // 状态显示
+        updateStatusDisplay(data.status);
+
+        // 设置分类和地点
+        // 需要找到对应的ID
+        const category = categories.find(
+          (c) => c.categoryName === data.categoryName
+        );
+        if (category) {
+          document.getElementById("categoryId").value = category.categoryId;
+        }
+
+        const location = locations.find(
+          (l) => l.locationName === data.locationName
+        );
+        if (location) {
+          document.getElementById("locationId").value = location.locationId;
+        }
+
+        // 渲染图片
+        renderImages(data.imageUrls || []);
+      }
+
+      function updateStatusDisplay(status) {
+        const statusChip = document.getElementById("statusChip");
+        const statusBtn = document.getElementById("statusBtn");
+
+        if (Number(status) === 1) {
+          statusChip.textContent = "已认领";
+          statusChip.style.background = "#2ecc71";
+          statusBtn.textContent = "标记为未认领";
+        } else {
+          statusChip.textContent = "未认领";
+          statusChip.style.background = "#f39c12";
+          statusBtn.textContent = "标记为已认领";
+        }
+      }
+
+      function renderImages(imageUrls) {
+        const imageGrid = document.getElementById("imageGrid");
+
+        if (!imageUrls || imageUrls.length === 0) {
+          imageGrid.innerHTML = '<p style="color: #7a8099;">暂无图片</p>';
+          return;
+        }
+
+        imageGrid.innerHTML = imageUrls
+          .map(
+            (url) => `
+          <div class="image-box">
+            <img src="${url}" alt="失物图片" onerror="this.src='';this.alt='加载失败';" />
+          </div>
+        `
+          )
+          .join("");
+      }
+
+      function toggleStatus() {
+        currentStatus = currentStatus === 1 ? 0 : 1;
+        updateStatusDisplay(currentStatus);
+      }
+
+      // 图片上传处理
+      const imageInput = document.getElementById("imageInput");
+      const uploadPreview = document.getElementById("uploadPreview");
+
+      imageInput.addEventListener("change", function (e) {
+        const files = Array.from(e.target.files);
+
+        files.forEach((file) => {
+          if (file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              newUploadedImages.push({
+                file: file,
+                url: e.target.result,
+              });
+              renderUploadPreview();
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+        imageInput.value = "";
+      });
+
+      function renderUploadPreview() {
+        uploadPreview.innerHTML = "";
+        newUploadedImages.forEach((img, index) => {
+          const previewItem = document.createElement("div");
+          previewItem.className = "preview-item";
+          previewItem.innerHTML = `
+            <img src="${img.url}" alt="新上传图片${index + 1}">
+            <button type="button" class="remove-image" onclick="removeNewImage(${index})" title="删除">×</button>
+          `;
+          uploadPreview.appendChild(previewItem);
+        });
+      }
+
+      function removeNewImage(index) {
+        newUploadedImages.splice(index, 1);
+        renderUploadPreview();
+      }
+
+      async function saveChanges() {
+        const itemName = document.getElementById("itemName").value.trim();
+        const categoryId = document.getElementById("categoryId").value;
+        const locationId = document.getElementById("locationId").value;
+
+        if (!itemName) {
+          alert("请输入物品名称");
+          return;
+        }
+
+        if (!categoryId) {
+          alert("请选择分类");
+          return;
+        }
+
+        if (!locationId) {
+          alert("请选择地点");
+          return;
+        }
+
+        try {
+          // 使用FormData将所有数据（包括图片文件）一起提交
+          const formData = new FormData();
+
+          // 添加基本数据
+          formData.append("itemId", currentItemId);
+          formData.append("itemName", itemName);
+          formData.append("categoryId", categoryId);
+          formData.append("locationId", locationId);
+          formData.append("status", currentStatus);
+
+          // 添加描述（总是添加，即使为空）
+          const description = document
+            .getElementById("description")
+            .value.trim();
+          formData.append("description", description);
+
+          // 添加新上传的图片文件
+          if (newUploadedImages.length > 0) {
+            newUploadedImages.forEach((img) => {
+              formData.append("imageUrlsArray", img.file);
+            });
+          }
+
+          console.log("提交FormData，包含图片数量:", newUploadedImages.length);
+
+          const res = await fetch(`/admin/lostAndFound/updateLostFound`, {
+            method: "PUT",
+            headers: {
+              admintoken: localStorage.getItem("adminToken") || "",
+              // 注意：使用FormData时不要设置Content-Type，浏览器会自动设置正确的边界
+            },
+            body: formData,
+          });
+
+          const result = await res.json();
+          if (result.code === "200") {
+            alert("更新成功");
+            // 清空新上传的图片
+            newUploadedImages = [];
+            renderUploadPreview();
+            // 重新加载数据
+            await fetchDetail();
+          } else {
+            alert(result.message || "更新失败");
+          }
+        } catch (error) {
+          console.error("更新失败:", error);
+          alert("更新出错，请稍后重试");
+        }
+      }
+
+      // 页面加载时执行
+      document.addEventListener("DOMContentLoaded", async () => {
+        await Promise.all([fetchCategories(), fetchLocations()]);
+        await fetchDetail();
+      });
     </script>
   </body>
 </html>

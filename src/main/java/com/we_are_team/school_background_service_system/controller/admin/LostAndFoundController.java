@@ -93,7 +93,7 @@ public class LostAndFoundController {
      */
     @PutMapping("/updateLostFound")
     public Result updateLostFound( @RequestParam Integer itemId,
-                                    @RequestParam String itemName,
+                                   @RequestParam String itemName,
                                    @RequestParam Integer categoryId,
                                    @RequestParam Integer locationId,
                                    @RequestParam Integer status,

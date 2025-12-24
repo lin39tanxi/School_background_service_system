@@ -62,7 +62,7 @@
           <if test="keyword != null and keyword != ''">
               (student_number like concat('%', #{keyword}, '%') or old_dorm_address like concat('%', #{keyword}, '%') or new_dorm_address like concat('%', #{keyword}, '%'))
           </if>
-          <if test="status != null and status != ''">
+          <if test="status != null">
               and status = #{status}
           </if>
           <if test="beginTime != null">
