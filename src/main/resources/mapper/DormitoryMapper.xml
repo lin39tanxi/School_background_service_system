@@ -9,7 +9,7 @@
      inner join dorm_room on floor.floor_id = dorm_room.floor_id
      <where>
          <if test="keyword != null and keyword != ''">
-             (dorm_building.building_name like concat('%', #{keyword}, '%') or floor.floor_name like concat('%', #{keyword}, '%') or dorm_room.room_number like concat('%', #{keyword}, '%'))
+             (dorm_building.building_name like concat('%', #{keyword}, '%') or floor.floor_name like concat('%', #{keyword}, '%') or dorm_room.room_number like concat('%', #{keyword}, '%') or dorm_room.studentArray like concat('%', #{keyword}, '%'))
          </if>
           <if test="buildingId != null and buildingId != ''">
               dorm_building.building_id = #{buildingId}

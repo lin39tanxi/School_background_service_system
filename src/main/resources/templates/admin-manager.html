@@ -666,7 +666,7 @@
           .join("");
 
         if (!username || !password || !permission) {
-          alert("请完整填写信息");
+          alert("请填写用户名、密码并选择权限");
           return;
         }
 
@@ -766,6 +766,7 @@
               permissions.length > 1
                 ? permissions.concat(permissions)
                 : permissions;
+            const isAdmin = row.username === "admin";
             return `
               <tr>
                 <td>${row.userId ?? "-"}</td>
@@ -795,9 +796,11 @@
                   <button class="btn btn-primary" data-action="change" data-id="${
                     row.userId
                   }">修改密码</button>
-                  <button class="btn btn-danger" data-action="delete" data-id="${
-                    row.userId
-                  }">删除</button>
+                  ${
+                    isAdmin
+                      ? ""
+                      : `<button class="btn btn-danger" data-action="delete" data-id="${row.userId}">删除</button>`
+                  }
                 </td>
               </tr>
             `;

@@ -255,9 +255,9 @@ public class UserServiceImpl implements UserService {
         if(adminRegisterDTO.getPassword() == null || adminRegisterDTO.getPassword().equals("")){
             throw new RuntimeException("密码不能为空");
         }
-        if(adminRegisterDTO.getNickname() == null || adminRegisterDTO.getNickname().equals("")){
-            throw new RuntimeException("昵称不能为空");
-        }
+//        if(adminRegisterDTO.getNickname() == null || adminRegisterDTO.getNickname().equals("")){
+//            throw new RuntimeException("昵称不能为空");
+//        }
         if(adminRegisterDTO.getUsername().length()<6 || adminRegisterDTO.getUsername().length()>20){
             throw new RuntimeException("用户名长度不能小于6位或者大于20位");
         }
@@ -316,6 +316,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUserByAdminId(Integer userId) {
         User user =userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(user.getUserId().equals(userId)){
+            throw new RuntimeException("不能删除自己");
+        }
+        if(user.getUsername().equals("admin")){
+            throw new RuntimeException("不能删除初始超级管理员");
+        }
         if(!user.getPermission().contains("1")){
             throw new RuntimeException("你没有权限删除管理员");
         }
