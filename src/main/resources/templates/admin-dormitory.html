@@ -150,6 +150,206 @@
         line-height: 1.6;
       }
 
+      .card-header .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .btn {
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text-main);
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s ease;
+      }
+
+      .btn:hover {
+        background: #f3f6ff;
+        border-color: #d3d8f3;
+      }
+
+      .btn.primary {
+        background: linear-gradient(135deg, #3f51b5, #5f6fd6);
+        color: #fff;
+        border: none;
+        box-shadow: 0 8px 24px rgba(63, 81, 181, 0.25);
+      }
+
+      .select {
+        min-width: 140px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text-main);
+        font-size: 14px;
+      }
+
+      .filter-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        color: var(--text-sub);
+        font-size: 14px;
+      }
+
+      .legend {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .status-dot.pending {
+        background: #f5a524;
+      }
+
+      .status-dot.approved {
+        background: #34c759;
+      }
+
+      .status-dot.rejected {
+        background: #ef5350;
+      }
+
+      .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      table.data-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 12px;
+      }
+
+      table.data-table thead {
+        background: #f7f9ff;
+      }
+
+      table.data-table th,
+      table.data-table td {
+        padding: 12px 10px;
+        text-align: left;
+        font-size: 14px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      table.data-table th {
+        color: var(--text-sub);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      table.data-table tbody tr:hover {
+        background: #f5f7ff;
+      }
+
+      table.data-table tbody tr {
+        cursor: pointer;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .badge.pending {
+        background: rgba(245, 165, 36, 0.15);
+        color: #b36b00;
+      }
+
+      .badge.approved {
+        background: rgba(52, 199, 89, 0.15);
+        color: #2c8c46;
+      }
+
+      .badge.rejected {
+        background: rgba(239, 83, 80, 0.15);
+        color: #b23b3b;
+      }
+
+      .subtext {
+        display: block;
+        font-size: 12px;
+        color: var(--text-sub);
+        margin-top: 4px;
+        line-height: 1.4;
+      }
+
+      .empty-state,
+      .loading-state,
+      .error-state {
+        padding: 24px;
+        text-align: center;
+        color: var(--text-sub);
+        font-size: 14px;
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .page-btn {
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        background: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: var(--text-main);
+      }
+
+      .page-btn:hover {
+        background: #f0f3ff;
+        border-color: #c8d0f9;
+      }
+
+      .page-btn.active {
+        background: #3f51b5;
+        color: #fff;
+        border-color: #3f51b5;
+        box-shadow: 0 8px 22px rgba(63, 81, 181, 0.25);
+      }
+
+      .page-btn.disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      .page-meta {
+        color: var(--text-sub);
+        font-size: 13px;
+        margin-left: 8px;
+      }
+
       @media (max-width: 960px) {
         .sidebar {
           display: none;
@@ -172,6 +372,14 @@
             <span class="menu-dot"></span>
             <span>宿舍调换申请 >></span>
           </div>
+          <div class="menu-item" data-target="dorm-view">
+            <span class="menu-dot"></span>
+            <span>查看宿舍 >></span>
+          </div>
+          <div class="menu-item" data-target="dorm-manual-change">
+            <span class="menu-dot"></span>
+            <span>手动调换宿舍 >></span>
+          </div>
         </div>
       </aside>
 
@@ -179,11 +387,100 @@
         <section class="card panel active" id="dorm-change">
           <div class="card-header">
             <div class="title">
-              宿舍调换申请 <span class="pill">待接入接口</span>
+              宿舍调换申请
+              <span class="pill" id="changeSummary">加载中...</span>
+            </div>
+            <div class="actions">
+              <button class="btn" id="refreshBtn">刷新</button>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <div>每页固定 10 条，按申请时间倒序展示。</div>
+            <div class="legend">
+              <span class="legend-item"
+                ><span class="status-dot pending"></span>申请中</span
+              >
+              <span class="legend-item"
+                ><span class="status-dot approved"></span>已通过</span
+              >
+              <span class="legend-item"
+                ><span class="status-dot rejected"></span>已拒绝</span
+              >
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>学号</th>
+                  <th>原宿舍</th>
+                  <th>申请宿舍</th>
+                  <th>申请理由</th>
+                  <th>状态</th>
+                  <th>申请时间</th>
+                </tr>
+              </thead>
+              <tbody id="changeTbody"></tbody>
+            </table>
+          </div>
+
+          <div class="loading-state" id="loadingState" hidden>
+            正在加载数据...
+          </div>
+          <div class="error-state" id="errorState" hidden>
+            获取数据失败，请稍后重试
+          </div>
+          <div class="empty-state" id="emptyState" hidden>暂无调换申请</div>
+
+          <div class="pagination" id="pagination"></div>
+        </section>
+        <section class="card panel" id="dorm-view">
+          <div class="card-header">
+            <div class="title">
+              查看宿舍 <span class="pill" id="dormSummary">加载中...</span>
+            </div>
+            <div class="actions">
+              <select class="select" id="buildingSelect">
+                <option value="">全部楼栋</option>
+              </select>
+              <select class="select" id="floorSelect" disabled>
+                <option value="">全部楼层</option>
+              </select>
+              <button class="btn" id="resetDormFilter">清空筛选</button>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>宿舍</th>
+                  <th>性别</th>
+                  <th>入住人数</th>
+                </tr>
+              </thead>
+              <tbody id="dormTbody"></tbody>
+            </table>
+          </div>
+
+          <div class="pagination" id="dormPagination"></div>
+
+          <div class="loading-state" id="dormLoading" hidden>
+            正在加载宿舍数据...
+          </div>
+          <div class="error-state" id="dormError" hidden>
+            获取宿舍数据失败，请稍后再试
+          </div>
+          <div class="empty-state" id="dormEmpty" hidden>暂无宿舍数据</div>
+        </section>
+        <section class="card panel" id="dorm-manual-change">
+          <div class="card-header">
+            <div class="title">
+              手动调换宿舍 <span class="pill">待接入接口</span>
             </div>
           </div>
           <p class="placeholder-text">
-            这里将展示宿舍调换申请列表，后续可接入审批、筛选、分页和导出等功能。
+            这里将展示手动调换宿舍列表，后续可接入审批、筛选、分页和导出等功能。
           </p>
         </section>
       </main>
@@ -192,6 +489,14 @@
     <script>
       const menuItems = document.querySelectorAll(".menu-item");
       const panels = document.querySelectorAll(".panel");
+      const pageSize = 10;
+      let currentPage = 1;
+      let totalPages = 1;
+      let totalRecords = 0;
+      const dormPageSize = 10;
+      let dormCurrentPage = 1;
+      let dormTotalPages = 1;
+      let dormTotalRecords = 0;
 
       function switchPanel(targetId) {
         menuItems.forEach((item) => {
@@ -205,6 +510,472 @@
       menuItems.forEach((item) => {
         item.addEventListener("click", () => switchPanel(item.dataset.target));
       });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const refreshBtn = document.getElementById("refreshBtn");
+        if (refreshBtn) {
+          refreshBtn.addEventListener("click", () =>
+            loadChangeList(currentPage)
+          );
+        }
+        loadChangeList(1);
+        initDormFilters();
+        loadBuildings();
+        loadDormList(1);
+      });
+
+      async function loadChangeList(pageNum) {
+        currentPage = pageNum;
+        const tbody = document.getElementById("changeTbody");
+
+        setViewState({ loading: true, error: false, empty: false });
+        tbody.innerHTML = "";
+
+        try {
+          const params = new URLSearchParams({
+            pageNum: pageNum,
+            pageSize: pageSize,
+          });
+          const response = await fetch(
+            `/admin/dormitory/getAllChangeDormitory?${params.toString()}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+            }
+          );
+
+          const result = await response.json();
+          if (result.code === "200" && result.data) {
+            const data = result.data;
+            const list = data.records || data.list || [];
+            totalRecords = data.total || list.length || 0;
+            totalPages = Math.max(1, Math.ceil(totalRecords / pageSize));
+            renderChangeRows(list);
+            renderPagination();
+            updateSummary(totalRecords);
+            setViewState({
+              loading: false,
+              error: false,
+              empty: !list || list.length === 0,
+            });
+            return;
+          }
+
+          setViewState({ loading: false, error: false, empty: true });
+          updateSummary(0);
+          renderChangeRows([]);
+        } catch (error) {
+          console.error("获取宿舍调换申请失败", error);
+          setViewState({ loading: false, error: true, empty: false });
+          updateSummary(0);
+          renderChangeRows([]);
+        }
+      }
+
+      function renderChangeRows(list) {
+        const tbody = document.getElementById("changeTbody");
+        tbody.innerHTML = "";
+
+        if (!list || list.length === 0) {
+          return;
+        }
+
+        list.forEach((item) => {
+          const reasonText = truncateText(item.reason, 10);
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${safeText(item.studentNumber)}</td>
+            <td>${safeText(item.oldDormAddress)}</td>
+            <td>${safeText(item.newDormAddress)}</td>
+            <td>
+              ${safeText(reasonText) || "-"}
+              ${
+                item.rejectionReason && item.status === 2
+                  ? `<span class="subtext">拒绝原因：${safeText(
+                      item.rejectionReason
+                    )}</span>`
+                  : ""
+              }
+            </td>
+            <td>${renderStatusBadge(item.status)}</td>
+            <td>${formatDateTime(item.createdTime)}</td>
+          `;
+          if (item.dormChangeId !== undefined && item.dormChangeId !== null) {
+            tr.addEventListener("click", () =>
+              goToDetail(String(item.dormChangeId))
+            );
+          }
+          tbody.appendChild(tr);
+        });
+      }
+
+      function goToDetail(dormChangeId) {
+        if (!dormChangeId) return;
+        window.location.href = `/admin/dormitory/changeDormitory/item?dormChangeId=${encodeURIComponent(
+          dormChangeId
+        )}`;
+      }
+
+      function renderStatusBadge(status) {
+        let text = "未知";
+        let cls = "";
+
+        if (status === 0 || status === "0") {
+          text = "申请中";
+          cls = "pending";
+        } else if (status === 1 || status === "1") {
+          text = "已通过";
+          cls = "approved";
+        } else if (status === 2 || status === "2") {
+          text = "已拒绝";
+          cls = "rejected";
+        }
+
+        return `<span class="badge ${cls}">${text}</span>`;
+      }
+
+      function renderPagination() {
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+
+        const start = Math.max(1, currentPage - 2);
+        const end = Math.min(totalPages, currentPage + 2);
+
+        pagination.appendChild(
+          createPageButton(
+            "上一页",
+            Math.max(1, currentPage - 1),
+            currentPage === 1
+          )
+        );
+
+        for (let i = start; i <= end; i++) {
+          pagination.appendChild(
+            createPageButton(i, i, false, i === currentPage)
+          );
+        }
+
+        pagination.appendChild(
+          createPageButton(
+            "下一页",
+            Math.min(totalPages, currentPage + 1),
+            currentPage === totalPages
+          )
+        );
+
+        const meta = document.createElement("span");
+        meta.className = "page-meta";
+        meta.textContent = `第 ${currentPage}/${totalPages} 页 · 共 ${totalRecords} 条`;
+        pagination.appendChild(meta);
+      }
+
+      function createPageButton(label, page, disabled, active) {
+        const btn = document.createElement("button");
+        btn.className =
+          "page-btn" +
+          (disabled ? " disabled" : "") +
+          (active ? " active" : "");
+        btn.textContent = label;
+        if (!disabled) {
+          btn.addEventListener("click", () => loadChangeList(page));
+        }
+        return btn;
+      }
+
+      function formatDateTime(value) {
+        if (!value) return "-";
+        if (typeof value === "string") return value.replace("T", " ");
+        return value;
+      }
+
+      function safeText(value) {
+        if (value === null || value === undefined) return "";
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function truncateText(value, maxLen) {
+        if (value === null || value === undefined) return "";
+        const text = String(value);
+        if (text.length <= maxLen) return text;
+        return text.slice(0, maxLen) + "...";
+      }
+
+      function setViewState({ loading, error, empty }) {
+        const loadingEl = document.getElementById("loadingState");
+        const errorEl = document.getElementById("errorState");
+        const emptyEl = document.getElementById("emptyState");
+
+        if (loadingEl) loadingEl.hidden = !loading;
+        if (errorEl) errorEl.hidden = !error;
+        if (emptyEl) emptyEl.hidden = !empty;
+      }
+
+      function updateSummary(total) {
+        const summaryEl = document.getElementById("changeSummary");
+        if (summaryEl) {
+          summaryEl.textContent = `共 ${total} 条`;
+        }
+      }
+
+      function initDormFilters() {
+        const buildingSelect = document.getElementById("buildingSelect");
+        const floorSelect = document.getElementById("floorSelect");
+        const resetBtn = document.getElementById("resetDormFilter");
+
+        if (buildingSelect) {
+          buildingSelect.addEventListener("change", async (e) => {
+            const buildingId = e.target.value;
+            await loadFloors(buildingId);
+            loadDormList(1);
+          });
+        }
+
+        if (floorSelect) {
+          floorSelect.addEventListener("change", () => loadDormList(1));
+        }
+
+        if (resetBtn) {
+          resetBtn.addEventListener("click", () => {
+            buildingSelect.value = "";
+            floorSelect.value = "";
+            floorSelect.disabled = true;
+            loadDormList(1);
+          });
+        }
+      }
+
+      async function loadBuildings() {
+        const buildingSelect = document.getElementById("buildingSelect");
+        if (!buildingSelect) return;
+
+        buildingSelect.disabled = true;
+        try {
+          const response = await fetch("/admin/dormitory/getAllBuilding", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              admintoken: localStorage.getItem("adminToken") || "",
+            },
+          });
+          const result = await response.json();
+          if (result.code === "200" && Array.isArray(result.data)) {
+            buildingSelect.innerHTML = '<option value="">全部楼栋</option>';
+            result.data.forEach((item) => {
+              const opt = document.createElement("option");
+              opt.value = item.buildingId;
+              opt.textContent = safeText(item.buildingName);
+              buildingSelect.appendChild(opt);
+            });
+          }
+        } catch (e) {
+          console.error("获取楼栋列表失败", e);
+        } finally {
+          buildingSelect.disabled = false;
+        }
+      }
+
+      async function loadFloors(buildingId) {
+        const floorSelect = document.getElementById("floorSelect");
+        if (!floorSelect) return;
+
+        floorSelect.innerHTML = '<option value="">全部楼层</option>';
+        if (!buildingId) {
+          floorSelect.disabled = true;
+          return;
+        }
+
+        floorSelect.disabled = true;
+        try {
+          const params = new URLSearchParams({ buildingId });
+          const response = await fetch(
+            `/admin/dormitory/getFloorsByBuilding?${params.toString()}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+            }
+          );
+          const result = await response.json();
+          if (result.code === "200" && Array.isArray(result.data)) {
+            result.data.forEach((item) => {
+              const opt = document.createElement("option");
+              opt.value = item.floorId;
+              opt.textContent = safeText(item.floorName || item.floorNumber);
+              floorSelect.appendChild(opt);
+            });
+            floorSelect.disabled = false;
+          }
+        } catch (e) {
+          console.error("获取楼层列表失败", e);
+          floorSelect.disabled = false;
+        }
+      }
+
+      async function loadDormList(pageNum = 1) {
+        dormCurrentPage = pageNum;
+        const buildingSelect = document.getElementById("buildingSelect");
+        const floorSelect = document.getElementById("floorSelect");
+        const buildingId = buildingSelect ? buildingSelect.value : "";
+        const floorId = floorSelect ? floorSelect.value : "";
+
+        const bodyEl = document.getElementById("dormTbody");
+        setDormViewState({ loading: true, error: false, empty: false });
+        bodyEl.innerHTML = "";
+
+        try {
+          const params = new URLSearchParams({
+            pageNum: dormCurrentPage,
+            pageSize: dormPageSize,
+          });
+          if (buildingId) params.append("buildingId", buildingId);
+          if (floorId) params.append("floorId", floorId);
+
+          const response = await fetch(
+            `/admin/dormitory/getAllBuildingAndFloorAndRooms?${params.toString()}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+            }
+          );
+          const result = await response.json();
+          if (result.code === "200" && result.data) {
+            const data = result.data;
+            const list = data.records || data.list || [];
+            dormTotalRecords = data.total || list.length || 0;
+            dormTotalPages = Math.max(
+              1,
+              Math.ceil(dormTotalRecords / dormPageSize)
+            );
+            renderDormRows(list);
+            renderDormPagination();
+            updateDormSummary(dormTotalRecords);
+            setDormViewState({
+              loading: false,
+              error: false,
+              empty: !list || list.length === 0,
+            });
+            return;
+          }
+
+          dormTotalRecords = 0;
+          dormTotalPages = 1;
+          updateDormSummary(0);
+          renderDormRows([]);
+          renderDormPagination();
+          setDormViewState({ loading: false, error: false, empty: true });
+        } catch (e) {
+          console.error("获取宿舍列表失败", e);
+          dormTotalRecords = 0;
+          dormTotalPages = 1;
+          updateDormSummary(0);
+          renderDormRows([]);
+          renderDormPagination();
+          setDormViewState({ loading: false, error: true, empty: false });
+        }
+      }
+
+      function renderDormRows(list) {
+        const bodyEl = document.getElementById("dormTbody");
+        bodyEl.innerHTML = "";
+
+        if (!list || list.length === 0) return;
+
+        list.forEach((item) => {
+          const tr = document.createElement("tr");
+          const location = `${safeText(item.buildingName || "")}${safeText(
+            item.floorName || ""
+          )}${safeText(item.roomNumber || "")}`;
+          const genderText =
+            item.gender === 1 || item.gender === "1" ? "男" : "女";
+          const peopleText = `${item.currentPeople ?? "-"}/${
+            item.maxPeople ?? "-"
+          }`;
+
+          tr.innerHTML = `
+            <td>${location}</td>
+            <td>${genderText}</td>
+            <td>${peopleText}</td>
+          `;
+          bodyEl.appendChild(tr);
+        });
+      }
+
+      function setDormViewState({ loading, error, empty }) {
+        const loadingEl = document.getElementById("dormLoading");
+        const errorEl = document.getElementById("dormError");
+        const emptyEl = document.getElementById("dormEmpty");
+
+        if (loadingEl) loadingEl.hidden = !loading;
+        if (errorEl) errorEl.hidden = !error;
+        if (emptyEl) emptyEl.hidden = !empty;
+      }
+
+      function updateDormSummary(total) {
+        const summaryEl = document.getElementById("dormSummary");
+        if (summaryEl) summaryEl.textContent = `共 ${total} 条`;
+      }
+
+      function renderDormPagination() {
+        const pagination = document.getElementById("dormPagination");
+        if (!pagination) return;
+        pagination.innerHTML = "";
+
+        const start = Math.max(1, dormCurrentPage - 2);
+        const end = Math.min(dormTotalPages, dormCurrentPage + 2);
+
+        pagination.appendChild(
+          createDormPageButton(
+            "上一页",
+            Math.max(1, dormCurrentPage - 1),
+            dormCurrentPage === 1
+          )
+        );
+
+        for (let i = start; i <= end; i++) {
+          pagination.appendChild(
+            createDormPageButton(i, i, false, i === dormCurrentPage)
+          );
+        }
+
+        pagination.appendChild(
+          createDormPageButton(
+            "下一页",
+            Math.min(dormTotalPages, dormCurrentPage + 1),
+            dormCurrentPage === dormTotalPages
+          )
+        );
+
+        const meta = document.createElement("span");
+        meta.className = "page-meta";
+        meta.textContent = `第 ${dormCurrentPage}/${dormTotalPages} 页 · 共 ${dormTotalRecords} 条`;
+        pagination.appendChild(meta);
+      }
+
+      function createDormPageButton(label, page, disabled, active) {
+        const btn = document.createElement("button");
+        btn.className =
+          "page-btn" +
+          (disabled ? " disabled" : "") +
+          (active ? " active" : "");
+        btn.textContent = label;
+        if (!disabled) {
+          btn.addEventListener("click", () => loadDormList(page));
+        }
+        return btn;
+      }
     </script>
   </body>
 </html>

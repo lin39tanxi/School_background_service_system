@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>宿舍调换详情 - 管理端</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Microsoft YaHei", Arial, sans-serif;
+        background-image: url(http://localhost:8081/img/35e1b763c15645c1a6d674accf959f30.jpg);
+        min-height: 100vh;
+        background-size: cover;
+        background-attachment: fixed;
+        color: #2f2f2f;
+      }
+
+      .header {
+        background: #3f51b5;
+        color: #fff;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .back-button {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 28px;
+        cursor: pointer;
+        padding: 5px 10px;
+        transition: opacity 0.3s;
+      }
+
+      .back-button:hover {
+        opacity: 0.8;
+      }
+
+      .header h1 {
+        font-size: 22px;
+        font-weight: normal;
+      }
+
+      .dropdown-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      .user-name {
+        min-width: 120px;
+        padding: 10px 14px;
+        background: #3f51b5;
+        border-radius: 5px;
+        color: #fff;
+        font-weight: 600;
+        text-align: center;
+        cursor: default;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        z-index: 1000;
+        width: 150px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+      }
+
+      .dropdown-container:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .dropdown-item {
+        width: 100%;
+        padding: 12px 20px;
+        background: none;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        color: #333;
+        font-size: 14px;
+        transition: all 0.2s;
+        outline: none;
+      }
+
+      .dropdown-item:hover {
+        background: #f5f5f5;
+        color: #3f51b5;
+      }
+
+      .dropdown-item:not(:last-child) {
+        border-bottom: 1px solid #eee;
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 24px auto 40px;
+        padding: 0 16px;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        padding: 22px;
+        backdrop-filter: blur(4px);
+      }
+
+      .card + .card {
+        margin-top: 16px;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 16px;
+        border-bottom: 1px solid #e8e8e8;
+        padding-bottom: 12px;
+      }
+
+      .title {
+        font-size: 22px;
+        color: #333;
+        margin-bottom: 6px;
+      }
+
+      .meta-line {
+        color: #7a8099;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .status-chip {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        background: #3f51b5;
+        margin-bottom: 6px;
+      }
+
+      .chip-pending {
+        background: #ff9800;
+      }
+
+      .chip-pass {
+        background: #4caf50;
+      }
+
+      .chip-reject {
+        background: #f44336;
+      }
+
+      .chip-cancel {
+        background: #9e9e9e;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+
+      .info-item {
+        background: #f8f9fd;
+        border: 1px solid #eef1f6;
+        border-radius: 10px;
+        padding: 12px 14px;
+      }
+
+      .info-item label {
+        display: block;
+        font-size: 13px;
+        color: #8b94b5;
+        margin-bottom: 6px;
+      }
+
+      .info-item .value {
+        color: #2f2f2f;
+        font-size: 15px;
+        line-height: 1.6;
+        word-break: break-all;
+      }
+
+      .info-block {
+        margin-bottom: 18px;
+        background: #fff;
+        border: 1px solid #eef1f6;
+        border-radius: 10px;
+        padding: 14px 16px;
+      }
+
+      .block-title {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .block-content {
+        font-size: 15px;
+        color: #444;
+        line-height: 1.7;
+        white-space: pre-line;
+      }
+
+      .status-line {
+        color: #888;
+        font-size: 14px;
+        margin-top: 6px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: 1px solid #d8def0;
+        background: #fff;
+        color: #2f2f2f;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 14px;
+      }
+
+      .btn:hover {
+        background: #eef2ff;
+        border-color: #c8d0f9;
+      }
+
+      .btn.primary {
+        background: linear-gradient(135deg, #3f51b5, #5f6fd6);
+        color: #fff;
+        border: none;
+        box-shadow: 0 8px 18px rgba(63, 81, 181, 0.25);
+      }
+
+      .btn.danger {
+        background: #fbe9e7;
+        color: #c62828;
+        border-color: #ffcdd2;
+      }
+
+      .btn[disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        z-index: 1200;
+      }
+
+      .modal[hidden] {
+        display: none;
+      }
+
+      .modal-mask {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(2px);
+      }
+
+      .modal-card {
+        position: relative;
+        background: #fff;
+        border-radius: 12px;
+        padding: 18px;
+        width: min(520px, 94vw);
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+      }
+
+      .modal-card h3 {
+        margin-bottom: 10px;
+        font-size: 18px;
+      }
+
+      .modal-card textarea {
+        width: 100%;
+        min-height: 120px;
+        border-radius: 8px;
+        border: 1px solid #d8def0;
+        padding: 10px;
+        font-size: 14px;
+        resize: vertical;
+        outline: none;
+      }
+
+      .modal-card textarea:focus {
+        border-color: #3f51b5;
+        box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.12);
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      @media (max-width: 768px) {
+        .card {
+          padding: 16px;
+        }
+        .header h1 {
+          font-size: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    
+
+    <main class="page">
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="status-chip" id="statusChip">加载中...</div>
+            <div class="title">申请单详情</div>
+            <div class="meta-line">申请编号：<span id="detailId">-</span></div>
+            <div class="meta-line" id="statusMessage"></div>
+          </div>
+          <div class="actions">
+            <button class="btn" id="backBtn">返回列表</button>
+            <button class="btn danger" id="rejectBtn">拒绝申请</button>
+            <button class="btn primary" id="agreeBtn">同意申请</button>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <label>学号</label>
+            <div class="value" id="studentNumber">-</div>
+          </div>
+          <div class="info-item">
+            <label>原宿舍</label>
+            <div class="value" id="oldDorm">-</div>
+          </div>
+          <div class="info-item">
+            <label>申请宿舍</label>
+            <div class="value" id="newDorm">-</div>
+          </div>
+          <div class="info-item">
+            <label>当前状态</label>
+            <div class="value" id="detailStatus">-</div>
+          </div>
+        </div>
+
+        <div class="info-block">
+          <div class="block-title">申请理由</div>
+          <div class="block-content" id="reason">-</div>
+        </div>
+
+        <div id="rejectBlock" class="info-block hidden">
+          <div class="block-title">拒绝原因</div>
+          <div class="block-content" id="rejectReason">-</div>
+        </div>
+
+        <div class="meta-line">
+          提交时间：<span id="createdTime">-</span> · 更新时间：<span
+            id="updatedTime"
+            >-</span
+          >
+        </div>
+      </section>
+    </main>
+
+    <div class="modal" id="rejectModal" hidden>
+      <div class="modal-mask" onclick="closeRejectModal()"></div>
+      <div class="modal-card">
+        <h3>填写拒绝理由（可选）</h3>
+        <textarea
+          id="rejectReasonInput"
+          placeholder="可不填，点击确认直接拒绝"
+        ></textarea>
+        <div class="modal-actions">
+          <button class="btn" onclick="closeRejectModal()">取消</button>
+          <button class="btn danger" id="confirmRejectBtn">确认拒绝</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const dormStatusMap = {
+        0: "申请中",
+        1: "已通过",
+        2: "已拒绝",
+      };
+
+      window.addEventListener("DOMContentLoaded", () => {
+        bindActions();
+        fetchAdminInfo();
+
+        const dormChangeId = getDormChangeId();
+        if (!dormChangeId) {
+          setStatusMessage("未找到申请参数");
+          disableActionButtons(true);
+          return;
+        }
+
+        loadDormDetail(dormChangeId);
+      });
+
+      function bindActions() {
+        const backBtn = document.getElementById("backBtn");
+        const rejectBtn = document.getElementById("rejectBtn");
+        const agreeBtn = document.getElementById("agreeBtn");
+        const confirmRejectBtn = document.getElementById("confirmRejectBtn");
+
+        if (backBtn) backBtn.addEventListener("click", goBack);
+        if (rejectBtn)
+          rejectBtn.addEventListener("click", () => openRejectModal());
+        if (agreeBtn) agreeBtn.addEventListener("click", () => agreeChange());
+        if (confirmRejectBtn)
+          confirmRejectBtn.addEventListener("click", () => rejectChange());
+      }
+
+      async function fetchAdminInfo() {
+        try {
+          const response = await fetch("/admin/user/getUserInfo", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              admintoken: localStorage.getItem("adminToken") || "",
+            },
+          });
+
+          const result = await response.json();
+          if (result.code === "200" && result.data) {
+            const nameEl = document.getElementById("adminUsername");
+            if (nameEl) nameEl.textContent = result.data.username || "管理员";
+            if (result.data.permission) {
+              localStorage.setItem("role", result.data.permission);
+            }
+          }
+        } catch (error) {
+          console.error("获取管理员信息失败", error);
+        }
+      }
+
+      function getDormChangeId() {
+        const params = new URLSearchParams(window.location.search);
+        const queryId = params.get("dormChangeId");
+        if (queryId) return queryId;
+        const pathMatch = window.location.pathname.match(/(\d+)$/);
+        if (pathMatch && pathMatch[1]) return pathMatch[1];
+        return null;
+      }
+
+      async function loadDormDetail(dormChangeId) {
+        setStatusMessage("加载中...");
+        disableActionButtons(true);
+        try {
+          const response = await fetch(
+            `/admin/dormitory/getMyChangeDormitoryInfo/${dormChangeId}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+            }
+          );
+
+          const result = await response.json();
+          if ((result.code === "200" || result.code === 200) && result.data) {
+            renderDormDetail(result.data);
+            setStatusMessage("");
+            disableActionButtons(false, Number(result.data.status));
+          } else {
+            setStatusMessage(result.message || "加载失败");
+          }
+        } catch (error) {
+          console.error("获取详情出错", error);
+          setStatusMessage("加载失败，请稍后重试");
+        }
+      }
+
+      function renderDormDetail(data) {
+        const status = Number(data.status ?? 0);
+        const statusText = dormStatusMap[status] || "申请中";
+
+        document.getElementById("detailId").textContent =
+          data.dormChangeId || "-";
+        document.getElementById("studentNumber").textContent =
+          data.studentNumber || "-";
+        document.getElementById("oldDorm").textContent =
+          data.oldDormAddress || "-";
+        document.getElementById("newDorm").textContent =
+          data.newDormAddress || "-";
+        document.getElementById("detailStatus").textContent = statusText;
+        document.getElementById("reason").textContent = data.reason || "-";
+        document.getElementById("createdTime").textContent = formatDateTime(
+          data.createdTime
+        );
+        document.getElementById("updatedTime").textContent = formatDateTime(
+          data.updatedTime
+        );
+
+        const chip = document.getElementById("statusChip");
+        chip.textContent = statusText;
+        chip.classList.remove(
+          "chip-pending",
+          "chip-pass",
+          "chip-reject",
+          "chip-cancel"
+        );
+        if (status === 0) chip.classList.add("chip-pending");
+        else if (status === 1) chip.classList.add("chip-pass");
+        else if (status === 2) chip.classList.add("chip-reject");
+
+        const rejectBlock = document.getElementById("rejectBlock");
+        if (status === 2 && data.rejectionReason) {
+          document.getElementById("rejectReason").textContent =
+            data.rejectionReason;
+          rejectBlock.classList.remove("hidden");
+        } else {
+          rejectBlock.classList.add("hidden");
+        }
+      }
+
+      function formatDateTime(dateTimeStr) {
+        if (!dateTimeStr) return "-";
+        try {
+          const dt = new Date(dateTimeStr);
+          if (Number.isNaN(dt.getTime())) return dateTimeStr;
+          const y = dt.getFullYear();
+          const m = String(dt.getMonth() + 1).padStart(2, "0");
+          const d = String(dt.getDate()).padStart(2, "0");
+          const hh = String(dt.getHours()).padStart(2, "0");
+          const mm = String(dt.getMinutes()).padStart(2, "0");
+          const ss = String(dt.getSeconds()).padStart(2, "0");
+          return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+        } catch (e) {
+          return dateTimeStr;
+        }
+      }
+
+      function setStatusMessage(msg) {
+        const el = document.getElementById("statusMessage");
+        el.textContent = msg || "";
+      }
+
+      function disableActionButtons(disabled, status) {
+        const rejectBtn = document.getElementById("rejectBtn");
+        const agreeBtn = document.getElementById("agreeBtn");
+        const isPending = status === undefined ? true : Number(status) === 0;
+
+        if (rejectBtn) rejectBtn.disabled = disabled || !isPending;
+        if (agreeBtn) agreeBtn.disabled = disabled || !isPending;
+      }
+
+      function goBack() {
+        window.location.href = "/admin/dormitory";
+      }
+
+      function logout() {
+        if (confirm("确定要退出登录吗？")) {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("role");
+          window.location.href = "/admins/login";
+        }
+      }
+
+      function openRejectModal() {
+        const modal = document.getElementById("rejectModal");
+        const input = document.getElementById("rejectReasonInput");
+        if (input) input.value = "";
+        modal.hidden = false;
+      }
+
+      function closeRejectModal() {
+        const modal = document.getElementById("rejectModal");
+        modal.hidden = true;
+      }
+
+      async function agreeChange() {
+        const dormChangeId = getDormChangeId();
+        if (!dormChangeId) {
+          alert("未找到申请编号");
+          return;
+        }
+        if (!confirm("确认同意该调换申请？")) return;
+
+        disableActionButtons(true);
+        try {
+          const response = await fetch(
+            `/admin/dormitory/agreeChangeDormitory/${dormChangeId}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+            }
+          );
+          const result = await response.json();
+          if (result.code === "200" || result.code === 200) {
+            setStatusMessage("已同意申请");
+            loadDormDetail(dormChangeId);
+          } else {
+            alert(result.message || "操作失败");
+            disableActionButtons(false, 0);
+          }
+        } catch (error) {
+          console.error("同意申请失败", error);
+          alert("操作失败，请稍后重试");
+          disableActionButtons(false, 0);
+        }
+      }
+
+      async function rejectChange() {
+        const dormChangeId = getDormChangeId();
+        if (!dormChangeId) {
+          alert("未找到申请编号");
+          return;
+        }
+        const reason = document.getElementById("rejectReasonInput").value;
+        closeRejectModal();
+        disableActionButtons(true);
+        try {
+          const response = await fetch(
+            "/admin/dormitory/rejectChangeDormitory/",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+              body: JSON.stringify({
+                dormChangeId,
+                rejectionReason: reason,
+              }),
+            }
+          );
+          const result = await response.json();
+          if (result.code === "200" || result.code === 200) {
+            setStatusMessage("已拒绝申请");
+            loadDormDetail(dormChangeId);
+          } else {
+            alert(result.message || "操作失败");
+            disableActionButtons(false, 0);
+          }
+        } catch (error) {
+          console.error("拒绝申请失败", error);
+          alert("操作失败，请稍后重试");
+          disableActionButtons(false, 0);
+        }
+      }
+    </script>
+  </body>
+</html>
