@@ -36,7 +36,8 @@ public class NotificationController {
                                                   @RequestParam(required = false ,defaultValue ="1") Integer pageNum,
                                                   @RequestParam(required = false, defaultValue ="1000") Integer pageSize,
                                                   @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginTime,
-                                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endTime) {
+                                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endTime)
+    {
         PageResult pageResult = notificationService.getNotificationList(orderKey, pageNum, pageSize, beginTime, endTime);
         return Result.success("获取成功", pageResult);
                                                  }

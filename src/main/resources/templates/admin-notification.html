@@ -1,225 +1,439 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>通知管理</title>
-    <style>
-      :root {
-        --bg: radial-gradient(
-          circle at 20% 20%,
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>通知管理</title>
+  <style>
+    :root {
+      --bg: radial-gradient(circle at 20% 20%,
           #e8edff,
           #f7f9ff 45%,
-          #eef2ff 80%
-        );
-        --card: rgba(255, 255, 255, 0.9);
-        --shadow: 0 10px 40px rgba(54, 74, 186, 0.15);
-        --primary: #3f51b5;
-        --text-main: #1f2a44;
-        --text-sub: #5a6275;
-        --border: #e4e8f2;
-      }
+          #eef2ff 80%);
+      --card: rgba(255, 255, 255, 0.9);
+      --shadow: 0 10px 40px rgba(54, 74, 186, 0.15);
+      --primary: #3f51b5;
+      --text-main: #1f2a44;
+      --text-sub: #5a6275;
+      --border: #e4e8f2;
+    }
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-      body {
-        font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-        background-image: url(http://localhost:8081/img/35e1b763c15645c1a6d674accf959f30.jpg);
-        background-size: cover;
-        background-attachment: fixed;
-        color: var(--text-main);
-        min-height: 100vh;
-        display: flex;
-      }
+    body {
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background-image: url(http://localhost:8081/img/35e1b763c15645c1a6d674accf959f30.jpg);
+      background-size: cover;
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+    }
 
-      .page {
-        display: flex;
-        width: 100%;
-        min-height: 100vh;
-        overflow: hidden;
-      }
+    .page {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+      overflow: hidden;
+    }
 
+    .sidebar {
+      width: 230px;
+      background: rgba(255, 255, 255, 0.85);
+      color: #000;
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      box-shadow: 6px 0 20px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand {
+      color: #000;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .menu {
+      display: grid;
+      gap: 12px;
+    }
+
+    .menu-item {
+      background: rgba(229, 229, 229, 0.659);
+      color: #1f1f1f;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-item.active {
+      background: linear-gradient(135deg, #3f51b5, #5f6fd6);
+      color: #fff;
+      box-shadow: 0 10px 30px rgba(63, 81, 181, 0.25);
+    }
+
+    .menu-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #7ba3ff;
+      box-shadow: 0 0 0 6px rgba(123, 163, 255, 0.18);
+    }
+
+    .content {
+      flex: 1;
+      padding: 28px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .pill {
+      padding: 6px 10px;
+      background: rgba(63, 81, 181, 0.1);
+      color: var(--primary);
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .placeholder-text {
+      color: var(--text-sub);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 960px) {
       .sidebar {
-        width: 230px;
-        background: rgba(255, 255, 255, 0.85);
-        color: #000;
-        padding: 28px 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-        box-shadow: 6px 0 20px rgba(0, 0, 0, 0.18);
-      }
-
-      .brand {
-        color: #000;
-        font-size: 18px;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-      }
-
-      .menu {
-        display: grid;
-        gap: 12px;
-      }
-
-      .menu-item {
-        background: rgba(229, 229, 229, 0.659);
-        color: #1f1f1f;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 12px;
-        padding: 14px 16px;
-        text-align: left;
-        font-size: 14px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .menu-item.active {
-        background: linear-gradient(135deg, #3f51b5, #5f6fd6);
-        color: #fff;
-        box-shadow: 0 10px 30px rgba(63, 81, 181, 0.25);
-      }
-
-      .menu-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #7ba3ff;
-        box-shadow: 0 0 0 6px rgba(123, 163, 255, 0.18);
-      }
-
-      .content {
-        flex: 1;
-        padding: 28px 32px;
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-      }
-
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        box-shadow: var(--shadow);
-        padding: 20px 22px;
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-      }
-
-      .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .title {
-        font-size: 18px;
-        font-weight: 700;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-
-      .pill {
-        padding: 6px 10px;
-        background: rgba(63, 81, 181, 0.1);
-        color: var(--primary);
-        border-radius: 999px;
-        font-size: 12px;
-      }
-
-      .panel {
         display: none;
       }
 
-      .panel.active {
-        display: block;
+      .content {
+        padding: 20px;
       }
 
-      .placeholder-text {
-        color: var(--text-sub);
-        font-size: 14px;
-        line-height: 1.6;
+      .card {
+        padding: 16px;
       }
+    }
 
-      @media (max-width: 960px) {
-        .sidebar {
-          display: none;
-        }
-        .content {
-          padding: 20px;
-        }
-        .card {
-          padding: 16px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="page">
-      <aside class="sidebar">
-        <div class="brand">通知管理</div>
-        <div class="menu" id="menuList">
-          <div class="menu-item active" data-target="notice-list">
-            <span class="menu-dot"></span>
-            <span>通知列表 >></span>
+    #noticeDetailModal>div {
+      max-width: 900px !important;
+      width: 96vw !important;
+      padding: 40px 32px !important;
+      max-height: 90vh !important;
+      overflow-y: auto !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <aside class="sidebar">
+      <div class="brand">通知管理</div>
+      <div class="menu" id="menuList">
+        <div class="menu-item active" data-target="notice-list">
+          <span class="menu-dot"></span>
+          <span>通知列表 >></span>
+        </div>
+        <div class="menu-item" data-target="upload-notice">
+          <span class="menu-dot"></span>
+          <span>上传通知 >></span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <section class="card panel active" id="notice-list">
+        <h2 style="font-size: 20px; font-weight: bold; color: #3f51b5; margin: 0;">校园通知</h2>
+        <div id="admin-notification-list-panel" style="margin-top: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+
+            <span id="noticeSummary" style="color: #888; font-size: 14px;"></span>
           </div>
-          <div class="menu-item" data-target="upload-notice">
-            <span class="menu-dot"></span>
-            <span>上传通知 >></span>
+          <div id="noticeList" style="display: flex; flex-direction: column; gap: 12px;"></div>
+          <div id="pagination" style="margin-top: 18px; display: flex; gap: 12px; align-items: center;"></div>
+          <div id="noticeCount" style="margin-top: 10px; color: #888; font-size: 14px;"></div>
+          <select id="pageSizeSelect"
+            style="margin-left:12px;padding:6px 10px;border-radius:6px;border:1px solid #e6e9f2">
+            <option value="5" selected>5/页</option>
+            <option value="10">10/页</option>
+            <option value="15">15/页</option>
+            <option value="20">20/页</option>
+          </select>
+        </div>
+        <div id="noticeDetailModal"
+          style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.35); align-items:center; justify-content:center; z-index:9999;">
+          <div
+            style="background:#fff; border-radius:10px; max-width:520px; width:90vw; padding:32px 24px; position:relative; box-shadow:0 8px 32px rgba(63,81,181,0.18);">
+            <button id="closeModalBtn"
+              style="position:absolute; right:18px; top:12px; background:none; border:none; font-size:22px; color:#888; cursor:pointer;">×</button>
+            <div id="noticeDetailContent"></div>
           </div>
         </div>
-      </aside>
 
-      <main class="content">
-        <section class="card panel active" id="notice-list">
-          <div class="card-header">
-            <div class="title">
-              通知列表 <span class="pill">待接入接口</span>
-            </div>
+        <script>
+          const menuItems = document.querySelectorAll(".menu-item");
+          const panels = document.querySelectorAll(".panel");
+
+          function switchPanel(targetId) {
+            menuItems.forEach((item) => {
+              item.classList.toggle("active", item.dataset.target === targetId);
+            });
+            panels.forEach((panel) => {
+              panel.classList.toggle("active", panel.id === targetId);
+            });
+          }
+
+          menuItems.forEach((item) => {
+            item.addEventListener("click", () => switchPanel(item.dataset.target));
+          });
+        </script>
+        <script>
+          let pageSize = 5;
+          let totalPages = 1;
+          let currentPage = 1;
+
+          window.addEventListener("DOMContentLoaded", function () {
+            fetchNotices(1);
+          });
+
+          // --- token 逻辑 ---
+          function getToken() {
+            if (window.ADMIN_TOKEN) return window.ADMIN_TOKEN;
+            const meta = document.querySelector('meta[name="admin-token"]');
+            if (meta && meta.content) return meta.content;
+            const ls = localStorage.getItem('adminToken');
+            if (ls) return ls;
+            const ss = sessionStorage.getItem('adminToken');
+            if (ss) return ss;
+            const m = document.cookie.match('(^|;)\\s*adminToken\\s*=\\s*([^;]+)');
+            if (m) return decodeURIComponent(m[2]);
+            return null;
+          }
+          function buildHeaders() {
+            const token = getToken();
+            const headers = { 'Accept': 'application/json' };
+            if (token) headers['adminToken'] = token;
+            else console.warn('adminToken not found in storage');
+            return headers;
+          }
+
+          async function fetchNotices(pageNum) {
+            currentPage = pageNum;
+            try {
+              const params = new URLSearchParams({ pageNum, pageSize });
+              const response = await fetch(`/admin/notification?${params.toString()}`, {
+                headers: buildHeaders()
+              });
+              const result = await response.json();
+              if (result.code === "200" && result.data) {
+                const data = result.data;
+                const notices = data.records || [];
+                const total = data.total || notices.length;
+                totalPages = Math.ceil(total / pageSize);
+                renderNotices(notices);
+                renderPagination();
+                updateSummary(total);
+              } else {
+                renderNotices([]);
+                updateSummary(0);
+              }
+            } catch (e) {
+              renderNotices([]);
+              updateSummary(0);
+            }
+          }
+
+          function renderNotices(list) {
+            const noticeList = document.getElementById("noticeList");
+            noticeList.innerHTML = "";
+            if (!list || list.length === 0) {
+              noticeList.innerHTML = '<div style="color:#aaa;text-align:center;padding:32px 0;">暂无通知</div>';
+              return;
+            }
+            list.forEach(item => {
+              const div = document.createElement("div");
+              div.className = "notice-item";
+              div.style = "background:#f7f9ff;border-radius:8px;padding:16px 18px;box-shadow:0 2px 8px rgba(63,81,181,0.06);cursor:pointer;transition:box-shadow .2s;";
+              div.innerHTML = `
+                <div style='font-size:16px;font-weight:600;color:#1f2a44;'>${item.title || "未命名通知"}</div>
+                <div style='font-size:13px;color:#5a6275;margin-top:6px;'>${formatDate(item.publishTime)}</div>
+              `;
+              div.onclick = () => fetchNoticeDetail(item.notificationId);
+              div.onmouseover = () => div.style.boxShadow = '0 4px 16px rgba(63,81,181,0.13)';
+              div.onmouseout = () => div.style.boxShadow = '0 2px 8px rgba(63,81,181,0.06)';
+              noticeList.appendChild(div);
+            });
+          }
+
+          function renderPagination() {
+            const pagination = document.getElementById("pagination");
+            pagination.innerHTML = "";
+            // 共多少条
+            const countSpan = document.createElement('span');
+            countSpan.id = 'noticeCount';
+            countSpan.style = 'color:#888;font-size:14px;margin-right:10px;';
+            countSpan.textContent = `共 ${typeof totalCount !== 'undefined' ? totalCount : ''} 条`;
+            pagination.appendChild(countSpan);
+            // 上一页
+            const createBtn = (label, page, disabled = false, active = false) => {
+              const btn = document.createElement("button");
+              btn.textContent = label;
+              btn.style = `padding:6px 14px;border-radius:6px;border:none;background:${active ? '#3f51b5' : '#e4e8f2'};color:${active ? '#fff' : '#333'};font-size:14px;cursor:${disabled ? 'not-allowed' : 'pointer'};margin:0 2px;`;
+              btn.disabled = disabled;
+              if (!disabled && !active) btn.onclick = () => fetchNotices(page);
+              return btn;
+            };
+            pagination.appendChild(createBtn('上一页', Math.max(1, currentPage - 1), currentPage === 1));
+            // 只显示3个页码
+            let start = Math.max(1, currentPage - 1);
+            let end = Math.min(totalPages, start + 2);
+            if (end - start < 2) start = Math.max(1, end - 2);
+            for (let i = start; i <= end; i++) {
+              pagination.appendChild(createBtn(i, i, false, i === currentPage));
+            }
+            pagination.appendChild(createBtn('下一页', Math.min(totalPages, currentPage + 1), currentPage === totalPages));
+            // 页大小切换
+            let sizeSelect = document.getElementById('pageSizeSelect');
+            if (!sizeSelect) {
+              sizeSelect = document.createElement('select');
+              sizeSelect.id = 'pageSizeSelect';
+              sizeSelect.style = 'margin-left:12px;padding:6px 10px;border-radius:6px;border:1px solid #e6e9f2';
+              sizeSelect.innerHTML = '<option value="5">5/页</option><option value="10">10/页</option><option value="15">15/页</option><option value="20">20/页</option>';
+              pagination.appendChild(sizeSelect);
+            } else {
+              pagination.appendChild(sizeSelect);
+            }
+            sizeSelect.value = String(pageSize);
+            sizeSelect.onchange = function (e) {
+              pageSize = parseInt(e.target.value, 10);
+              currentPage = 1;
+              fetchNotices(1);
+            };
+          }
+
+          function formatDate(dateString) {
+            if (!dateString) return "";
+            if (typeof dateString === "string" && dateString.includes(" ")) {
+              return dateString.split(" ")[0];
+            }
+            return dateString;
+          }
+
+          function updateSummary(total) {
+            window.totalCount = total;
+            const countSpan = document.getElementById("noticeCount");
+            if (countSpan) countSpan.textContent = `共 ${total || 0} 条`;
+          }
+
+          async function fetchNoticeDetail(notificationId) {
+            try {
+              const response = await fetch(`/admin/notification/${notificationId}`, {
+                headers: buildHeaders()
+              });
+              const result = await response.json();
+              if (result.code === "200" && result.data) {
+                showNoticeDetail(result.data);
+              }
+            } catch (e) { }
+          }
+
+          function showNoticeDetail(detail) {
+            const modal = document.getElementById("noticeDetailModal");
+            const content = document.getElementById("noticeDetailContent");
+            let imagesHtml = '';
+            if (Array.isArray(detail.imageUrls) && detail.imageUrls.length) {
+              let groupHtml = '';
+              const len = detail.imageUrls.length;
+              let i = 0;
+              for (; i + 1 < len; i += 2) {
+                const group = detail.imageUrls.slice(i, i + 2);
+                groupHtml += `<div style='display:flex;gap:18px;margin-top:10px;margin-bottom:8px;flex-wrap:wrap;'>` +
+                  group.map((u, idx) => `<img src='${u}' style='flex:1 1 0;max-width:48%;height:auto;object-fit:contain;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.10);margin-bottom:0;' alt='通知图片${i + idx + 1}' />`).join('') +
+                  `</div>`;
+              }
+              // 如果是单数，最后一张单独放大
+              if (i < len) {
+                groupHtml += `<div style='display:flex;justify-content:center;margin-top:10px;margin-bottom:8px;'><img src='${detail.imageUrls[i]}' style='max-width:96%;height:auto;object-fit:contain;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.10);margin-bottom:0;' alt='通知图片${i + 1}' /></div>`;
+              }
+              imagesHtml = groupHtml;
+            }
+            content.innerHTML = `
+              <h3 style='font-size:18px;font-weight:700;margin-bottom:12px;'>${detail.title}</h3>
+              <div style='color:#5a6275;font-size:14px;margin-bottom:10px;'>发布时间：${formatDate(detail.publishTime)}</div>
+              <div style='font-size:15px;line-height:1.8;color:#222;white-space:pre-line;margin-bottom:10px;word-break:break-all;'>${detail.content || ''}</div>
+              ${imagesHtml}
+            `;
+            modal.style.display = 'flex';
+          }
+          document.getElementById("closeModalBtn").onclick = function () {
+            document.getElementById("noticeDetailModal").style.display = 'none';
+          };
+          document.getElementById("noticeDetailModal").onclick = function (e) {
+            if (e.target === this) this.style.display = 'none';
+          };
+        </script>
+      </section>
+
+      <section class="card panel" id="upload-notice">
+        <div class="card-header">
+          <div class="title">
+            上传通知 <span class="pill">待接入表单</span>
           </div>
-          <p class="placeholder-text">
-            这里将展示全部通知记录，可在后续接入分页、筛选、发布和删除等操作。
-          </p>
-        </section>
+        </div>
+        <p class="placeholder-text">
+          在这里放置发布通知的表单，例如标题、正文、发布对象、发布时间等字段。
+        </p>
+      </section>
+    </main>
+  </div>
+</body>
 
-        <section class="card panel" id="upload-notice">
-          <div class="card-header">
-            <div class="title">
-              上传通知 <span class="pill">待接入表单</span>
-            </div>
-          </div>
-          <p class="placeholder-text">
-            在这里放置发布通知的表单，例如标题、正文、发布对象、发布时间等字段。
-          </p>
-        </section>
-      </main>
-    </div>
-
-    <script>
-      const menuItems = document.querySelectorAll(".menu-item");
-      const panels = document.querySelectorAll(".panel");
-
-      function switchPanel(targetId) {
-        menuItems.forEach((item) => {
-          item.classList.toggle("active", item.dataset.target === targetId);
-        });
-        panels.forEach((panel) => {
-          panel.classList.toggle("active", panel.id === targetId);
-        });
-      }
-
-      menuItems.forEach((item) => {
-        item.addEventListener("click", () => switchPanel(item.dataset.target));
-      });
-    </script>
-  </body>
 </html>
