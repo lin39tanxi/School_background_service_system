@@ -373,6 +373,28 @@
         background: #fff;
       }
 
+      .perm-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 12px;
+      }
+
+      .perm-option {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 10px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f7f8fd;
+        cursor: pointer;
+      }
+
+      .perm-option input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+      }
+
       .modal-actions {
         display: flex;
         justify-content: flex-end;
@@ -526,10 +548,6 @@
       <div class="modal-card">
         <div class="modal-title">添加管理员</div>
         <div class="field">
-          <label for="addNickname">昵称</label>
-          <input id="addNickname" type="text" placeholder="输入昵称" />
-        </div>
-        <div class="field">
           <label for="addUsername">用户名</label>
           <input id="addUsername" type="text" placeholder="输入用户名" />
         </div>
@@ -538,8 +556,8 @@
           <input id="addPassword" type="password" placeholder="输入密码" />
         </div>
         <div class="field">
-          <label for="addPermission">权限</label>
-          <select id="addPermission"></select>
+          <label>权限</label>
+          <div id="addPermissionContainer" class="perm-options"></div>
         </div>
         <div class="modal-actions">
           <button class="btn btn-ghost" id="cancelAddAdmin">取消</button>
@@ -575,10 +593,11 @@
       const openAddAdminBtn = document.getElementById("openAddAdmin");
       const cancelAddAdminBtn = document.getElementById("cancelAddAdmin");
       const submitAddAdminBtn = document.getElementById("submitAddAdmin");
-      const addNicknameInput = document.getElementById("addNickname");
       const addUsernameInput = document.getElementById("addUsername");
       const addPasswordInput = document.getElementById("addPassword");
-      const addPermissionSelect = document.getElementById("addPermission");
+      const addPermissionContainer = document.getElementById(
+        "addPermissionContainer"
+      );
 
       const PAGE_SIZE = 10;
       let pageNum = 1;
@@ -606,22 +625,26 @@
         return value || "-";
       }
 
-      function populatePermissionSelect() {
-        const options = Object.keys(permissionMap)
+      function renderPermissionCheckboxes() {
+        const items = Object.keys(permissionMap)
           .sort((a, b) => Number(a) - Number(b))
           .map(
-            (key) =>
-              `<option value="${key}">${permissionMap[key]}（${key}）</option>`
+            (key) => `
+            <label class="perm-option">
+              <input type="checkbox" value="${key}" />
+              <span>${permissionMap[key]}（${key}）</span>
+            </label>`
           )
           .join("");
-        addPermissionSelect.innerHTML = `<option value="">请选择权限</option>${options}`;
+        addPermissionContainer.innerHTML = items;
       }
 
       function openAddModal() {
-        addNicknameInput.value = "";
         addUsernameInput.value = "";
         addPasswordInput.value = "";
-        addPermissionSelect.value = "";
+        addPermissionContainer
+          .querySelectorAll('input[type="checkbox"]')
+          .forEach((cb) => (cb.checked = false));
         addAdminModal.classList.add("active");
       }
 
@@ -630,12 +653,19 @@
       }
 
       async function submitAddAdmin() {
-        const nickname = addNicknameInput.value.trim();
         const username = addUsernameInput.value.trim();
         const password = addPasswordInput.value.trim();
-        const permission = addPermissionSelect.value;
+        const permission = Array.from(
+          addPermissionContainer.querySelectorAll(
+            'input[type="checkbox"]:checked'
+          )
+        )
+          .map((cb) => cb.value)
+          .filter(Boolean)
+          .sort((a, b) => Number(a) - Number(b))
+          .join("");
 
-        if (!nickname || !username || !password || !permission) {
+        if (!username || !password || !permission) {
           alert("请完整填写信息");
           return;
         }
@@ -647,7 +677,7 @@
               "Content-Type": "application/json",
               admintoken: localStorage.getItem("adminToken") || "",
             },
-            body: JSON.stringify({ nickname, username, password, permission }),
+            body: JSON.stringify({ username, password, permission }),
           });
 
           const result = await res.json();
@@ -881,7 +911,7 @@
       submitAddAdminBtn.addEventListener("click", submitAddAdmin);
 
       document.addEventListener("DOMContentLoaded", () => {
-        populatePermissionSelect();
+        renderPermissionCheckboxes();
         fetchAdmins(1);
       });
     </script>

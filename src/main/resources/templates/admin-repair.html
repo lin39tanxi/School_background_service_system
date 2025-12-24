@@ -120,6 +120,12 @@
         gap: 12px;
       }
 
+      .card-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
       .title {
         font-size: 18px;
         font-weight: 700;
@@ -150,6 +156,181 @@
         line-height: 1.6;
       }
 
+      .table-wrapper {
+        overflow: auto;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+
+      .clickable-row {
+        cursor: pointer;
+        transition: background 0.12s ease;
+      }
+
+      .clickable-row:hover {
+        background: #f5f7ff;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 860px;
+      }
+
+      thead {
+        background: #f5f7ff;
+      }
+
+      th,
+      td {
+        padding: 12px 14px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+        color: var(--text-main);
+      }
+
+      th {
+        font-weight: 700;
+        color: #1f2a44;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn {
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text-main);
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 0.1s ease, box-shadow 0.2s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #3f51b5, #6576ff);
+        color: #fff;
+        border: none;
+      }
+
+      .btn-danger {
+        background: #ff5f6d;
+        color: #fff;
+        border: none;
+      }
+
+      .btn-ghost {
+        color: var(--text-sub);
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 6px;
+      }
+
+      .pager {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .page-btn {
+        padding: 6px 12px;
+        min-width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text-main);
+        cursor: pointer;
+        font-size: 13px;
+      }
+
+      .page-btn.active {
+        background: linear-gradient(135deg, #3f51b5, #6576ff);
+        color: #fff;
+        border: none;
+        box-shadow: 0 8px 20px rgba(63, 81, 181, 0.25);
+      }
+
+      .empty {
+        text-align: center;
+        padding: 24px 0;
+        color: var(--text-sub);
+        font-size: 14px;
+      }
+
+      .chips {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .stat {
+        font-size: 13px;
+        color: var(--text-sub);
+      }
+
+      .loading {
+        text-align: center;
+        padding: 16px 0;
+        font-size: 14px;
+        color: var(--text-sub);
+      }
+
+      .filters {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .filter-label {
+        font-size: 13px;
+        color: var(--text-sub);
+      }
+
+      .select {
+        min-width: 140px;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #fff;
+        color: var(--text-main);
+        font-size: 13px;
+      }
+
       @media (max-width: 960px) {
         .sidebar {
           display: none;
@@ -159,6 +340,9 @@
         }
         .card {
           padding: 16px;
+        }
+        table {
+          min-width: 640px;
         }
       }
     </style>
@@ -178,13 +362,51 @@
       <main class="content">
         <section class="card panel active" id="appointment-list">
           <div class="card-header">
-            <div class="title">
-              预约列表 <span class="pill">待接入接口</span>
+            <div class="title">维修预约列表</div>
+            <div class="card-actions">
+              <button id="refreshBtn" class="btn" type="button">刷新</button>
+              <div class="chips">
+                <span class="pill">每页 10 条</span>
+                <span class="stat" id="statText">加载中...</span>
+                <div class="filters">
+                  <span class="filter-label">状态筛选</span>
+                  <select id="statusFilter" class="select">
+                    <option value="">全部</option>
+                    <option value="0">申请中</option>
+                    <option value="1">已接受</option>
+                    <option value="2">已完成</option>
+                    <option value="3">已拒绝</option>
+                    <option value="4">已取消</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
-          <p class="placeholder-text">
-            这里将展示所有维修预约信息列表，后续可接入分页、筛选与操作按钮。
-          </p>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>单号</th>
+                  <th>描述</th>
+                  <th>地址</th>
+                  <th>图片</th>
+                  <th>状态</th>
+                  <th>创建时间</th>
+                </tr>
+              </thead>
+              <tbody id="repairTableBody">
+                <tr>
+                  <td colspan="6" class="loading">加载中...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination">
+            <div class="stat" id="pageHint">第 1 / 1 页</div>
+            <div class="pager" id="pager"></div>
+          </div>
         </section>
       </main>
     </div>
@@ -192,6 +414,18 @@
     <script>
       const menuItems = document.querySelectorAll(".menu-item");
       const panels = document.querySelectorAll(".panel");
+      const tableBody = document.getElementById("repairTableBody");
+      const pager = document.getElementById("pager");
+      const pageHint = document.getElementById("pageHint");
+      const statText = document.getElementById("statText");
+      const statusFilter = document.getElementById("statusFilter");
+
+      const pageSize = 10;
+      let currentPage = 1;
+      let totalRecords = 0;
+      let totalPages = 1;
+      let filterStatus = "";
+      const refreshBtn = document.getElementById("refreshBtn");
 
       function switchPanel(targetId) {
         menuItems.forEach((item) => {
@@ -205,6 +439,134 @@
       menuItems.forEach((item) => {
         item.addEventListener("click", () => switchPanel(item.dataset.target));
       });
+
+      const statusMap = {
+        0: { text: "申请中", color: "#ffb020" },
+        1: { text: "已接受", color: "#3f51b5" },
+        2: { text: "已完成", color: "#34c759" },
+        3: { text: "已拒绝", color: "#ff5f6d" },
+        4: { text: "已取消", color: "#9e9e9e" },
+      };
+
+      function createStatusBadge(status) {
+        const info = statusMap[status] || { text: "未知", color: "#9e9e9e" };
+        return `<span class="status" style="background: ${info.color}1a; color: ${info.color}"><span class="status-dot" style="background:${info.color}"></span>${info.text}</span>`;
+      }
+
+      function renderTable(records = []) {
+        if (!records.length) {
+          tableBody.innerHTML =
+            '<tr><td colspan="6" class="empty">暂无数据</td></tr>';
+          return;
+        }
+
+        const rows = records
+          .map((item) => {
+            const desc = item.description || "-";
+            const shortDesc =
+              desc.length > 10 ? `${desc.slice(0, 10)}...` : desc;
+            const created = item.createdTime || "-";
+            const imgCell = item.imageUrl
+              ? `<a href="${item.imageUrl}" target="_blank" rel="noreferrer"><img src="${item.imageUrl}" alt="报修图片" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--border);" /></a>`
+              : "-";
+            return `
+              <tr class="clickable-row" data-id="${item.orderId ?? ""}">
+                <td>${item.orderId ?? "-"}</td>
+                <td title="${desc}">${shortDesc}</td>
+                <td>${item.address || "-"}</td>
+                <td>${imgCell}</td>
+                <td>${createStatusBadge(item.processStatus)}</td>
+                <td>${created}</td>
+              </tr>
+            `;
+          })
+          .join("");
+
+        tableBody.innerHTML = rows;
+      }
+
+      function renderPagination() {
+        totalPages = Math.max(1, Math.ceil(totalRecords / pageSize));
+        pageHint.textContent = `第 ${currentPage} / ${totalPages} 页`;
+        statText.textContent = `共 ${totalRecords} 条记录`;
+        pager.innerHTML = "";
+
+        const addBtn = (label, page, disabled = false, active = false) => {
+          const btn = document.createElement("button");
+          btn.textContent = label;
+          btn.className = "page-btn" + (active ? " active" : "");
+          btn.disabled = disabled;
+          btn.addEventListener("click", () => loadRepairs(page));
+          pager.appendChild(btn);
+        };
+
+        addBtn("上一页", Math.max(1, currentPage - 1), currentPage === 1);
+
+        const windowSize = 5;
+        const start = Math.max(1, currentPage - 2);
+        const end = Math.min(totalPages, start + windowSize - 1);
+        for (let p = start; p <= end; p += 1) {
+          addBtn(p, p, false, p === currentPage);
+        }
+
+        addBtn(
+          "下一页",
+          Math.min(totalPages, currentPage + 1),
+          currentPage === totalPages
+        );
+      }
+
+      async function loadRepairs(page = 1) {
+        tableBody.innerHTML =
+          '<tr><td colspan="6" class="loading">加载中...</td></tr>';
+        try {
+          const statusQuery = filterStatus
+            ? `&status=${encodeURIComponent(filterStatus)}`
+            : "";
+          const token = localStorage.getItem("adminToken") || "";
+          const res = await fetch(
+            `/admin/repairs?pageNum=${page}&pageSize=${pageSize}${statusQuery}`,
+            {
+              headers: {
+                admintoken: token,
+              },
+            }
+          );
+          const json = await res.json();
+          if (json.code !== "200") throw new Error(json.message || "加载失败");
+          const data = json.data || { total: 0, records: [] };
+          totalRecords = Number(data.total) || 0;
+          currentPage = page;
+          renderTable(data.records || []);
+          renderPagination();
+        } catch (err) {
+          console.error(err);
+          tableBody.innerHTML = `<tr><td colspan="6" class="empty">${err.message}</td></tr>`;
+          statText.textContent = "加载失败，请稍后重试";
+        }
+      }
+
+      statusFilter.addEventListener("change", (e) => {
+        filterStatus = e.target.value;
+        loadRepairs(1);
+      });
+
+      refreshBtn.addEventListener("click", () => {
+        loadRepairs(currentPage);
+      });
+
+      tableBody.addEventListener("click", (event) => {
+        if (event.target.closest("a")) return;
+        const row = event.target.closest("tr[data-id]");
+        if (!row) return;
+        const orderId = row.dataset.id;
+        if (!orderId) return;
+        window.location.href = `/admin-repair-item.html?orderId=${encodeURIComponent(
+          orderId
+        )}`;
+      });
+
+      loadRepairs();
     </script>
   </body>
 </html>

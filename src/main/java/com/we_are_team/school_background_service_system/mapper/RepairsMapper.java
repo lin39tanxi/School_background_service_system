@@ -29,7 +29,22 @@ public interface RepairsMapper {
 /**
  * 获取报修单详情
  */
-@Select("select order_id, user_id, process_status, description, admin_id, reject_reason, completed_time, image_urls, created_time, updated_time, rating, comment, comment_created_time, address, phone, appointment_begin as appointment_begin, appointment_end as appointment_end from order_table where order_id = #{orderId}")
+@Select("select order_id, " +
+        "user_id, " +
+        "process_status, " +
+        "description, admin_id, " +
+        "reject_reason, completed_time, " +
+        "image_urls, created_time, " +
+        "updated_time, " +
+        "rating, " +
+        "comment, " +
+        "comment_created_time, " +
+        "address, " +
+        "phone, " +
+        "appointment_begin as appointment_begin," +
+        " appointment_end as appointment_end " +
+        "from order_table" +
+        " where order_id = #{orderId}")
 RepairOrder getRepairDetail(Integer orderId);
 
     void updateRepairStatus(@Param("repairOrder") RepairOrder repairOrder);

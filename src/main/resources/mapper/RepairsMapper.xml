@@ -24,7 +24,7 @@
                AND created_time &amp;gt= #{endTime}
            </if>
        </where>
-       ORDER BY created_time ASC
+       ORDER BY created_time DESC
 
    </select>
     <update id="updateRepairStatus" parameterType="com.we_are_team.school_background_service_system.pojo.entity.RepairOrder">

@@ -136,6 +136,166 @@
         font-size: 12px;
       }
 
+      .btn {
+        border: none;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .btn-ghost {
+        background: rgba(63, 81, 181, 0.08);
+        color: var(--primary);
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+      }
+
+      .filters {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        align-items: end;
+      }
+
+      .field-inline {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field-inline label {
+        font-size: 13px;
+        color: var(--text-sub);
+      }
+
+      .field-inline select,
+      .field-inline input {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        font-size: 14px;
+        background: #fff;
+      }
+
+      .filter-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .table-wrapper {
+        width: 100%;
+        overflow: auto;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 820px;
+      }
+
+      thead {
+        background: #f2f4fb;
+      }
+
+      th,
+      td {
+        padding: 12px 14px;
+        text-align: left;
+        font-size: 13px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      th {
+        color: var(--text-sub);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      tbody tr:hover {
+        background: rgba(63, 81, 181, 0.03);
+      }
+
+      .status-text {
+        font-size: 13px;
+        color: var(--text-sub);
+      }
+
+      .empty {
+        padding: 18px;
+        text-align: center;
+        color: var(--text-sub);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .badge-primary {
+        background: rgba(63, 81, 181, 0.1);
+        color: var(--primary);
+      }
+
+      .badge-success {
+        background: rgba(46, 204, 113, 0.12);
+        color: #1f9d55;
+      }
+
+      .badge-warning {
+        background: rgba(241, 196, 15, 0.12);
+        color: #b58200;
+      }
+
+      .img-box {
+        width: 90px;
+        height: 90px;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: #f7f8fb;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .img-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .pagination {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .page-info {
+        font-size: 13px;
+        color: var(--text-sub);
+      }
+
       .panel {
         display: none;
       }
@@ -187,12 +347,64 @@
         <section class="card panel active" id="lost-list">
           <div class="card-header">
             <div class="title">
-              失物列表 <span class="pill">待接入接口</span>
+              失物列表 <span class="pill">pageSize = 10</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-ghost" id="lfRefresh">刷新</button>
             </div>
           </div>
-          <p class="placeholder-text">
-            这里将展示所有失物信息列表，后续可接入分页、筛选与操作按钮。
-          </p>
+          <div class="filters">
+            <div class="field-inline">
+              <label for="lfCategory">分类</label>
+              <select id="lfCategory">
+                <option value="">全部分类</option>
+              </select>
+            </div>
+            <div class="field-inline">
+              <label for="lfLocation">地点</label>
+              <select id="lfLocation">
+                <option value="">全部地点</option>
+              </select>
+            </div>
+            <div class="field-inline">
+              <label for="lfBegin">开始时间</label>
+              <input id="lfBegin" type="date" />
+            </div>
+            <div class="field-inline">
+              <label for="lfEnd">结束时间</label>
+              <input id="lfEnd" type="date" />
+            </div>
+            <div class="filter-actions">
+              <button class="btn btn-primary" id="lfSearch">查询</button>
+              <button class="btn btn-ghost" id="lfReset">重置</button>
+            </div>
+          </div>
+
+          <div class="status-text" id="lfStatus">加载中...</div>
+
+          <div class="table-wrapper" id="lfTableWrapper" style="display: none">
+            <table>
+              <thead>
+                <tr>
+                  <th>图片</th>
+                  <th>物品名称</th>
+                  <th>分类</th>
+                  <th>地点</th>
+                  <th>状态</th>
+                </tr>
+              </thead>
+              <tbody id="lfTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="empty" id="lfEmpty" style="display: none">暂无数据</div>
+
+          <div class="pagination" id="lfPagination" style="display: none">
+            <button class="btn btn-ghost" id="lfPrev">上一页</button>
+            <button class="btn btn-ghost" id="lfNext">下一页</button>
+            <span class="page-info" id="lfPageInfo"></span>
+            <span class="page-info" id="lfTotalInfo"></span>
+          </div>
         </section>
 
         <section class="card panel" id="category-manage">
@@ -223,6 +435,28 @@
       const menuItems = document.querySelectorAll(".menu-item");
       const panels = document.querySelectorAll(".panel");
 
+      const lfStatusText = document.getElementById("lfStatus");
+      const lfTableWrapper = document.getElementById("lfTableWrapper");
+      const lfTableBody = document.getElementById("lfTableBody");
+      const lfEmpty = document.getElementById("lfEmpty");
+      const lfPagination = document.getElementById("lfPagination");
+      const lfPrev = document.getElementById("lfPrev");
+      const lfNext = document.getElementById("lfNext");
+      const lfPageInfo = document.getElementById("lfPageInfo");
+      const lfTotalInfo = document.getElementById("lfTotalInfo");
+      const lfRefresh = document.getElementById("lfRefresh");
+
+      const lfCategory = document.getElementById("lfCategory");
+      const lfLocation = document.getElementById("lfLocation");
+      const lfBegin = document.getElementById("lfBegin");
+      const lfEnd = document.getElementById("lfEnd");
+      const lfSearch = document.getElementById("lfSearch");
+      const lfReset = document.getElementById("lfReset");
+
+      const LF_PAGE_SIZE = 10;
+      let lfPageNum = 1;
+      let lfTotal = 0;
+
       function switchPanel(targetId) {
         menuItems.forEach((item) => {
           item.classList.toggle("active", item.dataset.target === targetId);
@@ -234,6 +468,209 @@
 
       menuItems.forEach((item) => {
         item.addEventListener("click", () => switchPanel(item.dataset.target));
+      });
+
+      function setLfLoading(text) {
+        lfStatusText.textContent = text;
+        lfStatusText.style.display = "block";
+        lfTableWrapper.style.display = "none";
+        lfEmpty.style.display = "none";
+        lfPagination.style.display = "none";
+      }
+
+      function renderSelectOptions(
+        selectEl,
+        list,
+        valueKey,
+        labelKey,
+        allText
+      ) {
+        const options = [`<option value="">${allText}</option>`].concat(
+          (list || []).map(
+            (item) =>
+              `<option value="${item[valueKey]}">${item[labelKey]}</option>`
+          )
+        );
+        selectEl.innerHTML = options.join("");
+      }
+
+      async function fetchCategories() {
+        try {
+          const res = await fetch("/admin/lostAndFound/getAllItemCategory", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              admintoken: localStorage.getItem("adminToken") || "",
+            },
+          });
+          const result = await res.json();
+          if (result.code === "200") {
+            renderSelectOptions(
+              lfCategory,
+              result.data,
+              "categoryId",
+              "categoryName",
+              "全部分类"
+            );
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      async function fetchLocations() {
+        try {
+          const res = await fetch(
+            "/admin/lostAndFound/getAllLocationCategory",
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+            }
+          );
+          const result = await res.json();
+          if (result.code === "200") {
+            renderSelectOptions(
+              lfLocation,
+              result.data,
+              "locationId",
+              "locationName",
+              "全部地点"
+            );
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      function formatStatus(status) {
+        return Number(status) === 1
+          ? { text: "已认领", cls: "badge-success" }
+          : { text: "未认领", cls: "badge-warning" };
+      }
+
+      function renderLfTable(records) {
+        lfTableBody.innerHTML = (records || [])
+          .map((row) => {
+            const stat = formatStatus(row.status);
+            return `
+              <tr>
+                <td>
+                  <div class="img-box">
+                    <img src="${row.imageUrls || ""}" alt="${
+              row.itemName || "图片"
+            }" onerror="this.src='';this.parentElement.textContent='无图';" />
+                  </div>
+                </td>
+                <td>${row.itemName || "-"}</td>
+                <td>${row.categoryName || "-"}</td>
+                <td>${row.locationName || "-"}</td>
+                <td><span class="badge ${stat.cls}">${stat.text}</span></td>
+              </tr>
+            `;
+          })
+          .join("");
+      }
+
+      function updateLfPagination() {
+        const totalPages = Math.max(1, Math.ceil(lfTotal / LF_PAGE_SIZE));
+        lfPageInfo.textContent = `第 ${lfPageNum} / ${totalPages} 页`;
+        lfTotalInfo.textContent = `共 ${lfTotal} 条`;
+        lfPrev.disabled = lfPageNum <= 1;
+        lfNext.disabled = lfPageNum >= totalPages;
+      }
+
+      function addOneDay(dateStr) {
+        if (!dateStr) return "";
+        const d = new Date(dateStr);
+        if (Number.isNaN(d.getTime())) return dateStr;
+        d.setDate(d.getDate() + 1);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+      }
+
+      async function fetchLostAndFound(page = 1) {
+        lfPageNum = page;
+        setLfLoading("加载中...");
+
+        const params = new URLSearchParams();
+        params.append("pageNum", lfPageNum);
+        params.append("pageSize", LF_PAGE_SIZE);
+        if (lfBegin.value) params.append("beginTime", lfBegin.value);
+        if (lfEnd.value) params.append("endTime", addOneDay(lfEnd.value));
+        if (lfCategory.value) params.append("categoryId", lfCategory.value);
+        if (lfLocation.value) params.append("locationId", lfLocation.value);
+
+        try {
+          const res = await fetch(
+            `/admin/lostAndFound/getLostAndFoundList?${params.toString()}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+            }
+          );
+
+          const result = await res.json();
+          if (result.code !== "200") {
+            lfStatusText.textContent = result.message || "获取列表失败";
+            return;
+          }
+
+          const data = result.data || {};
+          const records = data.records || [];
+          lfTotal = data.total || 0;
+
+          if (!records.length) {
+            lfTableWrapper.style.display = "none";
+            lfEmpty.style.display = "block";
+            lfStatusText.style.display = "none";
+            lfPagination.style.display = "none";
+            return;
+          }
+
+          renderLfTable(records);
+          updateLfPagination();
+          lfStatusText.style.display = "none";
+          lfTableWrapper.style.display = "block";
+          lfEmpty.style.display = "none";
+          lfPagination.style.display = "flex";
+        } catch (error) {
+          lfStatusText.textContent = "请求出错，请稍后重试";
+          console.error(error);
+        }
+      }
+
+      lfPrev.addEventListener("click", () => {
+        if (lfPageNum > 1) fetchLostAndFound(lfPageNum - 1);
+      });
+
+      lfNext.addEventListener("click", () => {
+        fetchLostAndFound(lfPageNum + 1);
+      });
+
+      lfRefresh.addEventListener("click", () => fetchLostAndFound(lfPageNum));
+
+      lfSearch.addEventListener("click", () => fetchLostAndFound(1));
+
+      lfReset.addEventListener("click", () => {
+        lfCategory.value = "";
+        lfLocation.value = "";
+        lfBegin.value = "";
+        lfEnd.value = "";
+        fetchLostAndFound(1);
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchCategories();
+        fetchLocations();
+        fetchLostAndFound(1);
       });
     </script>
   </body>

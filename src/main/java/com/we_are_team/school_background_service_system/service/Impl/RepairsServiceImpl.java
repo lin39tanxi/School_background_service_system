@@ -263,8 +263,10 @@ public class RepairsServiceImpl implements ReparisService {
         }
 
         if(repairOrder.getImageUrls() == null || repairOrder.getImageUrls().equals("")){
+
             RepairOrderVO repairOrderVO =  RepairOrderVO.builder().
                     orderId(repairOrder.getOrderId())
+                    .address(repairOrder.getAddress())
                     .adminId(repairOrder.getAdminId())
                     .comment(repairOrder.getComment())
                     .createdTime(repairOrder.getCreatedTime())
@@ -284,6 +286,7 @@ public class RepairsServiceImpl implements ReparisService {
             List<String> urls = new ArrayList<>(Arrays.asList(urlArray));
             RepairOrderVO repairOrderVO =  RepairOrderVO.builder().
                     orderId(repairOrder.getOrderId())
+                    .address(repairOrder.getAddress())
                     .adminId(repairOrder.getAdminId())
                     .comment(repairOrder.getComment())
                     .createdTime(repairOrder.getCreatedTime())
