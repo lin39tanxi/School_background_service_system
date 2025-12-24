@@ -311,11 +311,24 @@
         border: 1px solid #d9dff1;
         background: #fff;
         cursor: pointer;
+        min-width: 36px;
+        transition: all 0.2s;
+      }
+
+      .pager button:hover:not(:disabled) {
+        border-color: #3f51b5;
+        color: #3f51b5;
       }
 
       .pager button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+      }
+
+      .pager button.active {
+        background: #3f51b5;
+        color: #fff;
+        border-color: #3f51b5;
       }
     </style>
   </head>
@@ -356,6 +369,20 @@
           <div class="chip-group" id="categoryChips"></div>
           <button class="more-toggle" id="categoryMore">更多 ▾</button>
         </div>
+        <div class="filter-row">
+          <span class="filter-label">状态：</span>
+          <div class="chip-group">
+            <button class="filter-chip active" data-status="" id="statusAll">
+              全部
+            </button>
+            <button class="filter-chip" data-status="0" id="statusUnclaimed">
+              未认领
+            </button>
+            <button class="filter-chip" data-status="1" id="statusClaimed">
+              已认领
+            </button>
+          </div>
+        </div>
         <div class="filter-row date-row">
           <span class="filter-label">时间：</span>
           <input type="date" id="beginTime" />
@@ -388,9 +415,8 @@
         </table>
         <div class="pagination">
           <div id="pagerInfo">第 1 页</div>
-          <div class="pager">
-            <button id="prevPage">上一页</button>
-            <button id="nextPage">下一页</button>
+          <div class="pager" id="pager">
+            <!-- 页码按钮将动态生成 -->
           </div>
         </div>
       </section>
@@ -400,6 +426,7 @@
       const state = {
         locationId: null,
         categoryId: null,
+        status: null,
         beginTime: "",
         endTime: "",
         pageNum: 1,
@@ -445,7 +472,15 @@
       function bindFilterActions() {
         document.getElementById("searchBtn").addEventListener("click", () => {
           state.beginTime = document.getElementById("beginTime").value;
-          state.endTime = document.getElementById("endTime").value;
+          const endTimeValue = document.getElementById("endTime").value;
+          // 如果选择了结束时间，则在该时间上加一天
+          if (endTimeValue) {
+            const endDate = new Date(endTimeValue);
+            endDate.setDate(endDate.getDate() + 1);
+            state.endTime = endDate.toISOString().split("T")[0];
+          } else {
+            state.endTime = "";
+          }
           state.pageNum = 1;
           fetchLostList();
         });
@@ -453,6 +488,7 @@
         document.getElementById("resetBtn").addEventListener("click", () => {
           state.locationId = null;
           state.categoryId = null;
+          state.status = null;
           state.beginTime = "";
           state.endTime = "";
           state.pageNum = 1;
@@ -460,18 +496,7 @@
           document.getElementById("endTime").value = "";
           markActiveChip("locationChips", null);
           markActiveChip("categoryChips", null);
-          fetchLostList();
-        });
-
-        document.getElementById("prevPage").addEventListener("click", () => {
-          if (state.pageNum > 1) {
-            state.pageNum -= 1;
-            fetchLostList();
-          }
-        });
-
-        document.getElementById("nextPage").addEventListener("click", () => {
-          state.pageNum += 1;
+          markActiveStatusChip("");
           fetchLostList();
         });
 
@@ -479,24 +504,67 @@
           .getElementById("locationMore")
           .addEventListener("click", () => {
             state.locationExpanded = !state.locationExpanded;
-            toggleMore("locationChips", state.locationExpanded);
+            toggleMore("locationChips", state.locationExpanded, "locationMore");
           });
 
         document
           .getElementById("categoryMore")
           .addEventListener("click", () => {
             state.categoryExpanded = !state.categoryExpanded;
-            toggleMore("categoryChips", state.categoryExpanded);
+            toggleMore("categoryChips", state.categoryExpanded, "categoryMore");
+          });
+
+        // 状态筛选
+        document.getElementById("statusAll").addEventListener("click", () => {
+          state.status = null;
+          state.pageNum = 1;
+          markActiveStatusChip("");
+          fetchLostList();
+        });
+        document
+          .getElementById("statusUnclaimed")
+          .addEventListener("click", () => {
+            state.status = 0;
+            state.pageNum = 1;
+            markActiveStatusChip("0");
+            fetchLostList();
+          });
+        document
+          .getElementById("statusClaimed")
+          .addEventListener("click", () => {
+            state.status = 1;
+            state.pageNum = 1;
+            markActiveStatusChip("1");
+            fetchLostList();
           });
       }
 
-      function toggleMore(containerId, expanded) {
+      function markActiveStatusChip(value) {
+        const chips = document.querySelectorAll("[data-status]");
+        chips.forEach((chip) => {
+          chip.classList.toggle(
+            "active",
+            chip.dataset.status == value ||
+              (!value && chip.dataset.status === "")
+          );
+        });
+      }
+
+      function toggleMore(containerId, expanded, buttonId) {
         const chips = document.querySelectorAll(
           `#${containerId} .filter-chip[data-extra="true"]`
         );
         chips.forEach((chip) => {
           chip.style.display = expanded ? "inline-flex" : "none";
         });
+
+        // 更新按钮文字
+        if (buttonId) {
+          const button = document.getElementById(buttonId);
+          if (button) {
+            button.textContent = expanded ? "收起 ▴" : "更多 ▾";
+          }
+        }
       }
 
       // 加载分类
@@ -568,6 +636,15 @@
           container.appendChild(chip);
         });
 
+        // 只有当分类数量大于10时才显示"更多"按钮
+        const moreButton =
+          containerId === "locationChips"
+            ? document.getElementById("locationMore")
+            : document.getElementById("categoryMore");
+        if (moreButton) {
+          moreButton.style.display = list.length > 10 ? "inline-block" : "none";
+        }
+
         markActiveChip(containerId, state[key]);
       }
 
@@ -591,6 +668,7 @@
           pageSize: state.pageSize,
           locationId: state.locationId || "",
           categoryId: state.categoryId || "",
+          status: state.status !== null ? state.status : "",
           beginTime: state.beginTime || "",
           endTime: state.endTime || "",
         });
@@ -658,12 +736,93 @@
 
       function updatePager(total) {
         const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
-        document.getElementById(
-          "pagerInfo"
-        ).textContent = `第 ${state.pageNum} / ${totalPages} 页，共 ${total} 条`;
-        document.getElementById("prevPage").disabled = state.pageNum <= 1;
-        document.getElementById("nextPage").disabled =
-          state.pageNum >= totalPages;
+        document.getElementById("pagerInfo").textContent = `共 ${total} 条`;
+
+        const pager = document.getElementById("pager");
+        pager.innerHTML = "";
+
+        // 上一页按钮
+        const prevBtn = document.createElement("button");
+        prevBtn.textContent = "上一页";
+        prevBtn.disabled = state.pageNum <= 1;
+        prevBtn.addEventListener("click", () => {
+          if (state.pageNum > 1) {
+            state.pageNum -= 1;
+            fetchLostList();
+          }
+        });
+        pager.appendChild(prevBtn);
+
+        // 生成页码按钮
+        const pageNumbers = getPageNumbers(state.pageNum, totalPages);
+        pageNumbers.forEach((page) => {
+          if (page === "...") {
+            const ellipsis = document.createElement("span");
+            ellipsis.textContent = "...";
+            ellipsis.style.padding = "6px 10px";
+            pager.appendChild(ellipsis);
+          } else {
+            const pageBtn = document.createElement("button");
+            pageBtn.textContent = page;
+            pageBtn.className = page === state.pageNum ? "active" : "";
+            pageBtn.addEventListener("click", () => {
+              state.pageNum = page;
+              fetchLostList();
+            });
+            pager.appendChild(pageBtn);
+          }
+        });
+
+        // 下一页按钮
+        const nextBtn = document.createElement("button");
+        nextBtn.textContent = "下一页";
+        nextBtn.disabled = state.pageNum >= totalPages;
+        nextBtn.addEventListener("click", () => {
+          if (state.pageNum < totalPages) {
+            state.pageNum += 1;
+            fetchLostList();
+          }
+        });
+        pager.appendChild(nextBtn);
+      }
+
+      function getPageNumbers(currentPage, totalPages) {
+        const pages = [];
+
+        if (totalPages <= 7) {
+          // 总页数不超过7页，显示所有页码
+          for (let i = 1; i <= totalPages; i++) {
+            pages.push(i);
+          }
+        } else {
+          // 总页数超过7页，显示部分页码
+          if (currentPage <= 4) {
+            // 当前页靠前
+            for (let i = 1; i <= 5; i++) {
+              pages.push(i);
+            }
+            pages.push("...");
+            pages.push(totalPages);
+          } else if (currentPage >= totalPages - 3) {
+            // 当前页靠后
+            pages.push(1);
+            pages.push("...");
+            for (let i = totalPages - 4; i <= totalPages; i++) {
+              pages.push(i);
+            }
+          } else {
+            // 当前页在中间
+            pages.push(1);
+            pages.push("...");
+            for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+              pages.push(i);
+            }
+            pages.push("...");
+            pages.push(totalPages);
+          }
+        }
+
+        return pages;
       }
 
       // 退出登录

@@ -13,69 +13,72 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Slf4j
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-    @Autowired
-    private JwtTokenUserInterceptor jwtTokenUserInterceptor;
+  @Autowired
+  private JwtTokenUserInterceptor jwtTokenUserInterceptor;
 
-    @Autowired
-    private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
+  @Autowired
+  private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        log.info("开始进行拦截器配置");
-        registry.addInterceptor(jwtTokenUserInterceptor)
-                .addPathPatterns("/user/**")
-                .excludePathPatterns("/user/login")
-                .excludePathPatterns("/user/register")
-                .excludePathPatterns("/user/register/page");
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    log.info("开始进行拦截器配置");
+    registry.addInterceptor(jwtTokenUserInterceptor)
+        .addPathPatterns("/user/**")
+        .excludePathPatterns("/user/login")
+        .excludePathPatterns("/user/register")
+        .excludePathPatterns("/user/register/page")
+        .excludePathPatterns("/user/generateVerifyCode");
 
-        registry.addInterceptor(jwtTokenAdminInterceptor)
-                .addPathPatterns("/admin/**")
-                .excludePathPatterns("/admin/login");
+    registry.addInterceptor(jwtTokenAdminInterceptor)
+        .addPathPatterns("/admin/**")
+        .excludePathPatterns("/admin/login");
 
-    }
+  }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**")
-                .addResourceLocations("classpath:/static/", "classpath:/", "classpath:/templates/");
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    registry.addResourceHandler("/**")
+        .addResourceLocations("classpath:/static/", "classpath:/", "classpath:/templates/");
 
-    }
+  }
 
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        /* 配置静态资源映射 */
-        /**
-          用户页面
-          */
-        registry.addViewController("/").setViewName("forward:/user-login.html");
-        registry.addViewController("/users/login").setViewName("forward:/user-login.html");
-        registry.addViewController("/user/index").setViewName("forward:/user-index.html");
-        registry.addViewController("/user/info").setViewName("forward:/user-info.html");
-        registry.addViewController("/user/repair").setViewName("forward:/user-repair.html");
-        registry.addViewController("/user/repair/item").setViewName("forward:/user-repair-item.html");
-        registry.addViewController("/user/lostAndFound").setViewName("forward:/user-lostAndFound.html");
-        registry.addViewController("/user/changeDormitory").setViewName("forward:/user-changeDormitory.html");
-        registry.addViewController("/user/changeDormitory/item").setViewName("forward:/user-changeDormitory-item.html");
-        registry.addViewController("/user/lostAndFound/item").setViewName("forward:/user-lostAndFound-item.html");
-        registry.addViewController("/user/notice").setViewName("forward:/user-notice.html");
-        registry.addViewController("/user/notice/item").setViewName("forward:/user-notice-item.html");
-        registry.addViewController("/user/feedback").setViewName("forward:/user-feedback.html");
-        registry.addViewController("/user/feedback/item").setViewName("forward:/user-feedback-item.html");
-        registry.addViewController("/user/register/page").setViewName("forward:/user-register.html");
+  @Override
+  public void addViewControllers(ViewControllerRegistry registry) {
+    /* 配置静态资源映射 */
+    /**
+     * 用户页面
+     */
+    registry.addViewController("/").setViewName("forward:/user-login.html");
+    registry.addViewController("/users/login").setViewName("forward:/user-login.html");
+    registry.addViewController("/user/index").setViewName("forward:/user-index.html");
+    registry.addViewController("/user/info").setViewName("forward:/user-info.html");
+    registry.addViewController("/user/repair").setViewName("forward:/user-repair.html");
+    registry.addViewController("/user/repair/item").setViewName("forward:/user-repair-item.html");
+    registry.addViewController("/user/lostAndFound").setViewName("forward:/user-lostAndFound.html");
+    registry.addViewController("/user/changeDormitory").setViewName("forward:/user-changeDormitory.html");
+    registry.addViewController("/user/changeDormitory/item").setViewName("forward:/user-changeDormitory-item.html");
+    registry.addViewController("/user/lostAndFound/item").setViewName("forward:/user-lostAndFound-item.html");
+    registry.addViewController("/user/notice").setViewName("forward:/user-notice.html");
+    registry.addViewController("/user/notice/item").setViewName("forward:/user-notice-item.html");
+    registry.addViewController("/user/feedback").setViewName("forward:/user-feedback.html");
+    registry.addViewController("/user/feedback/item").setViewName("forward:/user-feedback-item.html");
+    registry.addViewController("/user/register/page").setViewName("forward:/user-register.html");
 
-        /**
-          管理员页面
-          */
-        registry.addViewController("/admins/login").setViewName("forward:/admin-login.html");
-        registry.addViewController("/admin/index").setViewName("forward:/admin-index.html");
-        registry.addViewController("/admin/manager").setViewName("forward:/admin-manager.html");
-        registry.addViewController("/admin/lostandfound").setViewName("forward:/admin-lostAndFound.html");
-        registry.addViewController("/admin/notifications").setViewName("forward:/admin-notification.html");
-        registry.addViewController("/admin/feedback").setViewName("forward:/admin-feedback.html");
-        registry.addViewController("/admin/repair").setViewName("forward:/admin-repair.html");
-        registry.addViewController("/admin/dormitory").setViewName("forward:/admin-dormitory.html");
-        registry.addViewController("/admin/dormitory/changeDormitory/item").setViewName("forward:/admin-dormitory-item.html");
-        registry.addViewController("/admin/lostAndFounditem").setViewName("forward:/admin-lostAndFound-item.html");
-    }
+    /**
+     * 管理员页面
+     */
+    registry.addViewController("/admins/login").setViewName("forward:/admin-login.html");
+    registry.addViewController("/admin/index").setViewName("forward:/admin-index.html");
+    registry.addViewController("/admin/manager").setViewName("forward:/admin-manager.html");
+    registry.addViewController("/admin/lostandfound").setViewName("forward:/admin-lostAndFound.html");
+    registry.addViewController("/admin/notifications").setViewName("forward:/admin-notification.html");
+    registry.addViewController("/admin/feedback").setViewName("forward:/admin-feedback.html");
+    registry.addViewController("/admin/repair").setViewName("forward:/admin-repair.html");
+    registry.addViewController("/admin/dormitory").setViewName("forward:/admin-dormitory.html");
+    registry.addViewController("/admin/dormitory/changeDormitory/item")
+        .setViewName("forward:/admin-dormitory-item.html");
+    registry.addViewController("/admin/lostAndFound/item").setViewName("forward:/admin-lostAndFound-item.html");
+    registry.addViewController("/admin/lostAndFound/add").setViewName("forward:/admin-lostAndFound-add.html");
+  }
 
 }

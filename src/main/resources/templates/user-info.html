@@ -1591,7 +1591,7 @@
             document.getElementById("userPhone").textContent =
               user.phone || "-";
             document.getElementById("dormitory").textContent =
-              (user.building || "")  + (user.dormitory || "");
+              (user.building || "") + (user.dormitory || "");
             document.getElementById("userGender").textContent =
               user.gender || "-";
             // 更新头像
@@ -1691,22 +1691,31 @@
         }
 
         try {
-          const response = await fetch("/user/user/update", {
+          let url = "";
+          let requestBody = "";
+
+          if (currentEditField === "nickname") {
+            // 修改昵称接口: PUT /user/my?nickname=xxx
+            url = "/user/my?nickname=" + encodeURIComponent(newValue);
+          } else if (currentEditField === "phone") {
+            // 修改手机号接口: PUT /user/changePhone?newPhone=xxx
+            url = "/user/changePhone?newPhone=" + encodeURIComponent(newValue);
+          }
+
+          const response = await fetch(url, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token"),
             },
-            body: JSON.stringify({
-              [currentEditField]: newValue,
-            }),
           });
 
           const result = await response.json();
-          if (result.code === "200") {
+          if (result.code === "200" || result.code === 200) {
             if (currentEditField === "nickname") {
               document.getElementById("userNickname").textContent = newValue;
-              document.querySelector(".sidebar-name").textContent = newValue;
+              document.getElementById("userSidebarNickname").textContent =
+                newValue;
             } else if (currentEditField === "phone") {
               document.getElementById("userPhone").textContent = newValue;
             }

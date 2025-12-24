@@ -87,6 +87,43 @@
       .message.success {
         color: #2e7d32;
       }
+      /* 验证码样式 */
+      .verify-code-group {
+        display: flex;
+        gap: 12px;
+        align-items: flex-end;
+      }
+      .verify-code-input-wrapper {
+        flex: 1;
+      }
+      .verify-code-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-bottom: 2px;
+      }
+      .verify-code-img {
+        width: 120px;
+        height: 44px;
+        border: 1px solid #cfd8dc;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: #f5f5f5;
+      }
+      .verify-code-img:hover {
+        border-color: #3f51b5;
+      }
+      .refresh-verify-code {
+        color: #3f51b5;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.2s ease;
+        user-select: none;
+      }
+      .refresh-verify-code:hover {
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -142,6 +179,38 @@
             placeholder="请输入姓名"
           />
         </div>
+        <div class="form-group">
+          <label for="verifyCode">验证码</label>
+          <div class="verify-code-group">
+            <div class="verify-code-input-wrapper">
+              <input
+                type="text"
+                id="verifyCode"
+                name="verifyCode"
+                required
+                placeholder="请输入验证码"
+                maxlength="4"
+              />
+            </div>
+            <div class="verify-code-right">
+              <img
+                id="verifyCodeImg"
+                src=""
+                alt="验证码"
+                class="verify-code-img"
+                onclick="refreshVerifyCode()"
+                title="点击刷新"
+              />
+              <span
+                class="refresh-verify-code"
+                onclick="refreshVerifyCode()"
+                title="刷新验证码"
+              >
+                刷新
+              </span>
+            </div>
+          </div>
+        </div>
         <div class="actions">
           <button type="submit">注册</button>
           <button
@@ -157,6 +226,54 @@
     </div>
 
     <script>
+      // 页面加载时获取验证码
+      window.addEventListener("DOMContentLoaded", function () {
+        refreshVerifyCode();
+      });
+
+      // 验证码相关变量
+      let verifyCodeObjectUrl = null;
+
+      // 加载验证码图片
+      async function loadVerifyCodeImage() {
+        const verifyCodeImg = document.getElementById("verifyCodeImg");
+        const url = "/user/generateVerifyCode";
+
+        try {
+          const response = await fetch(url, {
+            method: "GET",
+            cache: "no-store",
+          });
+
+          if (!response.ok) {
+            throw new Error("获取验证码失败，HTTP " + response.status);
+          }
+
+          const blob = await response.blob();
+          if (verifyCodeObjectUrl) {
+            URL.revokeObjectURL(verifyCodeObjectUrl);
+          }
+          verifyCodeObjectUrl = URL.createObjectURL(blob);
+          verifyCodeImg.src = verifyCodeObjectUrl;
+        } catch (error) {
+          console.error("获取验证码图片出错:", error);
+          document.getElementById("message").textContent = "验证码加载失败";
+        }
+      }
+
+      // 刷新验证码
+      function refreshVerifyCode() {
+        loadVerifyCodeImage();
+      }
+
+      // 页面卸载时释放验证码对象URL
+      window.addEventListener("beforeunload", function () {
+        if (verifyCodeObjectUrl) {
+          URL.revokeObjectURL(verifyCodeObjectUrl);
+        }
+      });
+
+      // 注册表单提交
       document
         .getElementById("registerForm")
         .addEventListener("submit", async function (e) {
@@ -164,6 +281,14 @@
           const messageEl = document.getElementById("message");
           messageEl.textContent = "";
           messageEl.classList.remove("success");
+
+          const verifyCode = document.getElementById("verifyCode").value.trim();
+
+          // 验证码校验
+          if (!verifyCode || verifyCode.length !== 4) {
+            messageEl.textContent = "请输入4位验证码";
+            return;
+          }
 
           const payload = {
             username:
@@ -174,6 +299,7 @@
               .value.trim(),
             nickname: document.getElementById("nickname").value.trim(),
             name: document.getElementById("name").value.trim(),
+            verifyCode: verifyCode,
           };
 
           try {
@@ -193,10 +319,16 @@
               }, 1200);
             } else {
               messageEl.textContent = data.message || "注册失败，请重试";
+              // 注册失败后刷新验证码
+              refreshVerifyCode();
+              document.getElementById("verifyCode").value = "";
             }
           } catch (err) {
             console.error("注册请求失败", err);
             messageEl.textContent = "网络异常，请稍后再试";
+            // 请求失败后刷新验证码
+            refreshVerifyCode();
+            document.getElementById("verifyCode").value = "";
           }
         });
     </script>

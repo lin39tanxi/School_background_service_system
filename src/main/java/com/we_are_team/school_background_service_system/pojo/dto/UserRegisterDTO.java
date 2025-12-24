@@ -12,6 +12,7 @@ public class UserRegisterDTO {
     private String nickname;
     private String studentNumber;
     private String name;
+    private String verifyCode;
 
-//    private String dormitoryAddress;
+    // private String dormitoryAddress;
 }
