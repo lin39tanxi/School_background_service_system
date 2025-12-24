@@ -402,14 +402,13 @@
               <th style="width: 160px">物品名称</th>
               <th style="width: 120px">分类</th>
               <th style="width: 120px">地点</th>
-              <th>描述</th>
               <th style="width: 120px">图片</th>
               <th style="width: 120px">状态</th>
             </tr>
           </thead>
           <tbody id="lostTableBody">
             <tr>
-              <td class="empty-row" colspan="7">加载中...</td>
+              <td class="empty-row" colspan="6">加载中...</td>
             </tr>
           </tbody>
         </table>
@@ -661,7 +660,7 @@
       // 列表
       async function fetchLostList() {
         const body = document.getElementById("lostTableBody");
-        body.innerHTML = `<tr><td class="empty-row" colspan="7">加载中...</td></tr>`;
+        body.innerHTML = `<tr><td class="empty-row" colspan="6">加载中...</td></tr>`;
 
         const params = new URLSearchParams({
           pageNum: state.pageNum,
@@ -701,7 +700,7 @@
         body.innerHTML = "";
 
         if (!list || list.length === 0) {
-          body.innerHTML = `<tr><td class="empty-row" colspan="7">暂无数据</td></tr>`;
+          body.innerHTML = `<tr><td class="empty-row" colspan="6">暂无数据</td></tr>`;
           updatePager(total);
           return;
         }
@@ -717,7 +716,6 @@
             <td>${item.itemName || "-"}</td>
             <td>${item.categoryName || "-"}</td>
             <td>${item.locationName || "-"}</td>
-            <td>${item.description || "-"}</td>
             <td>${imageCell}</td>
             <td>${statusTag(item.status)}</td>
           `;

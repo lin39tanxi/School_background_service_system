@@ -13,6 +13,13 @@
 
     </select>
 
-
+<select id="getAllUsers" resultType="com.we_are_team.school_background_service_system.pojo.entity.User">
+    SELECT * FROM user
+    <where>
+        <if test="keyword != null">
+            student_number like concat('%',#{keyword},'%') or nickname like concat('%',#{keyword},'%')
+        </if>
+    </where>
+</select>
 
 </mapper>

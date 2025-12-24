@@ -132,4 +132,11 @@ public interface UserMapper {
 
     @Update("update student set phone = #{newPhone} where student_number = #{studentNumber}")
     void changeMyPhoneByStudentNumber(@Param("newPhone") String newPhone, @Param("studentNumber") String studentNumber);
+
+
+    Page<User> getAllUsers(@Param("keyword") String keyword);
+
+    @Update("update user set password= #{changeStudentPasswordDTO.password} where student_number= #{changeStudentPasswordDTO.studentNumber}")
+    void updateStudentPassword(@Param("changeStudentPasswordDTO") ChangeStudentPasswordDTO changeStudentPasswordDTO);
+
 }

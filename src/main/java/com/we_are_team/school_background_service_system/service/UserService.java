@@ -121,4 +121,8 @@ public interface UserService {
      * @param newPhone
      */
     void changeMyPhone(String newPhone);
+
+    PageResult getUserList(Integer pageNum, Integer pageSize, String keyword);
+
+    void changeStudentPassword(ChangeStudentPasswordDTO changeStudentPasswordDTO);
 }

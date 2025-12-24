@@ -84,8 +84,31 @@ public class UserController {
      */
     @GetMapping("/user/getUserInfo")
     public Result<User> getUserInfo() {
-
         return Result.success("获取管理员信息成功",  userService.adminGetUserInfo());
     }
 
+ /**
+     * 获取用户列表
+     */
+    @GetMapping("/user/getUserList")
+    public Result<PageResult> getUserList(
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "1000") Integer pageSize,
+            String keyword)
+    {
+        PageResult pageResult = userService.getUserList(pageNum, pageSize, keyword);
+        return Result.success("获取用户列表成功",pageResult);
+    }
+
+    /**修改学生密码
+     *
+     */
+    @PostMapping("/user/changeStudentPassword")
+    public  Result changeStudentPassword( @RequestBody ChangeStudentPasswordDTO changeStudentPasswordDTO) {
+        {
+            userService.changeStudentPassword(changeStudentPasswordDTO);
+            return Result.success("修改密码成功");
+        }
+
+    }
 }

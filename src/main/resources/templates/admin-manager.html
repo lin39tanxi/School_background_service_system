@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -77,10 +77,22 @@
         padding: 14px 16px;
         text-align: left;
         font-size: 14px;
-        cursor: default;
+        cursor: pointer;
         display: flex;
         align-items: center;
         gap: 10px;
+        transition: all 0.3s ease;
+        opacity: 0.7;
+      }
+
+      .menu-item:hover {
+        opacity: 0.9;
+        transform: translateX(4px);
+      }
+
+      .menu-item.active {
+        opacity: 1;
+        box-shadow: 0 4px 12px rgba(63, 81, 181, 0.3);
       }
 
       .menu-dot {
@@ -163,6 +175,11 @@
       .btn:hover {
         transform: translateY(-1px);
         box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+      }
+
+      .btn-sm {
+        padding: 6px 12px;
+        font-size: 12px;
       }
 
       .table-wrapper {
@@ -469,9 +486,13 @@
       <aside class="sidebar">
         <div class="brand">功能模块</div>
         <div class="menu">
-          <div class="menu-item">
+          <div class="menu-item active" id="adminListMenu">
             <span class="menu-dot"></span>
             <span>管理员列表 >></span>
+          </div>
+          <div class="menu-item" id="studentListMenu">
+            <span class="menu-dot"></span>
+            <span>学生列表 >></span>
           </div>
         </div>
       </aside>
@@ -479,10 +500,7 @@
       <main class="content">
         <section class="card">
           <div class="card-header">
-            <div class="title">
-              管理员列表
-              
-            </div>
+            <div class="title">管理员列表</div>
             <div class="card-actions">
               <button class="btn btn-ghost" id="refreshBtn">刷新</button>
             </div>
@@ -517,6 +535,61 @@
             <label class="page-info" for="jumpInput">跳转到</label>
             <input class="input" id="jumpInput" type="number" min="1" />
             <button class="btn btn-primary" id="jumpBtn">跳转</button>
+          </div>
+        </section>
+
+        <!-- 学生列表模块 -->
+        <section class="card" id="studentListSection" style="display: none">
+          <div class="card-header">
+            <div class="title">学生列表</div>
+            <div class="card-actions">
+              <input
+                class="input"
+                id="studentSearchInput"
+                type="text"
+                placeholder="输入关键词搜索"
+                style="width: 220px; margin-right: 10px"
+              />
+              <button class="btn btn-primary" id="studentSearchBtn">
+                搜索
+              </button>
+              <button class="btn btn-ghost" id="studentRefreshBtn">刷新</button>
+            </div>
+          </div>
+
+          <div class="status" id="studentStatusText">加载中...</div>
+
+          <div
+            class="table-wrapper"
+            id="studentTableWrapper"
+            style="display: none"
+          >
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 150px">用户名</th>
+                  <th style="width: 150px">昵称</th>
+                  <th style="width: 100px">头像</th>
+                  <th style="width: 180px">注册时间</th>
+                  <th style="width: 120px">操作</th>
+                </tr>
+              </thead>
+              <tbody id="studentTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="empty" id="studentEmptyState" style="display: none">
+            暂无数据
+          </div>
+
+          <div class="pagination" id="studentPagination" style="display: none">
+            <button class="btn btn-ghost" id="studentPrevBtn">上一页</button>
+            <button class="btn btn-ghost" id="studentNextBtn">下一页</button>
+            <span class="page-info" id="studentPageInfo"></span>
+            <span class="page-info" id="studentTotalInfo"></span>
+            <label class="page-info" for="studentJumpInput">跳转到</label>
+            <input class="input" id="studentJumpInput" type="number" min="1" />
+            <button class="btn btn-primary" id="studentJumpBtn">跳转</button>
           </div>
         </section>
       </main>
@@ -916,6 +989,216 @@
       document.addEventListener("DOMContentLoaded", () => {
         renderPermissionCheckboxes();
         fetchAdmins(1);
+        initMenuToggle();
+      });
+
+      // 菜单切换功能
+      function initMenuToggle() {
+        const adminListMenu = document.getElementById("adminListMenu");
+        const studentListMenu = document.getElementById("studentListMenu");
+        const adminListSection = document.querySelector(".card");
+        const studentListSection =
+          document.getElementById("studentListSection");
+
+        adminListMenu.addEventListener("click", () => {
+          adminListMenu.classList.add("active");
+          studentListMenu.classList.remove("active");
+          adminListSection.style.display = "block";
+          studentListSection.style.display = "none";
+        });
+
+        studentListMenu.addEventListener("click", () => {
+          studentListMenu.classList.add("active");
+          adminListMenu.classList.remove("active");
+          adminListSection.style.display = "none";
+          studentListSection.style.display = "block";
+          fetchStudents(1, "");
+        });
+      }
+
+      /************************************************************************************************************************************************/
+      /*************************************************************** 学生列表模块 ********************************************************************/
+      /************************************************************************************************************************************************/
+
+      const STUDENT_PAGE_SIZE = 15;
+      let studentPageNum = 1;
+      let studentTotal = 0;
+      let studentKeyword = "";
+
+      const studentTableBody = document.getElementById("studentTableBody");
+      const studentStatusText = document.getElementById("studentStatusText");
+      const studentTableWrapper = document.getElementById(
+        "studentTableWrapper"
+      );
+      const studentEmptyState = document.getElementById("studentEmptyState");
+      const studentPagination = document.getElementById("studentPagination");
+      const studentPageInfo = document.getElementById("studentPageInfo");
+      const studentTotalInfo = document.getElementById("studentTotalInfo");
+      const studentPrevBtn = document.getElementById("studentPrevBtn");
+      const studentNextBtn = document.getElementById("studentNextBtn");
+      const studentJumpInput = document.getElementById("studentJumpInput");
+      const studentJumpBtn = document.getElementById("studentJumpBtn");
+      const studentSearchInput = document.getElementById("studentSearchInput");
+      const studentSearchBtn = document.getElementById("studentSearchBtn");
+      const studentRefreshBtn = document.getElementById("studentRefreshBtn");
+
+      async function fetchStudents(page, keyword) {
+        studentPageNum = page;
+        studentKeyword = keyword;
+        studentStatusText.style.display = "block";
+        studentStatusText.textContent = "加载中...";
+        studentTableWrapper.style.display = "none";
+        studentEmptyState.style.display = "none";
+        studentPagination.style.display = "none";
+
+        try {
+          const url = `/admin/user/getUserList?pageNum=${page}&pageSize=${STUDENT_PAGE_SIZE}&keyword=${encodeURIComponent(
+            keyword || ""
+          )}`;
+          const res = await fetch(url, {
+            headers: {
+              admintoken: localStorage.getItem("adminToken") || "",
+            },
+          });
+          const result = await res.json();
+
+          if (result.code === "200") {
+            const data = result.data;
+            studentTotal = data.total || 0;
+            const records = data.records || [];
+
+            if (records.length === 0) {
+              studentStatusText.style.display = "none";
+              studentEmptyState.style.display = "block";
+            } else {
+              renderStudentTable(records);
+              renderStudentPagination();
+              studentStatusText.style.display = "none";
+              studentTableWrapper.style.display = "block";
+              studentPagination.style.display = "flex";
+            }
+          } else {
+            studentStatusText.textContent =
+              result.message || "获取学生列表失败";
+          }
+        } catch (error) {
+          console.error(error);
+          studentStatusText.textContent = "请求出错，请稍后重试";
+        }
+      }
+
+      function renderStudentTable(records) {
+        studentTableBody.innerHTML = records
+          .map((item) => {
+            const avatarHtml = item.avatarUrl
+              ? `<img src="${item.avatarUrl}" alt="头像" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />`
+              : "-";
+            return `
+            <tr>
+              <td>${item.username || "-"}</td>
+              <td>${item.nickname || "-"}</td>
+              <td>${avatarHtml}</td>
+              <td>${formatDate(item.registeredTime)}</td>
+              <td>
+                <button
+                  class="btn btn-primary btn-sm"
+                  data-action="resetPassword"
+                  data-student-number="${item.studentNumber}"
+                >
+                  重置密码
+                </button>
+              </td>
+            </tr>
+          `;
+          })
+          .join("");
+      }
+
+      function renderStudentPagination() {
+        const totalPages = Math.max(
+          1,
+          Math.ceil(studentTotal / STUDENT_PAGE_SIZE)
+        );
+        studentPageInfo.textContent = `第 ${studentPageNum} / ${totalPages} 页`;
+        studentTotalInfo.textContent = `共 ${studentTotal} 条`;
+        studentPrevBtn.disabled = studentPageNum <= 1;
+        studentNextBtn.disabled = studentPageNum >= totalPages;
+      }
+
+      async function resetStudentPassword(studentNumber) {
+        if (!confirm("确定要将该学生密码重置为 123456 吗？")) return;
+
+        try {
+          const res = await fetch("/admin/user/changeStudentPassword", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              admintoken: localStorage.getItem("adminToken") || "",
+            },
+            body: JSON.stringify({
+              password: "123456",
+              studentNumber: studentNumber,
+            }),
+          });
+          const result = await res.json();
+          if (result.code === "200") {
+            alert("密码重置成功");
+          } else {
+            alert(result.message || "重置失败");
+          }
+        } catch (error) {
+          console.error(error);
+          alert("请求出错，请稍后重试");
+        }
+      }
+
+      // 学生列表事件监听
+      studentTableBody.addEventListener("click", (e) => {
+        const target = e.target;
+        if (target.dataset.action === "resetPassword") {
+          resetStudentPassword(target.dataset.studentNumber);
+        }
+      });
+
+      studentPrevBtn.addEventListener("click", () => {
+        if (studentPageNum > 1)
+          fetchStudents(studentPageNum - 1, studentKeyword);
+      });
+
+      studentNextBtn.addEventListener("click", () => {
+        const totalPages = Math.ceil(studentTotal / STUDENT_PAGE_SIZE);
+        if (studentPageNum < totalPages)
+          fetchStudents(studentPageNum + 1, studentKeyword);
+      });
+
+      studentJumpBtn.addEventListener("click", () => {
+        const targetPage = Number(studentJumpInput.value);
+        const totalPages = Math.max(
+          1,
+          Math.ceil(studentTotal / STUDENT_PAGE_SIZE)
+        );
+        if (!targetPage || targetPage < 1 || targetPage > totalPages) {
+          alert("请输入有效页码");
+          return;
+        }
+        fetchStudents(targetPage, studentKeyword);
+      });
+
+      studentSearchBtn.addEventListener("click", () => {
+        const keyword = studentSearchInput.value.trim();
+        fetchStudents(1, keyword);
+      });
+
+      studentSearchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          const keyword = studentSearchInput.value.trim();
+          fetchStudents(1, keyword);
+        }
+      });
+
+      studentRefreshBtn.addEventListener("click", () => {
+        studentSearchInput.value = "";
+        fetchStudents(1, "");
       });
     </script>
   </body>

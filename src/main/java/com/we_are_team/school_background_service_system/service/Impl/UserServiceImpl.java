@@ -428,4 +428,21 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public PageResult getUserList(Integer pageNum, Integer pageSize, String keyword) {
+        PageHelper pageHelper = new PageHelper();
+        pageHelper.startPage(pageNum, pageSize);
+        Page <User> user = userMapper.getAllUsers(keyword);
+        return new PageResult(user.getTotal(), user.getResult());
+    }
+
+    @Override
+    public void changeStudentPassword(ChangeStudentPasswordDTO changeStudentPasswordDTO) {
+        User user = userMapper.getUserByStudentNumber(changeStudentPasswordDTO.getStudentNumber());
+        if (user == null) {
+            throw new RuntimeException("该学号未注册");
+        }
+        userMapper.updateStudentPassword(changeStudentPasswordDTO);
+    }
+
 }
