@@ -353,4 +353,13 @@ public class RepairsServiceImpl implements ReparisService {
         repairsMapper.updateRepairStatus(repairOrder);
     }
 
+    @Override
+    public void deleteRepair(Integer orderId) {
+        User user = userMapper.getUserByUserId(BaseContext.getCurrentId());
+        if(!user.getPermission().contains("2")){
+            throw new RuntimeException("你没有权限删除这个报修单");
+        }
+        repairsMapper.deleteRepairByOrderId(orderId);
+    }
+
 }

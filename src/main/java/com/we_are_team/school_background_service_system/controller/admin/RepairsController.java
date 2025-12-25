@@ -61,4 +61,11 @@ public class RepairsController {
         return Result.success("完成报修成功");
     }
 
+//    删除保修单
+    @DeleteMapping("/repairs/{orderId}")
+    public Result deleteRepair(@PathVariable Integer orderId){
+        reparisService.deleteRepair(orderId);
+        return Result.success("删除报修单成功");
+    }
+
 }
