@@ -350,115 +350,56 @@
     </style>
   </head>
   <body>
+    
+
     <main class="page">
       <section class="card">
         <div class="card-header">
           <div>
-            <div
-              class="status-chip"
-              id="statusChip"
-              th:classappend="${detail.status == 0} ? 'chip-pending' : (${detail.status == 1} ? 'chip-pass' : 'chip-reject')"
-              th:text="${detail.status == 0 ? '申请中' : (detail.status == 1 ? '已通过' : '已拒绝')}"
-            >
-              加载中...
-            </div>
+            <div class="status-chip" id="statusChip">加载中...</div>
             <div class="title">申请单详情</div>
-            <div class="meta-line">
-              申请编号：<span id="detailId" th:text="${detail.dormChangeId}"
-                >-</span
-              >
-            </div>
+            <div class="meta-line">申请编号：<span id="detailId">-</span></div>
             <div class="meta-line" id="statusMessage"></div>
           </div>
           <div class="actions">
             <button class="btn" id="backBtn">返回列表</button>
-            <button
-              class="btn danger"
-              id="rejectBtn"
-              th:disabled="${detail.status != 0}"
-            >
-              拒绝申请
-            </button>
-            <button
-              class="btn primary"
-              id="agreeBtn"
-              th:disabled="${detail.status != 0}"
-            >
-              同意申请
-            </button>
+            <button class="btn danger" id="rejectBtn">拒绝申请</button>
+            <button class="btn primary" id="agreeBtn">同意申请</button>
           </div>
         </div>
 
         <div class="info-grid">
           <div class="info-item">
             <label>学号</label>
-            <div
-              class="value"
-              id="studentNumber"
-              th:text="${detail.studentNumber}"
-            >
-              -
-            </div>
+            <div class="value" id="studentNumber">-</div>
           </div>
           <div class="info-item">
             <label>原宿舍</label>
-            <div class="value" id="oldDorm" th:text="${detail.oldDormAddress}">
-              -
-            </div>
+            <div class="value" id="oldDorm">-</div>
           </div>
           <div class="info-item">
             <label>申请宿舍</label>
-            <div class="value" id="newDorm" th:text="${detail.newDormAddress}">
-              -
-            </div>
+            <div class="value" id="newDorm">-</div>
           </div>
           <div class="info-item">
             <label>当前状态</label>
-            <div
-              class="value"
-              id="detailStatus"
-              th:text="${detail.status == 0 ? '申请中' : (detail.status == 1 ? '已通过' : '已拒绝')}"
-            >
-              -
-            </div>
+            <div class="value" id="detailStatus">-</div>
           </div>
         </div>
 
         <div class="info-block">
           <div class="block-title">申请理由</div>
-          <div
-            class="block-content"
-            id="reason"
-            th:text="${detail.reason != null ? detail.reason : '-'}"
-          >
-            -
-          </div>
+          <div class="block-content" id="reason">-</div>
         </div>
 
-        <div
-          id="rejectBlock"
-          class="info-block"
-          th:classappend="${detail.status == 2 and detail.rejectionReason != null} ? '' : 'hidden'"
-        >
+        <div id="rejectBlock" class="info-block hidden">
           <div class="block-title">拒绝原因</div>
-          <div
-            class="block-content"
-            id="rejectReason"
-            th:text="${detail.rejectionReason}"
-          >
-            -
-          </div>
+          <div class="block-content" id="rejectReason">-</div>
         </div>
 
         <div class="meta-line">
-          提交时间：<span
-            id="createdTime"
-            th:text="${#temporals.format(detail.createdTime, 'yyyy-MM-dd HH:mm:ss')}"
-            >-</span
-          >
-          · 更新时间：<span
+          提交时间：<span id="createdTime">-</span> · 更新时间：<span
             id="updatedTime"
-            th:text="${detail.updatedTime != null ? #temporals.format(detail.updatedTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"
             >-</span
           >
         </div>
@@ -481,9 +422,24 @@
     </div>
 
     <script>
+      const dormStatusMap = {
+        0: "申请中",
+        1: "已通过",
+        2: "已拒绝",
+      };
+
       window.addEventListener("DOMContentLoaded", () => {
         bindActions();
         fetchAdminInfo();
+
+        const dormChangeId = getDormChangeId();
+        if (!dormChangeId) {
+          setStatusMessage("未找到申请参数");
+          disableActionButtons(true);
+          return;
+        }
+
+        loadDormDetail(dormChangeId);
       });
 
       function bindActions() {
@@ -523,6 +479,118 @@
         }
       }
 
+      function getDormChangeId() {
+        const params = new URLSearchParams(window.location.search);
+        const queryId = params.get("dormChangeId");
+        if (queryId) return queryId;
+        const pathMatch = window.location.pathname.match(/(\d+)$/);
+        if (pathMatch && pathMatch[1]) return pathMatch[1];
+        return null;
+      }
+
+      async function loadDormDetail(dormChangeId) {
+        setStatusMessage("加载中...");
+        disableActionButtons(true);
+        try {
+          const response = await fetch(
+            `/admin/dormitory/getMyChangeDormitoryInfo/${dormChangeId}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                admintoken: localStorage.getItem("adminToken") || "",
+              },
+            }
+          );
+
+          const result = await response.json();
+          if ((result.code === "200" || result.code === 200) && result.data) {
+            renderDormDetail(result.data);
+            setStatusMessage("");
+            disableActionButtons(false, Number(result.data.status));
+          } else {
+            setStatusMessage(result.message || "加载失败");
+          }
+        } catch (error) {
+          console.error("获取详情出错", error);
+          setStatusMessage("加载失败，请稍后重试");
+        }
+      }
+
+      function renderDormDetail(data) {
+        const status = Number(data.status ?? 0);
+        const statusText = dormStatusMap[status] || "申请中";
+
+        document.getElementById("detailId").textContent =
+          data.dormChangeId || "-";
+        document.getElementById("studentNumber").textContent =
+          data.studentNumber || "-";
+        document.getElementById("oldDorm").textContent =
+          data.oldDormAddress || "-";
+        document.getElementById("newDorm").textContent =
+          data.newDormAddress || "-";
+        document.getElementById("detailStatus").textContent = statusText;
+        document.getElementById("reason").textContent = data.reason || "-";
+        document.getElementById("createdTime").textContent = formatDateTime(
+          data.createdTime
+        );
+        document.getElementById("updatedTime").textContent = formatDateTime(
+          data.updatedTime
+        );
+
+        const chip = document.getElementById("statusChip");
+        chip.textContent = statusText;
+        chip.classList.remove(
+          "chip-pending",
+          "chip-pass",
+          "chip-reject",
+          "chip-cancel"
+        );
+        if (status === 0) chip.classList.add("chip-pending");
+        else if (status === 1) chip.classList.add("chip-pass");
+        else if (status === 2) chip.classList.add("chip-reject");
+
+        const rejectBlock = document.getElementById("rejectBlock");
+        if (status === 2 && data.rejectionReason) {
+          document.getElementById("rejectReason").textContent =
+            data.rejectionReason;
+          rejectBlock.classList.remove("hidden");
+        } else {
+          rejectBlock.classList.add("hidden");
+        }
+      }
+
+      function formatDateTime(dateTimeStr) {
+        if (!dateTimeStr) return "-";
+        try {
+          const dt = new Date(dateTimeStr);
+          if (Number.isNaN(dt.getTime())) return dateTimeStr;
+          const y = dt.getFullYear();
+          const m = String(dt.getMonth() + 1).padStart(2, "0");
+          const d = String(dt.getDate()).padStart(2, "0");
+          const hh = String(dt.getHours()).padStart(2, "0");
+          const mm = String(dt.getMinutes()).padStart(2, "0");
+          const ss = String(dt.getSeconds()).padStart(2, "0");
+          return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+        } catch (e) {
+          return dateTimeStr;
+        }
+      }
+
+      function setStatusMessage(msg) {
+        const el = document.getElementById("statusMessage");
+        el.textContent = msg || "";
+      }
+
+      function disableActionButtons(disabled, status) {
+        const rejectBtn = document.getElementById("rejectBtn");
+        const agreeBtn = document.getElementById("agreeBtn");
+        const isPending = status === undefined ? true : Number(status) === 0;
+
+        if (rejectBtn) rejectBtn.disabled = disabled || !isPending;
+        if (agreeBtn) agreeBtn.disabled = disabled || !isPending;
+      }
+
       function goBack() {
         window.location.href = "/admin/dormitory";
       }
@@ -548,13 +616,14 @@
       }
 
       async function agreeChange() {
-        const dormChangeId = document.getElementById("detailId").textContent;
-        if (!dormChangeId || dormChangeId === "-") {
+        const dormChangeId = getDormChangeId();
+        if (!dormChangeId) {
           alert("未找到申请编号");
           return;
         }
         if (!confirm("确认同意该调换申请？")) return;
 
+        disableActionButtons(true);
         try {
           const response = await fetch(
             `/admin/dormitory/agreeChangeDormitory/${dormChangeId}`,
@@ -568,25 +637,28 @@
           );
           const result = await response.json();
           if (result.code === "200" || result.code === 200) {
-            alert("操作成功");
-            window.location.reload();
+            setStatusMessage("已同意申请");
+            loadDormDetail(dormChangeId);
           } else {
             alert(result.message || "操作失败");
+            disableActionButtons(false, 0);
           }
         } catch (error) {
           console.error("同意申请失败", error);
           alert("操作失败，请稍后重试");
+          disableActionButtons(false, 0);
         }
       }
 
       async function rejectChange() {
-        const dormChangeId = document.getElementById("detailId").textContent;
-        if (!dormChangeId || dormChangeId === "-") {
+        const dormChangeId = getDormChangeId();
+        if (!dormChangeId) {
           alert("未找到申请编号");
           return;
         }
         const reason = document.getElementById("rejectReasonInput").value;
         closeRejectModal();
+        disableActionButtons(true);
         try {
           const response = await fetch(
             "/admin/dormitory/rejectChangeDormitory/",
@@ -604,14 +676,16 @@
           );
           const result = await response.json();
           if (result.code === "200" || result.code === 200) {
-            alert("操作成功");
-            window.location.reload();
+            setStatusMessage("已拒绝申请");
+            loadDormDetail(dormChangeId);
           } else {
             alert(result.message || "操作失败");
+            disableActionButtons(false, 0);
           }
         } catch (error) {
           console.error("拒绝申请失败", error);
           alert("操作失败，请稍后重试");
+          disableActionButtons(false, 0);
         }
       }
     </script>
