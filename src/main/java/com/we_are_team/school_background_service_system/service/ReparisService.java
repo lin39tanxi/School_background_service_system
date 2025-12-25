@@ -78,5 +78,9 @@ public interface ReparisService {
  */
     void completeRepair(Integer orderId);
 
-
+    /**
+     * 删除通知
+     * @param orderId
+     */
+    void deleteRepair(Integer orderId);
 }

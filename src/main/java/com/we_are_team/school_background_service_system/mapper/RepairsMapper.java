@@ -57,4 +57,7 @@ RepairOrder getRepairDetail(Integer orderId);
 
     @Select("select order_id as id,description as content,created_time ,updated_time,process_status as status from order_table where user_id = #{userId}")
     List<ApplicationForm> getAppcationFormByUserId(Integer userId);
+
+    @Delete("delete from order_table where order_id = #{orderId}")
+    void deleteRepairByOrderId(@Param("orderId") Integer orderId);
 }
