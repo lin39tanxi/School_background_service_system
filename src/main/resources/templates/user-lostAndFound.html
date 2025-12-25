@@ -330,6 +330,131 @@
         color: #fff;
         border-color: #3f51b5;
       }
+
+      /* 详情弹窗样式 */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.show {
+        display: flex;
+      }
+
+      .modal {
+        background: white;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        animation: modalSlideIn 0.3s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid #e4e7f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-title {
+        font-size: 18px;
+        color: #1f2c4c;
+        font-weight: 500;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #8a92a6;
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: all 0.2s;
+      }
+
+      .modal-close:hover {
+        background: #f7f8fb;
+        color: #27314d;
+      }
+
+      .modal-body {
+        padding: 24px;
+      }
+
+      .detail-row {
+        margin-bottom: 20px;
+      }
+
+      .detail-label {
+        font-size: 14px;
+        color: #606a88;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+
+      .detail-value {
+        font-size: 14px;
+        color: #27314d;
+        line-height: 1.6;
+      }
+
+      .detail-images {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .detail-image {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #e4e7f0;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .detail-image:hover {
+        transform: scale(1.05);
+      }
+
+      tbody tr {
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      tbody tr:hover {
+        background: #f0f4ff !important;
+      }
     </style>
   </head>
   <body>
@@ -420,6 +545,50 @@
         </div>
       </section>
     </main>
+
+    <!-- 详情弹窗 -->
+    <div class="modal-overlay" id="detailModal">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">失物招领详情</div>
+          <button class="modal-close" onclick="closeDetailModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-row">
+            <div class="detail-label">物品名称</div>
+            <div class="detail-value" id="detailItemName">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">物品分类</div>
+            <div class="detail-value" id="detailCategoryName">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">拾取地点</div>
+            <div class="detail-value" id="detailLocationName">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">物品描述</div>
+            <div class="detail-value" id="detailDescription">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">物品图片</div>
+            <div class="detail-images" id="detailImages">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">状态</div>
+            <div class="detail-value" id="detailStatus">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">创建时间</div>
+            <div class="detail-value" id="detailCreatedTime">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">更新时间</div>
+            <div class="detail-value" id="detailUpdatedTime">-</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script>
       const state = {
@@ -719,6 +888,10 @@
             <td>${imageCell}</td>
             <td>${statusTag(item.status)}</td>
           `;
+          // 添加点击事件
+          tr.addEventListener("click", () => {
+            showDetailModal(item.itemId);
+          });
           body.appendChild(tr);
         });
 
@@ -822,6 +995,92 @@
 
         return pages;
       }
+
+      // 显示详情弹窗
+      async function showDetailModal(itemId) {
+        try {
+          const res = await fetch(
+            `/user/lostAndFound/getLostAndFoundDetail/${itemId}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
+          );
+          const result = await res.json();
+
+          if (result.code === "200" && result.data) {
+            const data = result.data;
+
+            // 填充数据
+            document.getElementById("detailItemName").textContent =
+              data.itemName || "-";
+            document.getElementById("detailCategoryName").textContent =
+              data.categoryName || "-";
+            document.getElementById("detailLocationName").textContent =
+              data.locationName || "-";
+            document.getElementById("detailDescription").textContent =
+              data.description || "-";
+
+            // 处理图片
+            const imagesContainer = document.getElementById("detailImages");
+            if (data.imageUrls && data.imageUrls.length > 0) {
+              imagesContainer.innerHTML = "";
+              data.imageUrls.forEach((url) => {
+                const img = document.createElement("img");
+                img.src = url;
+                img.className = "detail-image";
+                img.alt = "物品图片";
+                img.onerror = function () {
+                  this.style.display = "none";
+                };
+                // 点击图片可以在新窗口查看
+                img.onclick = function (e) {
+                  e.stopPropagation();
+                  window.open(url, "_blank");
+                };
+                imagesContainer.appendChild(img);
+              });
+            } else {
+              imagesContainer.textContent = "-";
+            }
+
+            // 状态
+            const statusHtml = statusTag(data.status);
+            document.getElementById("detailStatus").innerHTML = statusHtml;
+
+            // 时间
+            document.getElementById("detailCreatedTime").textContent =
+              data.createdTime || "-";
+            document.getElementById("detailUpdatedTime").textContent =
+              data.updatedTime || "-";
+
+            // 显示弹窗
+            document.getElementById("detailModal").classList.add("show");
+          } else {
+            alert("获取详情失败：" + (result.msg || "未知错误"));
+          }
+        } catch (error) {
+          console.error("获取详情出错:", error);
+          alert("获取详情失败，请稍后重试");
+        }
+      }
+
+      // 关闭详情弹窗
+      function closeDetailModal() {
+        document.getElementById("detailModal").classList.remove("show");
+      }
+
+      // 点击遮罩层关闭弹窗
+      document
+        .getElementById("detailModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) {
+            closeDetailModal();
+          }
+        });
 
       // 退出登录
       function logout() {
