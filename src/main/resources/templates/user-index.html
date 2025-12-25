@@ -135,8 +135,7 @@
         border-left: 3px solid transparent;
       }
 
-      .menu-item:hover,
-      .menu-item.active {
+      .menu-item:hover{
         background: #f5f5f5;
         color: #3f51b5;
         border-left-color: #3f51b5;
@@ -461,7 +460,8 @@
       <!-- 左侧边栏 -->
       <aside class="sidebar">
         <div
-          class="menu-item active"
+          class="menu-item"
+          data-route="/user/repair"
           onclick="window.location.href='/user/repair'"
         >
           <span>维修预约</span>
@@ -469,6 +469,7 @@
         </div>
         <div
           class="menu-item"
+          data-route="/user/lostAndFound"
           onclick="window.location.href='/user/lostAndFound'"
         >
           <span>失物招领</span>
@@ -476,16 +477,25 @@
         </div>
         <div
           class="menu-item"
+          data-route="/user/changeDormitory"
           onclick="window.location.href='/user/changeDormitory'"
         >
           <span>宿舍调换申请</span>
           <span>></span>
         </div>
-        <div class="menu-item" onclick="window.location.href='/user/notice'">
+        <div
+          class="menu-item"
+          data-route="/user/notice"
+          onclick="window.location.href='/user/notice'"
+        >
           <span>学校通知</span>
           <span>></span>
         </div>
-        <div class="menu-item" onclick="window.location.href='/user/feedback'">
+        <div
+          class="menu-item"
+          data-route="/user/feedback"
+          onclick="window.location.href='/user/feedback'"
+        >
           <span>问题反馈</span>
           <span>></span>
         </div>
@@ -639,7 +649,7 @@
               user.className || "-";
             document.getElementById("phone").textContent = user.phone || "-";
             document.getElementById("dormitory").textContent =
-              (user.building || "")  + (user.dormitory || "") ;
+              (user.building || "") + (user.dormitory || "");
             document.getElementById("birthday").textContent =
               user.birthDate || "-";
 
@@ -892,6 +902,26 @@
           this.classList.add("active");
         });
       });
+
+      // 非首页按路径高亮，首页保持未选中
+      (function highlightByPath() {
+        const path = window.location.pathname;
+        const items = Array.from(document.querySelectorAll(".menu-item"));
+        const homePaths = ["/user", "/user/", "/user/index"];
+        if (homePaths.includes(path)) {
+          items.forEach((el) => el.classList.remove("active"));
+          return;
+        }
+
+        const match = items.find((el) =>
+          path.startsWith(el.dataset.route || "")
+        );
+
+        if (match) {
+          items.forEach((el) => el.classList.remove("active"));
+          match.classList.add("active");
+        }
+      })();
 
       // 通知项点击事件
       document.querySelectorAll(".notice-item").forEach((item) => {
