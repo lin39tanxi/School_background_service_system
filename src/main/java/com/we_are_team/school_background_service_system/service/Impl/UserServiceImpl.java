@@ -200,13 +200,12 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    /**
+     * 上传头像
+     */
     @Override
     public String uploadAvatar(MultipartFile avatarFile) {
         // log.info("上传头像{}", avatarFile);
-        /**
-         * 上传头像
-         */
-
         if (avatarFile == null || avatarFile.getOriginalFilename().equals("")) {
             throw new RuntimeException("请选择文件");
         }
